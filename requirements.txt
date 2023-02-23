@@ -1,0 +1,5 @@
+uvicorn[standard]
+fastapi
+fastapi-crudrouter
+tortoise-orm
+httpx
