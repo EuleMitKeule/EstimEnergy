@@ -21,6 +21,8 @@ class Collector(models.Model):
     energy_datas = fields.ReverseRelation["EnergyData"]
     min_hour = fields.IntField()
     max_hour = fields.IntField()
+    max_incomplete_days = fields.IntField()
+    billing_month = fields.IntField()
 
     async def connect(self):
         self.logger = logging.getLogger("energy_collector").getChild(self.name)
@@ -34,26 +36,23 @@ class Collector(models.Model):
         await self.api.connect(login=True)
         await self.api.subscribe_states(self.__state_changed)
 
-    async def calculate_day_cost(self):
-        date = datetime.datetime.now()
+    async def calculate_day_cost(self, date):
         day_base_cost = self.base_cost_per_month / get_days_in_month(date.month, date.year)
 
         energy_data = await EnergyData.filter(collector=self, year=date.year, month=date.month, day=date.day).first()
 
         return day_base_cost + self.cost_per_kwh * energy_data.kwh
 
-    async def calculate_day_cost_difference(self):
-        date = datetime.datetime.now()
+    async def calculate_day_cost_difference(self, date):
         days_in_month = get_days_in_month(date.month, date.year)
 
         payment_per_day: float = self.payment_per_month / days_in_month
 
-        cost = await self.calculate_day_cost()
+        cost = await self.calculate_day_cost(date)
         
         return payment_per_day - cost
     
-    async def predict_month_kwh_raw(self):
-        date = datetime.datetime.now()
+    async def predict_month_kwh_raw(self, date):
         days_in_month = get_days_in_month(date.month, date.year)
 
         energy_datas = await EnergyData.filter(collector=self, year=date.year, month=date.month)
@@ -69,17 +68,110 @@ class Collector(models.Model):
         estimated_kwh_total: float = kwh_per_day * days_in_month
         return estimated_kwh_total
     
-    async def predict_month_kwh(self):
-        date = datetime.datetime.now()
+    async def predict_month_kwh(self, date):
         days_in_month = get_days_in_month(date.month, date.year)
 
-        energy_datas = await EnergyData.filter(collector=self, year=date.year, month=date.month)
+        energy_datas = await self.recorded_energy_datas_in_month(date)
+        recorded_days = len(energy_datas)
         
-        if len(energy_datas) == 0:
+        if recorded_days == 0:
             return 0
 
-        recorded_days = 0
         kwh_total = 0
+        for energy_data in energy_datas:
+            kwh_total += energy_data.kwh
+        
+        kwh_per_day: float = kwh_total / recorded_days
+        estimated_kwh_total: float = kwh_per_day * days_in_month
+        return estimated_kwh_total
+
+    async def predict_month_cost_raw(self, date):
+        kwh = await self.predict_month_kwh_raw(date)
+        
+        return self.base_cost_per_month + kwh * self.cost_per_kwh
+
+    async def predict_month_cost(self, date):
+        kwh = await self.predict_month_kwh(date)
+        
+        return self.base_cost_per_month + kwh * self.cost_per_kwh
+    
+    async def predict_month_cost_difference_raw(self, date):
+        cost = await self.predict_month_cost_raw(date)
+        return self.payment_per_month - cost
+    
+    async def predict_month_cost_difference(self, date):
+        cost = await self.predict_month_cost(date)
+        return self.payment_per_month - cost
+    
+    async def predict_year_kwh_raw(self, date):
+        current_year = date.year
+        
+        kwh_total = 0
+        for month_offset in range(12):
+            month = (self.billing_month + month_offset - 1) % 12 + 1
+
+            is_after_billing_month = month >= self.billing_month
+            year = current_year - (1 if is_after_billing_month else 0)
+
+            date = date.replace(year=year, month=month, day=1)
+
+            kwh_total += await self.predict_month_kwh_raw(date)
+        
+        return kwh_total
+    
+    async def predict_year_kwh(self, date):
+        current_year = date.year
+
+        kwh_total = 0
+        recorded_months = 0
+        for month_offset in range(12):
+            month = (self.billing_month + month_offset - 1) % 12 + 1
+
+            is_after_billing_month = month >= self.billing_month
+            year = current_year - (1 if is_after_billing_month else 0)
+
+            date = date.replace(year=year, month=month, day=1)
+
+            energy_datas = await self.recorded_energy_datas_in_month(date)
+            recorded_days = len(energy_datas)
+
+            days_in_month = get_days_in_month(date.month, date.year)
+            if recorded_days < days_in_month - self.max_incomplete_days:
+                continue
+
+            recorded_months += 1
+            kwh_total += await self.predict_month_kwh(date)
+
+        if recorded_months == 0:
+            return 0
+        
+        kwh_per_month = kwh_total / recorded_months
+        return kwh_per_month * 12
+    
+    async def predict_year_cost_raw(self, date):
+        kwh = await self.predict_year_kwh_raw(date)
+        base_cost = self.base_cost_per_month * 12
+        return base_cost + kwh * self.cost_per_kwh
+    
+    async def predict_year_cost(self, date):
+        kwh = await self.predict_year_kwh(date)
+        base_cost = self.base_cost_per_month * 12
+        return base_cost + kwh * self.cost_per_kwh
+    
+    async def predict_year_cost_difference_raw(self, date):
+        cost = await self.predict_year_cost_raw(date)
+        payment = self.payment_per_month * 12
+        return payment - cost
+    
+    async def predict_year_cost_difference(self, date):
+        cost = await self.predict_year_cost(date)
+        payment = self.payment_per_month * 12
+        return payment - cost
+
+    async def recorded_energy_datas_in_month(self, date) -> list[EnergyData]:
+        energy_datas = await EnergyData.filter(collector=self, year=date.year, month=date.month)
+
+        recorded_energy_datas = []
         for energy_data in energy_datas:
             is_completed = energy_data.is_completed and self.max_hour == 24
             reached_max_hour = energy_data.hour_updated >= self.max_hour and self.max_hour < 24
@@ -89,34 +181,10 @@ class Collector(models.Model):
 
             if energy_data.hour_created > self.min_hour:
                 continue
-
-            kwh_total = energy_data.kwh
-            recorded_days += 1
-
-        if recorded_days == 0:
-            return 0
+            
+            recorded_energy_datas.append(energy_data)
         
-        kwh_per_day: float = kwh_total / recorded_days
-        estimated_kwh_total: float = kwh_per_day * days_in_month
-        return estimated_kwh_total
-
-    async def predict_month_cost_raw(self):
-        kwh = await self.predict_month_kwh_raw()
-        
-        return self.base_cost_per_month + kwh * self.cost_per_kwh
-
-    async def predict_month_cost(self):
-        kwh = await self.predict_month_kwh()
-        
-        return self.base_cost_per_month + kwh * self.cost_per_kwh
-    
-    async def predict_month_cost_difference_raw(self):
-        cost = await self.predict_month_cost_raw()
-        return self.payment_per_month - cost
-    
-    async def predict_month_cost_difference(self):
-        cost = await self.predict_month_cost()
-        return self.payment_per_month - cost
+        return recorded_energy_datas
 
     def __state_changed(self, state: EntityState):
         if not state.key == 3673186328:
