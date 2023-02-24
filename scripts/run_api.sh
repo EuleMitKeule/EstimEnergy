@@ -2,4 +2,4 @@
 
 # This script runs the API server.
 
-uvicorn estimenergy.main:app --reload --port 8000
+uvicorn estimenergy.main:app --reload --port 8000 --log-config logging.yml

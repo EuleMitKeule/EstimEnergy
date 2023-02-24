@@ -11,6 +11,8 @@ site
 coverage.xml
 .netlify
 *.db
+*.db-shm
+*.db-wal
 log.txt
 Pipfile.lock
 env3.*
@@ -26,3 +28,4 @@ archive.zip
 
 .env
 old/
+config.yml
