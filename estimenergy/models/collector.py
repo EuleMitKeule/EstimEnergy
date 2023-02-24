@@ -5,6 +5,7 @@ import logging
 from aioesphomeapi import EntityState, APIClient
 from tortoise import fields, models
 from tortoise.contrib.pydantic import pydantic_model_creator
+from estimenergy.helpers import get_days_in_month
 
 from estimenergy.models.energy_data import EnergyData
 
@@ -39,18 +40,22 @@ class Collector(models.Model):
         loop.create_task(self.__current_kwh_changed(current_kwh))
     
     async def __current_kwh_changed(self, current_kwh: float):
+        date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        days_in_month = get_days_in_month(date.month, date.year)
         
+        current_cost = current_kwh * self.cost_per_kwh + self.base_cost_per_month / days_in_month
+
         self.logger.info(f"Current KWh: {current_kwh}")
 
-        date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
         energy_data = await EnergyData.filter(collector=self, year=date.year, month=date.month, day=date.day).first()
         
         if energy_data is None:
-            energy_data = EnergyData(collector=self, year=date.year, month=date.month, day=date.day, kwh=current_kwh)
+            energy_data = EnergyData(collector=self, year=date.year, month=date.month, day=date.day, kwh=current_kwh, cost=current_cost)
             await energy_data.save()
             return
         
         energy_data.kwh = current_kwh
+        energy_data.cost = current_cost
         await energy_data.save()
     
 
