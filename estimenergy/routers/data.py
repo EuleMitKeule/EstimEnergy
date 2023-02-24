@@ -8,7 +8,7 @@ router = APIRouter()
 @router.get("/collector/{collector_name}")
 async def get_collector_data(collector_name):
     collector = await Collector.filter(name=collector_name).first()
-    
+
     if collector is None:
         raise HTTPException(status_code=404, detail="Collector name not found.")
     
@@ -17,11 +17,17 @@ async def get_collector_data(collector_name):
     predicted_month_kwh_raw = await collector.predict_month_kwh_raw()
     predicted_month_cost_raw = await collector.predict_month_cost_raw()
     predicted_month_cost_difference_raw = await collector.predict_month_cost_difference_raw()
+    predicted_month_kwh = await collector.predict_month_kwh()
+    predicted_month_cost = await collector.predict_month_cost()
+    predicted_month_cost_difference = await collector.predict_month_cost_difference()
 
     return {
         "current_day_cost": current_day_cost,
         "current_day_cost_difference": current_day_cost_difference,
         "predicted_month_kwh_raw": predicted_month_kwh_raw,
         "predicted_month_cost_raw": predicted_month_cost_raw,
-        "predicted_month_cost_difference_raw": predicted_month_cost_difference_raw
+        "predicted_month_cost_difference_raw": predicted_month_cost_difference_raw,
+        "predicted_month_kwh": predicted_month_kwh,
+        "predicted_month_cost": predicted_month_cost,
+        "predicted_month_cost_difference": predicted_month_cost_difference
     }

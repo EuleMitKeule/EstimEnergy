@@ -12,6 +12,9 @@ class EnergyData(models.Model):
     month = fields.IntField()
     day = fields.IntField()
     kwh = fields.FloatField()
+    hour_created = fields.IntField()
+    hour_updated = fields.IntField()
+    is_completed = fields.BooleanField()
 
     class Meta:
         unique_together = ("collector", "year", "month", "day")
