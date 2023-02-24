@@ -12,7 +12,6 @@ class EnergyData(models.Model):
     month = fields.IntField()
     day = fields.IntField()
     kwh = fields.FloatField()
-    cost = fields.FloatField()
 
     class Meta:
         unique_together = ("collector", "year", "month", "day")
