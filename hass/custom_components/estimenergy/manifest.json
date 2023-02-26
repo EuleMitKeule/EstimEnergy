@@ -1,0 +1,14 @@
+{
+  "domain": "estimenergy",
+  "version": "0.0.1",
+  "name": "EstimEnergy",
+  "documentation": "https://github.com/EuleMitKeule/EstimEnergy",
+  "issue_tracker": "https://github.com/EuleMitKeule/EstimEnergy/issues",
+  "dependencies": [],
+  "config_flow": true,
+  "codeowners": [
+    "@eulemitkeule",
+    "@mifiamigahna"
+  ],
+  "requirements": []
+}

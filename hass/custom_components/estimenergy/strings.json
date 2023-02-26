@@ -1,0 +1,15 @@
+{
+    "title": "EstimEnergy",
+    "config": {
+        "step": {
+            "user": {
+                "title": "EstimEnergy",
+                "data": {
+                    "host": "Host",
+                    "port": "Port",
+                    "collector_name": "Collector Name"
+                }
+            }
+        }
+    }
+}
