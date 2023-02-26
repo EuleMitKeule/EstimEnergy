@@ -1,6 +1,7 @@
-
 from homeassistant import config_entries
 import voluptuous as vol
+
+from homeassistant.data_entry_flow import FlowResult
 
 from .const import (
     DOMAIN,
@@ -11,23 +12,23 @@ from .const import (
     DEFAULT_PORT,
 )
 
+
 class EstimEnergyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """EstimEnergy config flow."""
+
     VERSION = 1
 
-    async def async_step_user(self, user_input=None):
-
+    async def async_step_user(self, user_input=None) -> FlowResult:
         if user_input is not None:
             collector_name = user_input["collector_name"]
 
             unique_id = f"estimenergy_{collector_name}"
-            
+
             await self.async_set_unique_id(unique_id)
             self._abort_if_unique_id_configured()
-            
+
             return self.async_create_entry(
-                title=collector_name.title(),
-                data=user_input
+                title=collector_name.title(), data=user_input
             )
 
         data_schema = vol.Schema(
@@ -46,7 +47,4 @@ class EstimEnergyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             },
         )
 
-        return self.async_show_form(
-            step_id="user",
-            data_schema=data_schema
-        )
+        return self.async_show_form(step_id="user", data_schema=data_schema)

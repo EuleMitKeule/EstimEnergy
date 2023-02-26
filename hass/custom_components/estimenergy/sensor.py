@@ -1,69 +1,74 @@
 """Sensor for EstimEnergy integration."""
-from __future__ import annotations
 
-from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorEntity,
-    SensorStateClass,
-)
-from homeassistant.core import HomeAssistant
+from __future__ import annotations
+import logging
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import ConfigType, HomeAssistantType
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.typing import DiscoveryInfoType, ConfigType
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.components.sensor import SensorEntity
+
+from .coordinator import EstimEnergyCoordinator
 
 from .const import (
-    DOMAIN,
     CONF_NAME,
+    CONF_HOST,
+    CONF_PORT,
 )
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
-    hass: HomeAssistantType, entry: ConfigType, async_add_entities
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up the EstimEnergy sensor platform."""
 
-    hass_data = hass.data[DOMAIN][entry.entry_id]
-
-    async_add_entities(
-        [
-            EstimEnergySensor(entry.data, hass_data)
-        ],
-        False,
+    coordinator = EstimEnergyCoordinator(
+        hass,
+        name=entry.data[CONF_NAME],
+        host=entry.data[CONF_HOST],
+        port=entry.data[CONF_PORT],
     )
 
-class EstimEnergySensor(SensorEntity):
-    """Representation of a Sensor."""
+    async_add_entities(
+        [EstimEnergySensor(coordinator)],
+        update_before_add=False,
+    )
 
-    def __init__(self, entry_data, hass_data) -> None:
-        """Initialize the sensor."""
-        self._state = None
-        self._name = f"EstimEnergy {entry_data[CONF_NAME]}"
-        self._unique_id = f"estimenergy_{entry_data[CONF_NAME]}"
+
+async def async_setup_platform(
+    hass: HomeAssistant,
+    config: ConfigType,
+    async_add_entities: AddEntitiesCallback,
+    discovery_info: DiscoveryInfoType | None = None,
+) -> None:
+    """Set up the sensor platform."""
+
+    coordinator = EstimEnergyCoordinator(
+        hass,
+        name=config[CONF_NAME],
+        host=config[CONF_HOST],
+        port=config[CONF_PORT],
+    )
+
+    async_add_entities(
+        [EstimEnergySensor(coordinator)],
+        update_before_add=False,
+    )
+
+
+class EstimEnergySensor(CoordinatorEntity, SensorEntity):
+    """EstimEnergy Sensor class."""
+
+    def __init__(self, coordinator) -> None:
+        super().__init__(coordinator)
+        self._attr_name = f"{coordinator.name} Sensor"
+        self._attr_unique_id = f"{coordinator.name}-sensor"
 
     @property
-    def name(self) -> str:
-        """Return the name of the sensor."""
-        return self._name
-    
-    @property
-    def unique_id(self) -> str:
-        """Return the unique id of the sensor."""
-        return self._unique_id
-
-    @property
-    def platform(self) -> str:
-        """Return the platform name."""
-        return "EstimEnergy"
-
-    @property
-    def state(self) -> str | None:
+    def native_value(self) -> int | None:
         """Return the state of the sensor."""
-        return self._state
-
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return self._state is not None
-
-    async def async_update(self) -> None:
-        """Get the latest data and updates the states."""
-        self._state = "Works!"
+        return self.coordinator.data

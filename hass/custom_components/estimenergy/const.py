@@ -1,5 +1,7 @@
+"""Constants for EstimEnergy"""
+from homeassistant.const import Platform
 
-PLATFORM = "sensor"
+PLATFORM = Platform.SENSOR
 DOMAIN = "estimenergy"
 
 CONF_NAME = "collector_name"
@@ -8,5 +10,3 @@ CONF_PORT = "port"
 
 DEFAULT_HOST = "localhost"
 DEFAULT_PORT = 8000
-
-
