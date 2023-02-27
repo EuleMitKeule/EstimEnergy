@@ -14,4 +14,7 @@ setup(
     keywords='estimenergy api client',
     packages=['estimenergy_client'],
     python_requires='>=3.6',
+    install_requires=[
+        'requests',
+    ],
 )
