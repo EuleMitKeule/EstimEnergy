@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 COPY ./estimenergy /app/estimenergy
 COPY ./logging.yml /app/logging.yml
 
-ENV CONFIG_PATH /config/config.yaml
+ENV CONFIG_PATH /config/config.yml
 
 VOLUME /config
 
