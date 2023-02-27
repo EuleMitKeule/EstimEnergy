@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 import logging
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.typing import DiscoveryInfoType, ConfigType
@@ -35,7 +35,7 @@ async def async_setup_entry(
 
     async_add_entities(
         [EstimEnergySensor(coordinator)],
-        update_before_add=False,
+        update_before_add=True,
     )
 
 
@@ -65,8 +65,8 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
 
     def __init__(self, coordinator) -> None:
         super().__init__(coordinator)
-        self._attr_name = f"{coordinator.name} Sensor"
-        self._attr_unique_id = f"{coordinator.name}-sensor"
+        self._attr_name = f"EstimEnergy {coordinator.name}"
+        self._attr_unique_id = f"estimenergy-{coordinator.name}"
 
     @property
     def native_value(self) -> int | None:

@@ -4,3 +4,4 @@ fastapi-crudrouter
 httpx
 aioesphomeapi
 tortoise_orm
+requests

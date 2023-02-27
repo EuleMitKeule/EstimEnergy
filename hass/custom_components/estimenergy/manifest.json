@@ -1,5 +1,6 @@
 {
   "domain": "estimenergy",
+  "version": "0.0.1",
   "name": "EstimEnergy",
   "codeowners": ["@eulemitkeule", "@mifiamigahna"],
   "config_flow": true,
