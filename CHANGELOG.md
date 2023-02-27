@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2023-02-27)
+### Feature
+* Enable hacs compatibility ([`77c7f7e`](https://github.com/EuleMitKeule/EstimEnergy/commit/77c7f7e143fb2d482ca3615065bcb8842593d64d))
+
+### Fix
+* Hacs.json typo ([`80ac47d`](https://github.com/EuleMitKeule/EstimEnergy/commit/80ac47dfab3874a251ea3ebdd5c08791218ecec0))
+
 ## v0.3.3 (2023-02-27)
 ### Fix
 * Dockerfile config path ([`bc82a4d`](https://github.com/EuleMitKeule/EstimEnergy/commit/bc82a4dccc5d18419f77ccb47f84c8bf9b710fa6))
