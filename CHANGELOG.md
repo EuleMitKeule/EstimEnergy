@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.1 (2023-02-27)
+### Fix
+* Copy logging config into docker image ([`aa0d05b`](https://github.com/EuleMitKeule/EstimEnergy/commit/aa0d05bd8eea63ee49cc9994072b49055cb870df))
+
 ## v0.3.0 (2023-02-27)
 ### Feature
 * Add mountable config directory ([`63616ae`](https://github.com/EuleMitKeule/EstimEnergy/commit/63616ae0c1f852fa9dc529dd1088c1cf57ba1e9d))
