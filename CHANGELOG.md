@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.4 (2023-02-27)
+### Fix
+* Docker workflow auth ([`285e07c`](https://github.com/EuleMitKeule/EstimEnergy/commit/285e07ce6d672b5cb3bb95e572d0af39350e9201))
+
 ## v0.2.3 (2023-02-27)
 ### Fix
 * Correct docker workflow ([`b4bdc8d`](https://github.com/EuleMitKeule/EstimEnergy/commit/b4bdc8d4e9faba4372fbdd9434aed7952ad537c2))
