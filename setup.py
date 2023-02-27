@@ -1,11 +1,12 @@
 
+import os
 from setuptools import setup
 
-__version__ = '0.4.1'
+version = os.environ.get("RELEASE_VERSION", None)
 
 setup(
     name='estimenergy_client',
-    version=__version__,
+    version=version,
     description='Client for the Estimenergy API',
     long_description=open('README.md', 'r').read(),
     long_description_content_type='text/markdown',
