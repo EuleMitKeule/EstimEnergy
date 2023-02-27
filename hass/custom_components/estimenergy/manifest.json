@@ -8,5 +8,5 @@
   "documentation": "https://github.com/EuleMitKeule/EstimEnergy",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/EuleMitKeule/EstimEnergy/issues",
-  "requirements": ["estimenergy-client"]
+  "requirements": ["estimenergy-client>=0.2.0"]
 }

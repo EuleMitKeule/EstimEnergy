@@ -30,4 +30,4 @@ class EstimEnergyCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         """Refresh data from API."""
-        return await self.client.async_get_data(self.name)
+        return await self.hass.async_add_executor_job(self.client.get_data, self.name)
