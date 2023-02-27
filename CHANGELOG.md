@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.1 (2023-02-27)
+### Fix
+* Coordinator api access ([`56a536e`](https://github.com/EuleMitKeule/EstimEnergy/commit/56a536e9ef1b54285c332c8f8cd9e06c69b69480))
+
 ## v0.2.0 (2023-02-27)
 ### Feature
 * Implement coordinator client ([`c0a9462`](https://github.com/EuleMitKeule/EstimEnergy/commit/c0a9462f264c6867b1e856143f11a918d566f007))
