@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.2 (2023-02-27)
+### Fix
+* Dockerfile logging path ([`cebfd73`](https://github.com/EuleMitKeule/EstimEnergy/commit/cebfd73b653d62fc85dc85ffc3622b8c2d48b030))
+
 ## v0.3.1 (2023-02-27)
 ### Fix
 * Copy logging config into docker image ([`aa0d05b`](https://github.com/EuleMitKeule/EstimEnergy/commit/aa0d05bd8eea63ee49cc9994072b49055cb870df))
