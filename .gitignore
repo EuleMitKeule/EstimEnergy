@@ -21,6 +21,7 @@ docs_build
 venv
 docs.zip
 archive.zip
+*.egg-info
 
 # vim temporary files
 *~
