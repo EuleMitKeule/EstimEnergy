@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.2 (2023-02-27)
+### Fix
+* Add docker workflow ([`2db8068`](https://github.com/EuleMitKeule/EstimEnergy/commit/2db806882dac84bf0d0b48c898fe32e83257fe8a))
+
 ## v0.2.1 (2023-02-27)
 ### Fix
 * Coordinator api access ([`56a536e`](https://github.com/EuleMitKeule/EstimEnergy/commit/56a536e9ef1b54285c332c8f8cd9e06c69b69480))
