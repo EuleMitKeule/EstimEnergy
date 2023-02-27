@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.1 (2023-02-27)
+### Fix
+* Add hassfest and hacs workflows ([`f96335b`](https://github.com/EuleMitKeule/EstimEnergy/commit/f96335ba51d02a911a32b7f46efcc61eb63ebdc6))
+
 ## v0.4.0 (2023-02-27)
 ### Feature
 * Enable hacs compatibility ([`77c7f7e`](https://github.com/EuleMitKeule/EstimEnergy/commit/77c7f7e143fb2d482ca3615065bcb8842593d64d))
