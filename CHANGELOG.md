@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2023-02-27)
+### Feature
+* Add mountable config directory ([`63616ae`](https://github.com/EuleMitKeule/EstimEnergy/commit/63616ae0c1f852fa9dc529dd1088c1cf57ba1e9d))
+
 ## v0.2.4 (2023-02-27)
 ### Fix
 * Docker workflow auth ([`285e07c`](https://github.com/EuleMitKeule/EstimEnergy/commit/285e07ce6d672b5cb3bb95e572d0af39350e9201))
