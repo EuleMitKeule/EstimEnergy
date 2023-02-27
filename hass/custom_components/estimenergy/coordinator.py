@@ -5,7 +5,7 @@ from datetime import timedelta
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-# from estimenergy_client import EstimEnergyClient
+from estimenergy_client.client import EstimEnergyClient
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -22,15 +22,12 @@ class EstimEnergyCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=5),
         )
 
-        # self.client = EstimEnergyClient(host, port)
+        self.client = EstimEnergyClient(host, port)
         self.hass = hass
         self.name = name
         self.host = host
         self.port = port
-        self.count = 0
 
     async def _async_update_data(self):
         """Refresh data from API."""
-        self.count += 1
-        # self.client.get_data(self.name)
-        return self.count
+        return await self.client.async_get_data(self.name)

@@ -71,4 +71,4 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
     @property
     def native_value(self) -> int | None:
         """Return the state of the sensor."""
-        return self.coordinator.data
+        return self.coordinator.data["current_day_cost"]
