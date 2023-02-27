@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.3 (2023-02-27)
+### Fix
+* Correct docker workflow ([`b4bdc8d`](https://github.com/EuleMitKeule/EstimEnergy/commit/b4bdc8d4e9faba4372fbdd9434aed7952ad537c2))
+
 ## v0.2.2 (2023-02-27)
 ### Fix
 * Add docker workflow ([`2db8068`](https://github.com/EuleMitKeule/EstimEnergy/commit/2db806882dac84bf0d0b48c898fe32e83257fe8a))
