@@ -1,10 +1,11 @@
 
 from setuptools import setup
 
+__version__ = '0.0.0'
 
 setup(
     name='estimenergy_client',
-    version='0.1.0',
+    version=__version__,
     description='Client for the Estimenergy API',
     long_description=open('README.md', 'r').read(),
     long_description_content_type='text/markdown',
