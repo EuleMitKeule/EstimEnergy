@@ -1,4 +1,5 @@
 
+import os
 import asyncio
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
@@ -7,6 +8,8 @@ import yaml
 from estimenergy.routers import settings, energy_data, data, collector
 from estimenergy.models import Collector, CollectorSchema
 
+
+config_path = os.environ.get("CONFIG_PATH", "config.yml")
 
 app = FastAPI(
     title="EstimEnergy",
@@ -28,7 +31,7 @@ app.include_router(collector.router)
 @app.on_event("startup")
 async def start_energy_collectors():
     
-    with open("config.yml") as f:
+    with open(config_path) as f:
         config_dict = yaml.safe_load(f)
 
     collector_names = [collector_dict["name"] for collector_dict in config_dict["collectors"]]
