@@ -32,6 +32,7 @@ async def get_collector_data(collector_name):
     predicted_year_cost_difference = await collector.predict_year_cost_difference(date)
 
     return {
+        "current_day_kwh": current_day_kwh,
         "current_day_cost": current_day_cost,
         "current_day_cost_difference": current_day_cost_difference,
         "predicted_month_kwh_raw": predicted_month_kwh_raw,
