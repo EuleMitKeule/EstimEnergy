@@ -36,10 +36,19 @@ class Collector(models.Model):
         await self.api.connect(login=True)
         await self.api.subscribe_states(self.__state_changed)
 
+    async def get_day_kwh(self, date):
+        energy_data = await EnergyData.filter(collector=self, year=date.year, month=date.month, day=date.day).first()
+        if energy_data is None:
+            return 0
+        
+        return energy_data.kwh
+
     async def calculate_day_cost(self, date):
         day_base_cost = self.base_cost_per_month / get_days_in_month(date.month, date.year)
 
         energy_data = await EnergyData.filter(collector=self, year=date.year, month=date.month, day=date.day).first()
+        if energy_data is None:
+            return 0
 
         return day_base_cost + self.cost_per_kwh * energy_data.kwh
 
@@ -56,6 +65,8 @@ class Collector(models.Model):
         days_in_month = get_days_in_month(date.month, date.year)
 
         energy_datas = await EnergyData.filter(collector=self, year=date.year, month=date.month)
+        if energy_data is None:
+            return 0
 
         kwh_total = 0
         for energy_data in energy_datas:
@@ -72,6 +83,9 @@ class Collector(models.Model):
         days_in_month = get_days_in_month(date.month, date.year)
 
         energy_datas = await self.recorded_energy_datas_in_month(date)
+        if energy_data is None:
+            return 0
+        
         recorded_days = len(energy_datas)
         
         if recorded_days == 0:

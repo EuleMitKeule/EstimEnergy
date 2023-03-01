@@ -8,14 +8,19 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.typing import DiscoveryInfoType, ConfigType
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.components.sensor import SensorEntity
+from homeassistant.const import CURRENCY_EURO
+from homeassistant.const import UnitOfEnergy
+from .const import (
+    SENSOR_DAY_KWH,
+    SENSOR_MONTH_KWH_RAW,
+    SENSOR_YEAR_KWH_RAW,
+    SENSOR_MONTH_KWH,
+    SENSOR_YEAR_KWH,
+)
 
 from .coordinator import EstimEnergyCoordinator
 
-from .const import (
-    CONF_NAME,
-    CONF_HOST,
-    CONF_PORT,
-)
+from .const import CONF_NAME, CONF_HOST, CONF_PORT, SENSOR_TYPES
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -33,8 +38,13 @@ async def async_setup_entry(
         port=entry.data[CONF_PORT],
     )
 
+    sensors = [
+        EstimEnergySensor(coordinator, sensor_type=sensor_type)
+        for sensor_type in SENSOR_TYPES
+    ]
+
     async_add_entities(
-        [EstimEnergySensor(coordinator)],
+        sensors,
         update_before_add=True,
     )
 
@@ -54,21 +64,51 @@ async def async_setup_platform(
         port=config[CONF_PORT],
     )
 
+    sensors = [
+        EstimEnergySensor(coordinator, sensor_type=sensor_type)
+        for sensor_type in SENSOR_TYPES
+    ]
+
     async_add_entities(
-        [EstimEnergySensor(coordinator)],
-        update_before_add=False,
+        sensors,
+        update_before_add=True,
     )
 
 
 class EstimEnergySensor(CoordinatorEntity, SensorEntity):
     """EstimEnergy Sensor class."""
 
-    def __init__(self, coordinator) -> None:
+    def __init__(self, coordinator: EstimEnergyCoordinator, sensor_type: str) -> None:
         super().__init__(coordinator)
-        self._attr_name = f"EstimEnergy {coordinator.name}"
-        self._attr_unique_id = f"estimenergy-{coordinator.name}"
+        self.sensor_type = sensor_type
+        self._attr_name = f"EstimEnergy {coordinator.name} {self.sensor_type}"
+        self._attr_unique_id = f"estimenergy-{coordinator.name}-{self.sensor_type}"
 
     @property
     def native_value(self) -> int | None:
         """Return the state of the sensor."""
-        return self.coordinator.data["current_day_cost"]
+        if (
+            self.coordinator.data is None
+            or self.sensor_type not in self.coordinator.data
+        ):
+            return None
+
+        return self.coordinator.data[self.sensor_type]
+
+    @property
+    def native_unit_of_measurement(self) -> str | None:
+        """Return the unit of measurement of the sensor."""
+        if (
+            self.sensor_type == SENSOR_DAY_KWH
+            or self.sensor_type == SENSOR_MONTH_KWH_RAW
+            or self.sensor_type == SENSOR_YEAR_KWH_RAW
+            or self.sensor_type == SENSOR_MONTH_KWH
+            or self.sensor_type == SENSOR_YEAR_KWH
+        ):
+            return UnitOfEnergy.KILO_WATT_HOUR
+        else:
+            currency = self.hass.config.currency
+            if currency is None:
+                currency = CURRENCY_EURO
+
+            return currency

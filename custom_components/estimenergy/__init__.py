@@ -6,10 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 
 from homeassistant.core import HomeAssistant
 
-from .const import (
-    PLATFORM,
-    DOMAIN,
-)
+from .const import PLATFORM, DOMAIN, SENSOR_TYPES
 
 _LOGGER = logging.getLogger(__name__)
 

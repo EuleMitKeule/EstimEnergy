@@ -5,7 +5,7 @@ from datetime import timedelta
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from estimenergy_client.client import EstimEnergyClient
+from estimenergy_client import EstimEnergyClient
 
 
 _LOGGER = logging.getLogger(__name__)

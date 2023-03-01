@@ -15,6 +15,7 @@ async def get_collector_data(collector_name):
     
     date = datetime.datetime.now()
     
+    current_day_kwh = await collector.get_day_kwh(date)
     current_day_cost = await collector.calculate_day_cost(date)
     current_day_cost_difference = await collector.calculate_day_cost_difference(date)
     predicted_month_kwh_raw = await collector.predict_month_kwh_raw(date)
