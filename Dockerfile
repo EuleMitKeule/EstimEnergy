@@ -11,6 +11,7 @@ COPY ./logging.yml /app/logging.yml
 
 ENV CONFIG_PATH /config/config.yml
 ENV DB_PATH /config/estimenergy.db
+ENV ENABLE_METRICS true
 
 VOLUME /config
 

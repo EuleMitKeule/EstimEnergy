@@ -315,7 +315,7 @@ class CollectorPrometheusCollector(PrometheusCollector):
         self.collector = collector
         self.metrics = {
             sensor_type[SENSOR_TYPE_JSON]: self.create_metric(
-                name=f"collector_{self.collector.name}_{sensor_type[SENSOR_TYPE_JSON]}",
+                name=sensor_type[SENSOR_TYPE_JSON],
                 documentation=sensor_type[SENSOR_TYPE_FRIENDLY_NAME]
             )
             for sensor_type in SENSOR_TYPES
