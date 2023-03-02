@@ -10,6 +10,7 @@ COPY ./estimenergy /app/estimenergy
 COPY ./logging.yml /app/logging.yml
 
 ENV CONFIG_PATH /config/config.yml
+ENV DB_PATH /config/estimenergy.db
 
 VOLUME /config
 

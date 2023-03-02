@@ -1,0 +1,17 @@
+
+services:
+  estimenergy:
+    build: .
+    container_name: estimenergy
+    restart: unless-stopped
+    networks:
+      - estimenergy
+    ports:
+      - 13380:80
+    volumes:
+      - ./config:/config
+
+networks:
+  estimenergy:
+    driver: bridge
+    name: estimenergy

@@ -5,11 +5,10 @@ from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
 import yaml
 
-from estimenergy.routers import settings, energy_data, collector
-from estimenergy.models import Collector, CollectorSchema
+from estimenergy.routers import energy_data, collector
+from estimenergy.models import Collector
+from estimenergy.common import instrumentator, settings
 
-
-config_path = os.environ.get("CONFIG_PATH", "config.yml")
 
 app = FastAPI(
     title="EstimEnergy",
@@ -17,20 +16,22 @@ app = FastAPI(
 
 register_tortoise(
     app,
-    db_url="sqlite://estimenergy.db",
+    db_url=f"sqlite://{settings.db_path}",
     modules={"models": ["estimenergy.models"]},
     generate_schemas=True,
     add_exception_handlers=True,
 )
 
-app.include_router(settings.router)
+instrumentator.instrument(app)
+instrumentator.expose(app, include_in_schema=True)
+
 app.include_router(energy_data.router)
 app.include_router(collector.router)
 
 @app.on_event("startup")
 async def start_energy_collectors():
     
-    with open(config_path) as f:
+    with open(settings.config_path) as f:
         config_dict = yaml.safe_load(f)
 
     collector_names = [collector_dict["name"] for collector_dict in config_dict["collectors"]]

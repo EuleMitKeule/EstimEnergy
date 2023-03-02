@@ -5,18 +5,27 @@ from setuptools import setup
 version = os.environ.get("RELEASE_VERSION", None)
 
 setup(
-    name='estimenergy_client',
+    name='estimenergy',
     version=version,
-    description='Client for the Estimenergy API',
+    description='EstimEnergy Python Package',
     long_description=open('README.md', 'r').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/eulemitkeule/estimenergy',
+    url='https://github.com/EuleMitKeule/EstimEnergy',
     author='Lennard Beers',
     author_email='l.beers@outlook.de',
     keywords='estimenergy api client',
-    packages=['estimenergy_client'],
+    packages=['estimenergy'],
     python_requires='>=3.6',
     install_requires=[
-        'requests',
+        "requests",
+        "uvicorn[standard]",
+        "fastapi",
+        "fastapi-crudrouter",
+        "httpx",
+        "aioesphomeapi",
+        "tortoise_orm",
+        "prometheus_client",
+        "prometheus-fastapi-instrumentator",
+        "python-dotenv",
     ],
 )

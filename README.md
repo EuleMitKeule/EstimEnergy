@@ -49,18 +49,18 @@ collectors:
     max_hour: <explained_below> # 24
 ```
 
-## EstimEnergy Client Library
+## EstimEnergy Library
 
 ### Installation
 
 ```sh
-pip install estimenergy-client
+pip install estimenergy
 ```
 
 ### Usage
 
 ```python
-from estimenergy_client import EstimEnergyClient
+from estimenergy.client import EstimEnergyClient
 
 client = EstimEnergyClient(
     host="<estimenergy_api_ip_address",

@@ -2,12 +2,17 @@
 import asyncio
 import datetime
 import logging
+from typing import Callable
 from aioesphomeapi import EntityState, APIClient
+from prometheus_client import Gauge, Info, Metric
+from prometheus_client.registry import Collector as PrometheusCollector
 from tortoise import fields, models
 from tortoise.contrib.pydantic import pydantic_model_creator
+from estimenergy.const import SENSOR_TYPE_FRIENDLY_NAME, SENSOR_TYPE_JSON, SENSOR_TYPES
 from estimenergy.helpers import get_days_in_month
 
 from estimenergy.models.energy_data import EnergyData
+from estimenergy.common import collector_registry
 
 
 class Collector(models.Model):
@@ -32,11 +37,14 @@ class Collector(models.Model):
             self.port,
             self.password
         )
+        
+        self.prometheus_collector = CollectorPrometheusCollector(self)
+        collector_registry.register(self.prometheus_collector)
 
         await self.api.connect(login=True)
         await self.api.subscribe_states(self.__state_changed)
 
-    async def get_data(self, date):
+    async def get_data(self, date: datetime.date = datetime.datetime.now()):
         day_kwh = await self.get_day_kwh(date)
         day_cost = await self.get_day_cost(date)
         day_cost_difference = await self.get_day_cost_difference(date)
@@ -255,6 +263,7 @@ class Collector(models.Model):
             return
 
         await self.__update_energy_data(energy_data, current_kwh, current_cost, date)
+        await self.prometheus_collector.update_metrics()
 
     async def __create_energy_data(self, kwh, cost, date):
         energy_data = EnergyData(
@@ -299,3 +308,32 @@ CollectorSchema = pydantic_model_creator(Collector, name="Collector")
 
 class CollectorWithDataSchema(CollectorSchema):
     data: dict
+
+
+class CollectorPrometheusCollector(PrometheusCollector):
+    def __init__(self, collector: Collector):
+        self.collector = collector
+        self.metrics = {
+            sensor_type[SENSOR_TYPE_JSON]: self.create_metric(
+                name=f"collector_{self.collector.name}_{sensor_type[SENSOR_TYPE_JSON]}",
+                documentation=sensor_type[SENSOR_TYPE_FRIENDLY_NAME]
+            )
+            for sensor_type in SENSOR_TYPES
+        }
+
+    async def collect(self):
+        return self.metrics.values()
+    
+    def create_metric(self, name: str, documentation: str) -> Metric:
+        metric = Gauge(
+            name=name,
+            documentation=documentation,
+            labelnames=["name", "id"]
+        )
+
+        return metric
+    
+    async def update_metrics(self):
+        data = await self.collector.get_data()
+        for sensor_type in SENSOR_TYPES:
+            self.metrics[sensor_type[SENSOR_TYPE_JSON]].labels(name=self.collector.name, id=self.collector.id).set(data[sensor_type[SENSOR_TYPE_JSON]])
