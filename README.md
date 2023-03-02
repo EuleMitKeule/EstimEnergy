@@ -53,7 +53,9 @@ collectors:
 
 ### Installation
 
-> pip install estimenergy-client
+```sh
+pip install estimenergy-client
+```
 
 ### Usage
 
