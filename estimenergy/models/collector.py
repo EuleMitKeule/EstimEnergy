@@ -38,7 +38,7 @@ class Collector(models.Model):
 
     async def get_data(self, date):
         day_kwh = await self.get_day_kwh(date)
-        day_cost = await self.calculate_day_cost(date)
+        day_cost = await self.get_day_cost(date)
         day_cost_difference = await self.get_day_cost_difference(date)
         predicted_month_kwh_raw = await self.get_predicted_month_kwh_raw(date)
         predicted_month_cost_raw = await self.get_predicted_month_cost_raw(date)
@@ -92,7 +92,7 @@ class Collector(models.Model):
 
         payment_per_day: float = self.payment_per_month / days_in_month
 
-        cost = await self.calculate_day_cost(date)
+        cost = await self.get_day_cost(date)
         
         return payment_per_day - cost
     
