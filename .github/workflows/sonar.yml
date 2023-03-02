@@ -22,6 +22,21 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+
+    - name: Run tests
+      run: |
+        pytest --cov=estimenergy --cov-report=xml      
+
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       env:
@@ -34,3 +49,4 @@ jobs:
           -Dsonar.python.coverage.reportPaths=coverage.xml
           -Dsonar.sources=estimenergy
           -Dsonar.tests=tests/
+          -Dsonar.python.version=3.9
