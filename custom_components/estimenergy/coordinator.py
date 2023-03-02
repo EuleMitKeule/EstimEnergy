@@ -22,12 +22,43 @@ class EstimEnergyCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=5),
         )
 
-        self.client = EstimEnergyClient(host, port)
         self.hass = hass
         self.name = name
         self.host = host
         self.port = port
+        self.client = EstimEnergyClient(host, port)
+        self.collector_id = None
+        self._data = None
+        self.collector = None
+
+    async def initialize(self) -> None:
+        """Initialize the EstimEnergy API connection."""
+
+        collectors = await self.hass.async_add_executor_job(self.client.get_collectors)
+
+        for collector in collectors:
+            if collector["name"] == self.name:
+                self.collector_id = collector["id"]
+                break
+
+        if not self.collector_id:
+            raise CollectorNotFoundError(self.name)
 
     async def _async_update_data(self):
         """Refresh data from API."""
-        return await self.hass.async_add_executor_job(self.client.get_data, self.name)
+
+        if self.collector_id is None:
+            return None
+
+        self.collector = await self.hass.async_add_executor_job(
+            self.client.get_collector, self.collector_id
+        )
+
+        return self.collector
+
+
+class CollectorNotFoundError(Exception):
+    """Custom Exception for a collector not being found."""
+
+    def __init__(self, collector_name: str) -> None:
+        super().__init__(f"Collector with name {collector_name} not found!")

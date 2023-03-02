@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
 import yaml
 
-from estimenergy.routers import settings, energy_data, data, collector
+from estimenergy.routers import settings, energy_data, collector
 from estimenergy.models import Collector, CollectorSchema
 
 
@@ -25,7 +25,6 @@ register_tortoise(
 
 app.include_router(settings.router)
 app.include_router(energy_data.router)
-app.include_router(data.router)
 app.include_router(collector.router)
 
 @app.on_event("startup")
