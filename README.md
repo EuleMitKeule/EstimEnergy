@@ -1,5 +1,6 @@
-
+[![PyPI](https://img.shields.io/pypi/v/estimenergy)](https://pypi.org/project/estimenergy)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+
 [![Docker](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/docker.yml/badge.svg)](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/docker.yml)
 [![PyPI](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/pypi.yml/badge.svg)](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/pypi.yml)
 [![HACS](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/hacs.yml/badge.svg)](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/hacs.yml)
