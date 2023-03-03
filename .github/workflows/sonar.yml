@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       
       - uses: actions/setup-python@v4
         with:
@@ -33,20 +33,20 @@ jobs:
         run: |
           poetry install --with test
 
-    - name: Run tests
-      run: |
-        pytest --cov=estimenergy --cov-report=xml      
+      - name: Run tests
+        run: |
+          pytest --cov=estimenergy --cov-report=xml      
 
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args: >
-          -Dsonar.organization=${{ env.SONAR_PROJECT_ORGANIZATION }}
-          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
-          -Dsonar.python.coverage.reportPaths=coverage.xml
-          -Dsonar.sources=estimenergy,custom_components/estimenergy
-          -Dsonar.tests=tests/
-          -Dsonar.python.version=3.9
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=${{ env.SONAR_PROJECT_ORGANIZATION }}
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.sources=estimenergy,custom_components/estimenergy
+            -Dsonar.tests=tests/
+            -Dsonar.python.version=3.9

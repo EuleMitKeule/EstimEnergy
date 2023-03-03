@@ -20,6 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install
+          poetry add twine
 
       - name: Build and publish
         env:
