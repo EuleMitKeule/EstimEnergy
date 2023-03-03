@@ -23,7 +23,6 @@ docs.zip
 archive.zip
 *.egg-info
 config
-docker-compose.yml
 
 # vim temporary files
 *~
