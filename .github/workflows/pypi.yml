@@ -21,13 +21,13 @@ jobs:
 
       - name: Install dependencies
         run: |
+          poetry config virtualenvs.create false
           poetry install --with build
 
       - name: Build and publish
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-          RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
         run: |
           poetry build
           poetry run twine upload dist/*
