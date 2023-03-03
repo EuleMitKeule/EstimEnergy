@@ -1,0 +1,37 @@
+
+[build-system]
+requires = ["poetry-core", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.poetry]
+name = "estimenergy"
+description = "Estimate Energy Consumption"
+authors = ["Lennard Beers <l.beers@outlook.de>"]
+repository = "https://github.com/EuleMitKeule/EstimEnergy"
+readme = "README.md"
+packages = [{include = "estimenergy"}]
+license = "MIT"
+version = "0.0.0"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+uvicorn = {extras = ["standard"], version = "~0.20.0"}
+fastapi = "~0.92.0"
+fastapi-crudrouter = "~0.8.6"
+aioesphomeapi = "~13.4.0"
+tortoise_orm = "~0.19.3"
+requests = "~2.28.2"
+prometheus_client = "~0.16.0"
+prometheus-fastapi-instrumentator = "~5.10.0"
+python-dotenv = "~0.21.1"
+PyYAML = "~6.0"
+
+[tool.poetry.group.test.dependencies]
+pytest = "~7.2.1"
+pytest-cov = "~4.0.0"
+httpx = "~0.23.3"

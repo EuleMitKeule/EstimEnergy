@@ -32,3 +32,5 @@ docker-compose.yml
 .env
 old/
 config.yml
+poetry.lock
+.venv

@@ -2,9 +2,8 @@
 import asyncio
 import datetime
 import logging
-from typing import Callable
 from aioesphomeapi import EntityState, APIClient
-from prometheus_client import Gauge, Info, Metric
+from prometheus_client import Gauge, Metric
 from prometheus_client.registry import Collector as PrometheusCollector
 from tortoise import fields, models
 from tortoise.contrib.pydantic import pydantic_model_creator
