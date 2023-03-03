@@ -1,8 +1,6 @@
 
-import asyncio
 import datetime
 import logging
-from aioesphomeapi import EntityState, APIClient
 from prometheus_client import Gauge, Metric
 from prometheus_client.registry import Collector as PrometheusCollector
 from tortoise import fields, models
@@ -12,6 +10,7 @@ from estimenergy.helpers import get_days_in_month
 
 from estimenergy.models.energy_data import EnergyData
 from estimenergy.common import collector_registry
+from estimenergy.collector_clients import GlowClient
 
 
 class Collector(models.Model):
@@ -30,18 +29,19 @@ class Collector(models.Model):
 
     async def connect(self):
         self.logger = logging.getLogger("energy_collector").getChild(self.name)
-        self.logger.info("Connecting to Home Assistant Glow", )
-        self.api = APIClient(
-            self.host,
-            self.port,
-            self.password
+
+        self.client = GlowClient(
+            name=self.name,
+            host=self.host,
+            port=self.port,
+            password=self.password,
+            kwh_callback=self.__on_kwh_changed,
         )
+
+        await self.client.start()
         
         self.prometheus_collector = CollectorPrometheusCollector(self)
         collector_registry.register(self.prometheus_collector)
-
-        await self.api.connect(login=True)
-        await self.api.subscribe_states(self.__state_changed)
 
     async def get_data(self, date: datetime.date = datetime.datetime.now()):
         day_kwh = await self.get_day_kwh(date)
@@ -238,15 +238,7 @@ class Collector(models.Model):
         
         return recorded_energy_datas
 
-    def __state_changed(self, state: EntityState):
-        if not state.key == 3673186328:
-            return
-        
-        current_kwh: float = state.state
-        loop = asyncio.get_event_loop()
-        loop.create_task(self.__current_kwh_changed(current_kwh))
-    
-    async def __current_kwh_changed(self, current_kwh: float):
+    async def __on_kwh_changed(self, current_kwh: float):
         date = datetime.datetime.now()
         days_in_month = get_days_in_month(date.month, date.year)
         

@@ -47,6 +47,6 @@ jobs:
           -Dsonar.organization=${{ env.SONAR_PROJECT_ORGANIZATION }}
           -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
           -Dsonar.python.coverage.reportPaths=coverage.xml
-          -Dsonar.sources=estimenergy
+          -Dsonar.sources=estimenergy,custom_components/estimenergy
           -Dsonar.tests=tests/
           -Dsonar.python.version=3.9
