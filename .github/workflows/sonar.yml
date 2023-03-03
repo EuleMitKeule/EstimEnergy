@@ -35,7 +35,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest --cov=estimenergy --cov-report=xml      
+          poetry run pytest --cov=estimenergy --cov-report=xml      
 
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
