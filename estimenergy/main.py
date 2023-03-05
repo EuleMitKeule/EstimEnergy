@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
 import yaml
 from estimenergy.collectors.glow_collector import GlowCollector
-from estimenergy.const import DEFAULT_HOST, DEFAULT_PORT
+from estimenergy.const import DEFAULT_HOST, DEFAULT_PORT, LOGGING_CONFIG
 
 from estimenergy.routers import collector_router, energy_router
 from estimenergy.models import CollectorData
@@ -35,8 +35,8 @@ def start():
         "estimenergy.main:app",
         host=DEFAULT_HOST,
         port=DEFAULT_PORT,
-        log_config=settings.log_config_path,
-        reload=True,
+        log_config=LOGGING_CONFIG,
+        reload=settings.reload,
     )
 
 @app.on_event("startup")

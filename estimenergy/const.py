@@ -82,3 +82,47 @@ JSON_MAX_HOUR = "max_hour"
 JSON_MAX_INCOMPLETE_DAYS = "max_incomplete_days"
 JSON_BILLING_MONTH = "billing_month"
 JSON_DATA = "data"
+
+LOGGING_CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default": {
+            "()": "uvicorn.logging.ColourizedFormatter",
+            "format": "%(asctime)-25s %(name)-30s %(levelprefix)-8s %(message)s",
+        },
+        "access": {
+            "()": "uvicorn.logging.ColourizedFormatter",
+            "format": "%(asctime)-25s %(name)-30s %(levelprefix)-8s %(message)s",
+        },
+    },
+    "handlers": {
+        "default": {
+            "formatter": "default",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stderr",
+        },
+        "access": {
+            "formatter": "access",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+        },
+    },
+    "loggers": {
+        "uvicorn.error": {
+            "level": "INFO",
+            "handlers": ["default"],
+            "propagate": False,
+        },
+        "uvicorn.access": {
+            "level": "INFO",
+            "handlers": ["access"],
+            "propagate": False,
+        },
+        "energy_collector": {
+            "level": "DEBUG",
+            "handlers": ["default"],
+            "propagate": False,
+        },
+    },
+}

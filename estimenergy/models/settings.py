@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     log_config_path: str = "logging.yml"
     db_path: str = "estimenergy.db"
     enable_metrics: bool = True
+    reload: bool = False
 
     class Config:
         env_file = ".env"

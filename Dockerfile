@@ -3,7 +3,6 @@ FROM python:3.9
 WORKDIR /app
 
 COPY pyproject.toml pyproject.toml
-COPY logging.yml logging.yml
 COPY README.md README.md
 COPY estimenergy estimenergy
 
@@ -17,4 +16,4 @@ ENV ENABLE_METRICS true
 
 VOLUME /config
 
-CMD ["poetry", "run", "uvicorn", "estimenergy.main:app", "--host", "0.0.0.0", "--port", "80", "--log-config", "logging.yml"]
+CMD ["poetry", "run", "api"]
