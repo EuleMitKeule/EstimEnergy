@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 
 
-class CollectorClient(ABC):
+class Collector(ABC):
     def __init__(self):
         pass
 

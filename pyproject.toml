@@ -13,6 +13,9 @@ packages = [{include = "estimenergy"}]
 license = "MIT"
 version = "0.0.0"
 
+[tool.poetry.scripts]
+api = "estimenergy.main:start"
+
 [tool.poetry-dynamic-versioning]
 enable = true
 vcs = "git"

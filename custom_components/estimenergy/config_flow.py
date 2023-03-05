@@ -3,13 +3,13 @@ import voluptuous as vol
 
 from homeassistant.data_entry_flow import FlowResult
 
+from estimenergy.const import DEFAULT_HOST, DEFAULT_PORT
+
 from .const import (
     DOMAIN,
     CONF_NAME,
     CONF_HOST,
     CONF_PORT,
-    DEFAULT_HOST,
-    DEFAULT_PORT,
 )
 
 
