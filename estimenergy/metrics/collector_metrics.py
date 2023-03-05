@@ -1,5 +1,4 @@
 
-from prometheus_client import Gauge, Metric
 from prometheus_client.registry import Collector as Metrics
 from estimenergy.const import METRICS
 
@@ -17,6 +16,6 @@ class CollectorMetrics(Metrics):
         return self.metrics.values()
     
     async def update_metrics(self):
-        data = await self.collector.get_data()
+        data = await self.collector.get_metrics()
         for metric in METRICS:
             self.metrics[metric].labels(name=self.collector.name, id=self.collector.id).set(data[metric.json_key])

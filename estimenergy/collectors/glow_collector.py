@@ -12,11 +12,10 @@ from aioesphomeapi import (
     ReconnectLogic,
 )
 from zeroconf import Zeroconf
+
 from estimenergy.collectors import Collector
-from estimenergy.models import CollectorData
-from estimenergy.models.energy_data import EnergyData
-from estimenergy.prometheus import CollectorMetrics
-from estimenergy.common import collector_registry
+from estimenergy.models import CollectorData, EnergyData
+from estimenergy.metrics import CollectorMetrics
 
 
 class GlowCollector(Collector):
@@ -46,7 +45,6 @@ class GlowCollector(Collector):
         )
         
         self.metrics = CollectorMetrics(self.collector_data)
-        collector_registry.register(self.metrics)
 
     async def start(self):
         await self.__try_login()

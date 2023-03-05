@@ -24,7 +24,7 @@ register_tortoise(
     add_exception_handlers=True,
 )
 
-instrumentator.instrument(app)
+instrumentator.instrument(app, "estimenergy")
 instrumentator.expose(app, include_in_schema=True)
 
 app.include_router(energy_router.router)

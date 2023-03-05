@@ -27,7 +27,7 @@ class CollectorData(models.Model):
         super().__init__(*args, **kwargs)
         self.logger = logging.getLogger("energy_collector").getChild(self.name)
 
-    async def get_data(self, date: datetime.date = datetime.datetime.now()):
+    async def get_metrics(self, date: datetime.date = datetime.datetime.now()):
         return {
             metric.json_key: await self.get_metric(metric, date)
             for metric in METRICS
