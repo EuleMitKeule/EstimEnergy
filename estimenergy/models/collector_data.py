@@ -18,10 +18,8 @@ class CollectorData(models.Model):
     base_cost_per_month = fields.FloatField()
     payment_per_month = fields.FloatField()
     energy_datas = fields.ReverseRelation["EnergyData"]
-    min_hour = fields.IntField()
-    max_hour = fields.IntField()
-    max_incomplete_days = fields.IntField()
     billing_month = fields.IntField()
+    min_accuracy = fields.FloatField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -64,10 +62,9 @@ class CollectorData(models.Model):
             if days_with_data == 0:
                 return 0
 
-            days_without_data = days_in_month - days_with_data
-            energy_total = sum(energy_data.kwh for energy_data in energy_datas)
+            energy_total = sum(energy_data.kwh for energy_data in energy_datas if metric.is_raw or energy_data.accuracy >= self.min_accuracy)
             energy_per_day = energy_total / days_with_data
-            return energy_total + (energy_per_day * days_without_data)
+            return energy_per_day * days_in_month
         
         if metric.metric_period == MetricPeriod.YEAR:
             current_year = date.year
@@ -82,14 +79,18 @@ class CollectorData(models.Model):
 
                 date = date.replace(year=year, month=month, day=1)
 
+                accuracy = await self.get_accuracy(Metric(MetricType.ACCURACY, MetricPeriod.MONTH, False, False), date)
                 energy_datas = await self.get_energy_datas(MetricPeriod.MONTH, date)
 
-                if len(energy_datas) > self.max_incomplete_days:
+                if not metric.is_raw and accuracy < self.min_accuracy:
                     missing_months += 1
                     continue
 
                 kwh_total += await self.get_energy(Metric(MetricType.ENERGY, MetricPeriod.MONTH, True, metric.is_raw), date)
 
+            if missing_months == 12:
+                return 0
+            
             return kwh_total / (12 - missing_months) * 12
         
     async def get_cost(self, metric: Metric, date: datetime.date = datetime.datetime.now()):
