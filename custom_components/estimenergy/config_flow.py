@@ -7,7 +7,6 @@ from estimenergy.const import DEFAULT_HOST, DEFAULT_PORT
 
 from .const import (
     DOMAIN,
-    CONF_NAME,
     CONF_HOST,
     CONF_PORT,
 )
@@ -20,22 +19,15 @@ class EstimEnergyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None) -> FlowResult:
         if user_input is not None:
-            collector_name = user_input["collector_name"]
-
-            unique_id = f"estimenergy_{collector_name}"
+            unique_id = f"estimenergy_{user_input[CONF_HOST]}:{user_input[CONF_PORT]}"
 
             await self.async_set_unique_id(unique_id)
             self._abort_if_unique_id_configured()
 
-            return self.async_create_entry(
-                title=collector_name.title(), data=user_input
-            )
+            return self.async_create_entry(title=unique_id, data=user_input)
 
         data_schema = vol.Schema(
             {
-                vol.Required(
-                    CONF_NAME,
-                ): str,
                 vol.Required(
                     CONF_HOST,
                     default=DEFAULT_HOST,

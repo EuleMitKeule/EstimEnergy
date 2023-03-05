@@ -14,16 +14,14 @@ _LOGGER = logging.getLogger(__name__)
 class EstimEnergyCoordinator(DataUpdateCoordinator):
     """Data coordinator for EstimEnergy."""
 
-    def __init__(self, hass: HomeAssistant, name: str, host: str, port: int) -> None:
+    def __init__(self, hass: HomeAssistant, host: str, port: int) -> None:
         super().__init__(
             hass,
             _LOGGER,
-            name=name,
             update_interval=timedelta(seconds=5),
         )
 
         self.hass = hass
-        self.name = name
         self.host = host
         self.port = port
         self.client = EstimEnergyClient(host, port)
