@@ -30,7 +30,7 @@ class Metric:
         
     @property
     def json_key(self) -> str:
-        return f"{self.metric_period.value[0]}_{self.metric_type.value[0]}{'_predicted' if self.is_predicted else ''}{'_raw' if self.is_raw else ''}"
+        return f"estimenergy_{self.metric_period.value[0]}_{self.metric_type.value[0]}{'_predicted' if self.is_predicted else ''}{'_raw' if self.is_raw else ''}"
 
     @property
     def friendly_name(self) -> str:
@@ -38,7 +38,7 @@ class Metric:
     
     def create_gauge(self) -> Gauge:
         return Gauge(
-            f"estimenergy_{self.json_key}",
+            f"{self.json_key}",
             f"EstimEnergy {self.friendly_name}",
             ["name", "id"],
         )

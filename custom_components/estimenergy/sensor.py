@@ -11,25 +11,11 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import CURRENCY_EURO, PERCENTAGE
 from homeassistant.const import UnitOfEnergy
-from estimenergy.const import (
-    JSON_BILLING_MONTH,
-    JSON_DATA,
-    JSON_DAY_KWH,
-    JSON_DAY_COST,
-    JSON_DAY_COST_DIFFERENCE,
-    JSON_MONTH_KWH_RAW,
-    JSON_YEAR_KWH_RAW,
-    JSON_MONTH_KWH,
-    JSON_MONTH_COST,
-    JSON_MONTH_COST_DIFFERENCE,
-    JSON_YEAR_KWH,
-    SENSOR_TYPE_FRIENDLY_NAME,
-    SENSOR_TYPE_JSON,
-    SENSOR_TYPE_UNIQUE_ID,
-    CONF_NAME,
-    CONF_HOST,
-    CONF_PORT,
-)
+from estimenergy.client import EstimEnergyClient
+from estimenergy.const import METRICS, Metric, MetricType, MetricPeriod
+
+from .const import CONF_HOST, CONF_PORT
+from .coordinator import EstimEnergyCoordinator
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -78,13 +64,7 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
     @property
     def device_class(self) -> SensorDeviceClass | None:
         """Return the class of this entity."""
-        if self.json_key in [
-            JSON_DAY_KWH,
-            JSON_MONTH_KWH_RAW,
-            JSON_YEAR_KWH_RAW,
-            JSON_MONTH_KWH,
-            JSON_YEAR_KWH,
-        ]:
+        if self.metric.metric_type == MetricType.ENERGY:
             return SensorDeviceClass.ENERGY
 
         if self.metric.metric_type in [MetricType.COST, MetricType.COST_DIFFERENCE]:
@@ -116,7 +96,7 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
         if self.metric.metric_period == MetricPeriod.TOTAL:
             return None
 
-        billing_month = self.coordinator.data[JSON_BILLING_MONTH]
+        billing_month = self.collector["billing_month"]
         now = datetime.now()
 
         return now.replace(
@@ -134,12 +114,12 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
         """Return the state of the sensor."""
         if (
             self.coordinator.data is None
-            or JSON_METRICS not in self.coordinator.data
-            or self.metric.json_key not in self.coordinator.data[JSON_METRICS]
+            or "metrics" not in self.coordinator.data
+            or self.metric.json_key not in self.coordinator.data["metrics"]
         ):
             return None
 
-        return self.coordinator.data[JSON_METRICS][self.metric.json_key]
+        return self.coordinator.data[self.collector["name"]][self.metric.json_key]
 
     @property
     def suggested_display_precision(self) -> int | None:
@@ -149,13 +129,7 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
     @property
     def native_unit_of_measurement(self) -> str | None:
         """Return the unit of measurement of the sensor."""
-        if self.json_key in [
-            JSON_DAY_KWH,
-            JSON_MONTH_KWH_RAW,
-            JSON_YEAR_KWH_RAW,
-            JSON_MONTH_KWH,
-            JSON_YEAR_KWH,
-        ]:
+        if self.device_class == SensorDeviceClass.ENERGY:
             return UnitOfEnergy.KILO_WATT_HOUR
 
         if self.device_class == SensorDeviceClass.MONETARY:

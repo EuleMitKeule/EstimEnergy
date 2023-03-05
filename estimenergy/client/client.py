@@ -26,3 +26,8 @@ class EstimEnergyClient:
         url = f"http://{self.host}:{self.port}/collector"
         response = await requests.get(url)
         return response.json()
+
+    def get_metrics(self):
+        url = f"http://{self.host}:{self.port}/metrics"
+        response = requests.get(url)
+        return response.text

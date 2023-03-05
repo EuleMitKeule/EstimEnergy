@@ -2,21 +2,24 @@
 
 import logging
 import asyncio
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, ConfigType
 from homeassistant.core import HomeAssistant
-from estimenergy.const import SENSOR_TYPES
 
 from .const import PLATFORM, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup(hass, config) -> bool:
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Set up the EstimEnergy component."""
+
     hass.data.setdefault(DOMAIN, {})
     return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Set up EstimEnergy from a config entry."""
+
     hass.data.setdefault(DOMAIN, {})
     hass_data = dict(entry.data)
     hass.data[DOMAIN][entry.entry_id] = hass_data
@@ -41,7 +44,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
     )
 
-    # Remove config entry from domain.
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
 
