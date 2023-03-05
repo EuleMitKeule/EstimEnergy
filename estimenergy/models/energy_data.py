@@ -1,13 +1,9 @@
 
-import asyncio
-from typing import Awaitable, Type
 from tortoise import fields, models
-from tortoise.signals import pre_save
-from estimenergy.helpers import get_days_in_month
 
 
 class EnergyData(models.Model):
-    collector = fields.ForeignKeyField("models.Collector", related_name="energy_datas")
+    collector = fields.ForeignKeyField("models.CollectorData", related_name="energy_datas")
     year = fields.IntField()
     month = fields.IntField()
     day = fields.IntField()
@@ -18,3 +14,9 @@ class EnergyData(models.Model):
 
     class Meta:
         unique_together = ("collector", "year", "month", "day")
+
+    @property
+    def accuracy(self) -> float:
+        hour_updated = 24 if self.is_completed else self.hour_updated
+        hours_with_data = hour_updated - self.hour_created
+        return hours_with_data / 24

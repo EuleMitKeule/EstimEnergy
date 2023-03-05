@@ -1,11 +1,12 @@
+
 from fastapi_crudrouter import TortoiseCRUDRouter
-from tortoise.contrib.pydantic import pydantic_model_creator
 
 from estimenergy.models import EnergyData
+from estimenergy.schemas import EnergySchema
 
 
 router = TortoiseCRUDRouter(
-    schema=pydantic_model_creator(EnergyData, name="EnergyData"),
+    schema=EnergySchema,
     db_model=EnergyData,
-    prefix="energy_data",
+    prefix="energy",
 )

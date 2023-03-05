@@ -13,6 +13,9 @@ packages = [{include = "estimenergy"}]
 license = "MIT"
 version = "0.0.0"
 
+[tool.poetry.scripts]
+api = "estimenergy.main:start"
+
 [tool.poetry-dynamic-versioning]
 enable = true
 vcs = "git"
@@ -31,11 +34,13 @@ prometheus-fastapi-instrumentator = "~5.10.0"
 python-dotenv = "~0.21.1"
 PyYAML = "~6.0"
 
-[tool.poetry.group.test.dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "~7.2.1"
 pytest-cov = "~4.0.0"
 httpx = "~0.23.3"
 PyYAML = "~6.0"
+poetry = "~1.4.0"
+pytest-asyncio = "^0.20.3"
 
 [tool.poetry.group.build.dependencies]
 poetry-dynamic-versioning = "~0.21.4"

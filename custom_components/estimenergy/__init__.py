@@ -3,10 +3,10 @@
 import logging
 import asyncio
 from homeassistant.config_entries import ConfigEntry
-
 from homeassistant.core import HomeAssistant
+from estimenergy.const import SENSOR_TYPES
 
-from .const import PLATFORM, DOMAIN, SENSOR_TYPES
+from .const import PLATFORM, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 

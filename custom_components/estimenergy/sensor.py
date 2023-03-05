@@ -11,15 +11,13 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import CURRENCY_EURO
 from homeassistant.const import UnitOfEnergy
-
-from .coordinator import EstimEnergyCoordinator
-from .const import (
+from estimenergy.const import (
     JSON_BILLING_MONTH,
     JSON_DATA,
     JSON_DAY_KWH,
     JSON_DAY_COST,
     JSON_DAY_COST_DIFFERENCE,
-    JSON_MONTH_KWH_RAW,
+    JSON_PREDICTED_MONTH_KWH_RAW,
     JSON_YEAR_KWH_RAW,
     JSON_MONTH_KWH,
     JSON_MONTH_COST,
@@ -28,10 +26,14 @@ from .const import (
     SENSOR_TYPE_FRIENDLY_NAME,
     SENSOR_TYPE_JSON,
     SENSOR_TYPE_UNIQUE_ID,
+    SENSOR_TYPES,
+)
+
+from .coordinator import EstimEnergyCoordinator
+from .const import (
     CONF_NAME,
     CONF_HOST,
     CONF_PORT,
-    SENSOR_TYPES,
 )
 
 
@@ -81,8 +83,8 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
         """Return the class of this entity."""
         if self.json_key in [
             JSON_DAY_KWH,
-            JSON_MONTH_KWH_RAW,
-            JSON_YEAR_KWH_RAW,
+            JSON_PREDICTED_MONTH_KWH_RAW,
+            JSON_PREDICTED_YEAR_KWH_RAW,
             JSON_MONTH_KWH,
             JSON_YEAR_KWH,
         ]:
@@ -149,7 +151,7 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
         """Return the unit of measurement of the sensor."""
         if self.json_key in [
             JSON_DAY_KWH,
-            JSON_MONTH_KWH_RAW,
+            JSON_PREDICTED_MONTH_KWH_RAW,
             JSON_YEAR_KWH_RAW,
             JSON_MONTH_KWH,
             JSON_YEAR_KWH,

@@ -1,7 +1,75 @@
 
+from enum import Enum
+from prometheus_client import Gauge
+
+DEFAULT_HOST = "localhost"
+DEFAULT_PORT = 8000
+
 SENSOR_TYPE_JSON = "json"
 SENSOR_TYPE_FRIENDLY_NAME = "friendly_name"
 SENSOR_TYPE_UNIQUE_ID = "unique_id"
+
+class MetricPeriod(Enum):
+    DAY = ("day", "Daily")
+    MONTH = ("month", "Monthly")
+    YEAR = ("year", "Yearly")
+    TOTAL = ("total", "Total")
+
+class MetricType(Enum):
+    COST = ("cost", "Cost")
+    COST_DIFFERENCE = ("cost_difference", "Cost Difference")
+    ENERGY = ("kwh", "Energy")
+    ACCURACY = ("accuracy", "Accuracy")
+
+class Metric:
+    def __init__(self, metric_type: MetricType, metric_period: MetricPeriod, is_predicted: bool, is_raw: bool):
+        self.metric_type = metric_type
+        self.metric_period = metric_period
+        self.is_predicted = is_predicted
+        self.is_raw = is_raw
+        
+    @property
+    def json_key(self) -> str:
+        return f"{self.metric_period.value[0]}_{self.metric_type.value[0]}{'_predicted' if self.is_predicted else ''}{'_raw' if self.is_raw else ''}"
+
+    @property
+    def friendly_name(self) -> str:
+        return f"{self.metric_period.value[1]} {self.metric_type.value[1]} {'(Predicted)' if self.is_predicted else ''} {'(Raw)' if self.is_raw else ''}"
+    
+    def create_gauge(self) -> Gauge:
+        return Gauge(
+            f"estimenergy_{self.json_key}",
+            f"EstimEnergy {self.friendly_name}",
+            ["name", "id"],
+        )
+
+METRICS = [
+    Metric(MetricType.ENERGY, MetricPeriod.DAY, False, False),
+    Metric(MetricType.ENERGY, MetricPeriod.MONTH, False, False),
+    Metric(MetricType.ENERGY, MetricPeriod.YEAR, False, False),
+    Metric(MetricType.ENERGY, MetricPeriod.TOTAL, False, False),
+    Metric(MetricType.ENERGY, MetricPeriod.MONTH, True, False),
+    Metric(MetricType.ENERGY, MetricPeriod.YEAR, True, False),
+    Metric(MetricType.ENERGY, MetricPeriod.MONTH, True, True),
+    Metric(MetricType.ENERGY, MetricPeriod.YEAR, True, True),
+    Metric(MetricType.COST, MetricPeriod.DAY, False, False),
+    Metric(MetricType.COST, MetricPeriod.MONTH, False, False),
+    Metric(MetricType.COST, MetricPeriod.YEAR, False, False),
+    Metric(MetricType.COST, MetricPeriod.MONTH, True, False),
+    Metric(MetricType.COST, MetricPeriod.YEAR, True, False),
+    Metric(MetricType.COST, MetricPeriod.MONTH, True, True),
+    Metric(MetricType.COST, MetricPeriod.YEAR, True, True),
+    Metric(MetricType.COST_DIFFERENCE, MetricPeriod.DAY, False, False),
+    Metric(MetricType.COST_DIFFERENCE, MetricPeriod.MONTH, False, False),
+    Metric(MetricType.COST_DIFFERENCE, MetricPeriod.YEAR, False, False),
+    Metric(MetricType.COST_DIFFERENCE, MetricPeriod.MONTH, True, False),
+    Metric(MetricType.COST_DIFFERENCE, MetricPeriod.YEAR, True, False),
+    Metric(MetricType.COST_DIFFERENCE, MetricPeriod.MONTH, True, True),
+    Metric(MetricType.COST_DIFFERENCE, MetricPeriod.YEAR, True, True),
+    Metric(MetricType.ACCURACY, MetricPeriod.DAY, False, False),
+    Metric(MetricType.ACCURACY, MetricPeriod.MONTH, False, False),
+    Metric(MetricType.ACCURACY, MetricPeriod.YEAR, False, False),
+]
 
 JSON_NAME = "name"
 JSON_HOST = "host"
@@ -15,141 +83,46 @@ JSON_MAX_INCOMPLETE_DAYS = "max_incomplete_days"
 JSON_BILLING_MONTH = "billing_month"
 JSON_DATA = "data"
 
-JSON_DAY_KWH = "day_kwh"
-FRIENDLY_DAY_KWH = "Daily Energy Usage"
-UNIQUE_ID_DAY_KWH = "day_kwh"
-
-JSON_DAY_COST = "day_cost"
-FRIENDLY_DAY_COST = "Daily Energy Cost"
-UNIQUE_ID_DAY_COST = "day_cost"
-
-JSON_DAY_COST_DIFFERENCE = "day_cost_difference"
-FRIENDLY_DAY_COST_DIFFERENCE = "Daily Energy Cost Difference"
-UNIQUE_ID_DAY_COST_DIFFERENCE = "day_cost_difference"
-
-JSON_MONTH_KWH_RAW = "predicted_month_kwh_raw"
-FRIENDLY_MONTH_KWH_RAW = "Predicted Monthly Energy Usage Raw"
-UNIQUE_ID_MONTH_KWH_RAW = "predicted_month_kwh_raw"
-
-JSON_MONTH_COST_RAW = "predicted_month_cost_raw"
-FRIENDLY_MONTH_COST_RAW = "Predicted Monthly Energy Cost Raw"
-UNIQUE_ID_MONTH_COST_RAW = "predicted_month_cost_raw"
-
-JSON_MONTH_COST_DIFFERENCE_RAW = "predicted_month_cost_difference_raw"
-FRIENDLY_MONTH_COST_DIFFERENCE_RAW = "Predicted Monthly Energy Cost Difference Raw"
-UNIQUE_ID_MONTH_COST_DIFFERENCE_RAW = "predicted_month_cost_difference_raw"
-
-JSON_YEAR_KWH_RAW = "predicted_year_kwh_raw"
-FRIENDLY_YEAR_KWH_RAW = "Predicted Yearly Energy Usage Raw"
-UNIQUE_ID_YEAR_KWH_RAW = "predicted_year_kwh_raw"
-
-JSON_YEAR_COST_RAW = "predicted_year_cost_raw"
-FRIENDLY_YEAR_COST_RAW = "Predicted Yearly Energy Cost Raw"
-UNIQUE_ID_YEAR_COST_RAW = "predicted_year_cost_raw"
-
-JSON_YEAR_COST_DIFFERENCE_RAW = "predicted_year_cost_difference_raw"
-FRIENDLY_YEAR_COST_DIFFERENCE_RAW = "Predicted Yearly Energy Cost Difference Raw"
-UNIQUE_ID_YEAR_COST_DIFFERENCE_RAW = "predicted_year_cost_difference_raw"
-
-JSON_MONTH_KWH = "predicted_month_kwh"
-FRIENDLY_MONTH_KWH = "Predicted Monthly Energy Usage"
-UNIQUE_ID_MONTH_KWH = "predicted_month_kwh"
-
-JSON_MONTH_COST = "predicted_month_cost"
-FRIENDLY_MONTH_COST = "Predicted Monthly Energy Cost"
-UNIQUE_ID_MONTH_COST = "predicted_month_cost"
-
-JSON_MONTH_COST_DIFFERENCE = "predicted_month_cost_difference"
-FRIENDLY_MONTH_COST_DIFFERENCE = "Predicted Monthly Energy Cost Difference"
-UNIQUE_ID_MONTH_COST_DIFFERENCE = "predicted_month_cost_difference"
-
-JSON_YEAR_KWH = "predicted_year_kwh"
-FRIENDLY_YEAR_KWH = "Predicted Yearly Energy Usage"
-UNIQUE_ID_YEAR_KWH = "predicted_year_kwh"
-
-JSON_YEAR_COST = "predicted_year_cost"
-FRIENDLY_YEAR_COST = "Predicted Yearly Energy Cost"
-UNIQUE_ID_YEAR_COST = "predicted_year_cost"
-
-JSON_YEAR_COST_DIFFFERENCE = "predicted_year_cost_difference"
-FRIENDLY_YEAR_COST_DIFFFERENCE = "Predicted Yearly Energy Cost Difference"
-UNIQUE_ID_YEAR_COST_DIFFFERENCE = "predicted_year_cost_difference"
-
-SENSOR_TYPES = [
-    {
-        SENSOR_TYPE_JSON: JSON_DAY_KWH,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_DAY_KWH,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_DAY_KWH,
+LOGGING_CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default": {
+            "()": "uvicorn.logging.ColourizedFormatter",
+            "format": "%(asctime)-25s %(name)-30s %(levelprefix)-8s %(message)s",
+        },
+        "access": {
+            "()": "uvicorn.logging.ColourizedFormatter",
+            "format": "%(asctime)-25s %(name)-30s %(levelprefix)-8s %(message)s",
+        },
     },
-    {
-        SENSOR_TYPE_JSON: JSON_DAY_COST,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_DAY_COST,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_DAY_COST,
+    "handlers": {
+        "default": {
+            "formatter": "default",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stderr",
+        },
+        "access": {
+            "formatter": "access",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+        },
     },
-    {
-        SENSOR_TYPE_JSON: JSON_DAY_COST_DIFFERENCE,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_DAY_COST_DIFFERENCE,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_DAY_COST_DIFFERENCE,
+    "loggers": {
+        "uvicorn.error": {
+            "level": "INFO",
+            "handlers": ["default"],
+            "propagate": False,
+        },
+        "uvicorn.access": {
+            "level": "INFO",
+            "handlers": ["access"],
+            "propagate": False,
+        },
+        "energy_collector": {
+            "level": "DEBUG",
+            "handlers": ["default"],
+            "propagate": False,
+        },
     },
-    {
-        SENSOR_TYPE_JSON: JSON_MONTH_KWH_RAW,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_MONTH_KWH_RAW,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_MONTH_KWH_RAW,
-    },
-    {
-        SENSOR_TYPE_JSON: JSON_MONTH_COST_RAW,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_MONTH_COST_RAW,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_MONTH_COST_RAW,
-    },
-    {
-        SENSOR_TYPE_JSON: JSON_MONTH_COST_DIFFERENCE_RAW,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_MONTH_COST_DIFFERENCE_RAW,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_MONTH_COST_DIFFERENCE_RAW,
-    },
-    {
-        SENSOR_TYPE_JSON: JSON_YEAR_KWH_RAW,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_YEAR_KWH_RAW,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_YEAR_KWH_RAW,
-    },
-    {
-        SENSOR_TYPE_JSON: JSON_YEAR_COST_RAW,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_YEAR_COST_RAW,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_YEAR_COST_RAW,
-    },
-    {
-        SENSOR_TYPE_JSON: JSON_YEAR_COST_DIFFERENCE_RAW,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_YEAR_COST_DIFFERENCE_RAW,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_YEAR_COST_DIFFERENCE_RAW,
-    },
-    {
-        SENSOR_TYPE_JSON: JSON_MONTH_KWH,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_MONTH_KWH,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_MONTH_KWH,
-    },
-    {
-        SENSOR_TYPE_JSON: JSON_MONTH_COST,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_MONTH_COST,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_MONTH_COST,
-    },
-    {
-        SENSOR_TYPE_JSON: JSON_MONTH_COST_DIFFERENCE,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_MONTH_COST_DIFFERENCE,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_MONTH_COST_DIFFERENCE,
-    },
-    {
-        SENSOR_TYPE_JSON: JSON_YEAR_KWH,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_YEAR_KWH,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_YEAR_KWH,
-    },
-    {
-        SENSOR_TYPE_JSON: JSON_YEAR_COST,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_YEAR_COST,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_YEAR_COST,
-    },
-    {
-        SENSOR_TYPE_JSON: JSON_YEAR_COST_DIFFFERENCE,
-        SENSOR_TYPE_FRIENDLY_NAME: FRIENDLY_YEAR_COST_DIFFFERENCE,
-        SENSOR_TYPE_UNIQUE_ID: UNIQUE_ID_YEAR_COST_DIFFFERENCE,
-    },
-]
-
+}
