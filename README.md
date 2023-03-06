@@ -24,7 +24,7 @@ services:
     container_name: estimenergy
     restart: unless-stopped
     ports:
-      - 12380:80
+      - 12321:12321
     volumes:
       - /path/to/appdata/estimenergy:/config
 ```
