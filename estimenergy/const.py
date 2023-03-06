@@ -2,8 +2,8 @@
 from enum import Enum
 from prometheus_client import Gauge
 
-DEFAULT_HOST = "localhost"
-DEFAULT_PORT = 8000
+DEFAULT_HOST = "127.0.0.1"
+DEFAULT_PORT = 12321
 
 SENSOR_TYPE_JSON = "json"
 SENSOR_TYPE_FRIENDLY_NAME = "friendly_name"

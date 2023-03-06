@@ -7,7 +7,7 @@ services:
     networks:
       - estimenergy
     ports:
-      - 13380:80
+      - 12321:12321
     volumes:
       - ./config:/config
 

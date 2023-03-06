@@ -26,16 +26,13 @@ async def async_setup_entry(
 ) -> None:
     """Set up the EstimEnergy sensor platform."""
 
-    client = EstimEnergyClient()
+    client = EstimEnergyClient(entry.data[CONF_HOST], entry.data[CONF_PORT])
     collectors = await hass.async_add_executor_job(client.get_collectors)
 
     coordinator = EstimEnergyCoordinator(
         hass,
-        host=entry.data[CONF_HOST],
-        port=entry.data[CONF_PORT],
+        entry,
     )
-
-    await coordinator.initialize()
 
     for collector in collectors:
         sensors = [
@@ -58,8 +55,8 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
         super().__init__(coordinator)
         self.metric = metric
         self.collector = collector
-        self._attr_name = f"EstimEnergy {coordinator.name} {metric.friendly_name}"
-        self._attr_unique_id = f"estimenergy-{coordinator.name}-{metric.json_key}"
+        self._attr_name = f"EstimEnergy {collector['name']} {metric.friendly_name}"
+        self._attr_unique_id = f"estimenergy-{collector['name']}-{metric.json_key}"
 
     @property
     def device_class(self) -> SensorDeviceClass | None:
@@ -114,8 +111,8 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
         """Return the state of the sensor."""
         if (
             self.coordinator.data is None
-            or "metrics" not in self.coordinator.data
-            or self.metric.json_key not in self.coordinator.data["metrics"]
+            or self.collector["name"] not in self.coordinator.data
+            or self.metric.json_key not in self.coordinator.data[self.collector["name"]]
         ):
             return None
 

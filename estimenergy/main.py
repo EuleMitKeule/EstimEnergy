@@ -33,7 +33,7 @@ app.include_router(collector_router.router)
 def start():
     uvicorn.run(
         "estimenergy.main:app",
-        host=DEFAULT_HOST,
+        host="0.0.0.0",
         port=DEFAULT_PORT,
         log_config=LOGGING_CONFIG,
         reload=settings.reload,

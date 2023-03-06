@@ -22,6 +22,7 @@ class EstimEnergyCoordinator(DataUpdateCoordinator):
             hass,
             _LOGGER,
             update_interval=timedelta(seconds=5),
+            name="estimenergy",
         )
 
         self.hass = hass
@@ -41,17 +42,21 @@ class EstimEnergyCoordinator(DataUpdateCoordinator):
         """Refresh data from API."""
 
         metrics_text = await self.hass.async_add_executor_job(self.client.get_metrics)
-        metrics = text_string_to_metric_families(metrics_text)
-        samples = [
-            sample
-            for family in text_string_to_metric_families(metrics)
-            for sample in family.samples
-            if family.name in [metric.json_key for metric in METRICS]
-        ]
 
-        return {
+        families = list(text_string_to_metric_families(metrics_text))
+        metric_keys = [metric.json_key for metric in METRICS]
+        samples = []
+        for family in families:
+            if family.name not in metric_keys:
+                continue
+            samples.extend(family.samples)
+
+        data = {
             name: {
-                metric: self.get_value_for_metric(metric, samples) for metric in METRICS
+                metric.json_key: self.get_value_for_metric(metric, samples)
+                for metric in METRICS
             }
             for name in set([sample.labels["name"] for sample in samples])
         }
+
+        return data
