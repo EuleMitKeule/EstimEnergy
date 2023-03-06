@@ -1,5 +1,5 @@
 {
-  "domain": "estimenergy",
+  "domain": "estimenergy_integration",
   "name": "EstimEnergy",
   "codeowners": ["@eulemitkeule", "@mifiamigahna"],
   "config_flow": true,
