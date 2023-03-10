@@ -23,4 +23,3 @@ class CollectorMetrics(Metrics):
         data = await self.collector.get_metrics(date)
         for metric in METRICS:
             self.metrics[metric].labels(name=self.collector.name, id=self.collector.id).set(data[metric.json_key])
-        pass
