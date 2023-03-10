@@ -87,7 +87,7 @@ class GlowCollector(Collector):
         self.logger.error(exception)
 
     def __state_changed(self, state: EntityState):
-        if not state.key == 3673186328:
+        if state.key != 3673186328:
             return
         
         current_kwh: float = state.state
