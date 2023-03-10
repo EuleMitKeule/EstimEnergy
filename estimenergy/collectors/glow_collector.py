@@ -66,7 +66,7 @@ class GlowCollector(Collector):
             APIConnectionError, 
             InvalidEncryptionKeyAPIError, 
             RequiresEncryptionAPIError
-        ) as err:
+        ):
             return False
         finally:
             await self.api.disconnect(force=True)
@@ -76,7 +76,7 @@ class GlowCollector(Collector):
 
         try:
             await self.api.subscribe_states(self.__state_changed)
-        except APIConnectionError as err:
+        except APIConnectionError:
             await self.api.disconnect()
     
     async def __on_disconnect(self):
