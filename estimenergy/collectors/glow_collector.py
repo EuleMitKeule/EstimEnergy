@@ -72,10 +72,10 @@ class GlowCollector(Collector):
             await self.api.disconnect()
     
     async def __on_disconnect(self):
-        self.logger.warn(f"Disconnected from ESPHome Device {self.name}")
+        self.logger.warn(f"Disconnected from ESPHome Device {self.collector_data.name}")
 
     async def __on_connect_error(self, exception: Exception):
-        self.logger.error(f"Error connecting to ESPHome Device {self.name}")
+        self.logger.error(f"Error connecting to ESPHome Device {self.collector_data.name}")
         self.logger.error(exception)
 
     def __state_changed(self, state: EntityState):
