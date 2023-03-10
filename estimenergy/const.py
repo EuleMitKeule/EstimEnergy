@@ -36,11 +36,12 @@ class Metric:
     def friendly_name(self) -> str:
         return f"{self.metric_period.value[1]} {self.metric_type.value[1]} {'(Predicted)' if self.is_predicted else ''} {'(Raw)' if self.is_raw else ''}"
     
-    def create_gauge(self) -> Gauge:
+    def create_gauge(self, registry) -> Gauge:
         return Gauge(
             f"{self.json_key}",
             f"EstimEnergy {self.friendly_name}",
             ["name", "id"],
+            registry=registry
         )
 
 METRICS = [

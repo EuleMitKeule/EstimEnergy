@@ -25,13 +25,13 @@ class CollectorData(models.Model):
         super().__init__(*args, **kwargs)
         self.logger = logging.getLogger("energy_collector").getChild(self.name)
 
-    async def get_metrics(self, date: datetime.date = datetime.datetime.now()):
+    async def get_metrics(self, date: datetime.date):
         return {
             metric.json_key: await self.get_metric(metric, date)
             for metric in METRICS
         }
     
-    async def get_metric(self, metric: Metric, date: datetime.date = datetime.datetime.now()):
+    async def get_metric(self, metric: Metric, date: datetime.date):
         if metric.metric_type == MetricType.ENERGY:
             return await self.get_energy(metric, date)
         
@@ -46,7 +46,7 @@ class CollectorData(models.Model):
         
         raise ValueError(f"Unknown metric type {metric.metric_type}")
 
-    async def get_energy(self, metric: Metric, date: datetime.date = datetime.datetime.now()):
+    async def get_energy(self, metric: Metric, date: datetime.date):
         energy_datas = await self.get_energy_datas(metric.metric_period, date)
 
         if not metric.is_predicted:
@@ -93,7 +93,7 @@ class CollectorData(models.Model):
             
             return kwh_total / (12 - missing_months) * 12
         
-    async def get_cost(self, metric: Metric, date: datetime.date = datetime.datetime.now()):
+    async def get_cost(self, metric: Metric, date: datetime.date):
         energy = await self.get_energy(metric, date)
         kwh_cost = energy * self.cost_per_kwh
         
@@ -105,20 +105,20 @@ class CollectorData(models.Model):
         
         return kwh_cost + self.base_cost_per_month * 12
     
-    async def get_cost_difference(self, metric: Metric, date: datetime.date = datetime.datetime.now()):
+    async def get_cost_difference(self, metric: Metric, date: datetime.date):
         cost = await self.get_cost(metric, date)
         payment = await self.get_payment(metric, date)
         
         return payment - cost 
 
-    async def get_accuracy(self, metric: Metric, date: datetime.date = datetime.datetime.now()):
+    async def get_accuracy(self, metric: Metric, date: datetime.date):
         energy_datas = await self.get_energy_datas(metric.metric_period, date)
         day_count = await self.get_day_count(metric.metric_period, date)
         accuracy_total = sum(energy_data.accuracy for energy_data in energy_datas) / day_count
 
         return accuracy_total
 
-    async def get_payment(self, metric: Metric, date: datetime.date = datetime.datetime.now()):
+    async def get_payment(self, metric: Metric, date: datetime.date):
         if metric.metric_period == MetricPeriod.DAY:
             return self.payment_per_month / get_days_in_month(date.month, date.year)
         
@@ -131,7 +131,7 @@ class CollectorData(models.Model):
             self, 
             metric_period: 
             MetricPeriod, 
-            date: datetime.date = datetime.datetime.now()
+            date: datetime.date
         ) -> list[EnergyData]:
         if metric_period == MetricPeriod.DAY:
             return await EnergyData.filter(collector=self, year=date.year, month=date.month, day=date.day)
@@ -143,8 +143,8 @@ class CollectorData(models.Model):
             return await EnergyData.filter(
                 Q(collector=self) & 
                 (
-                    Q(year=date.year - 1, month__gte=self.billing_month) | 
-                    Q(year=date.year, month__lt=self.billing_month)
+                    Q(year=date.year - 1, month__lt=self.billing_month) | 
+                    Q(year=date.year, month__gte=self.billing_month)
                 )
             )
         
@@ -153,7 +153,7 @@ class CollectorData(models.Model):
 
         raise ValueError(f"Unknown metric period {metric_period}")
 
-    async def get_day_count(self, metric_period: MetricPeriod, date: datetime.date = datetime.datetime.now()) -> int:
+    async def get_day_count(self, metric_period: MetricPeriod, date: datetime.date) -> int:
         if metric_period == MetricPeriod.DAY:
             return 1
         

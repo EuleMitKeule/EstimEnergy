@@ -9,6 +9,7 @@ from estimenergy.models.settings import Settings
 load_dotenv()
 
 settings = Settings()
+metric_registry = CollectorRegistry(auto_describe=True)
 instrumentator = Instrumentator(
     should_group_status_codes=False,
     should_ignore_untemplated=True,
@@ -18,4 +19,5 @@ instrumentator = Instrumentator(
     env_var_name="ENABLE_METRICS",
     inprogress_name="inprogress",
     inprogress_labels=True,
+    registry=metric_registry,
 )

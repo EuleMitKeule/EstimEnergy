@@ -1,4 +1,6 @@
 
+from datetime import datetime
+
 
 def get_days_in_month(month: int, year: int):
     """Return the number of days in a given month and year."""
@@ -12,3 +14,15 @@ def get_days_in_month(month: int, year: int):
         return 30
     else:
         return 31
+
+
+def get_current_datetime():
+    """Get current datetime.
+
+    Returns
+    -------
+    datetime
+        Current datetime.
+
+    """
+    return datetime.now()

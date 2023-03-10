@@ -16,6 +16,7 @@ from zeroconf import Zeroconf
 from estimenergy.collectors import Collector
 from estimenergy.models import CollectorData, EnergyData
 from estimenergy.metrics import CollectorMetrics
+from estimenergy.helpers import get_current_datetime
 
 
 class GlowCollector(Collector):
@@ -50,6 +51,9 @@ class GlowCollector(Collector):
         await self.__try_login()
         await self.reconnect_logic.start()
 
+    async def update_kwh(self, kwh: float):
+        return await self.__on_kwh_changed(kwh)
+
     async def __try_login(self):
         try:
             await self.api.connect(login=True)
@@ -83,7 +87,7 @@ class GlowCollector(Collector):
         loop.create_task(self.__on_kwh_changed(current_kwh))
     
     async def __on_kwh_changed(self, current_kwh: float):
-        date = datetime.datetime.now()
+        date = get_current_datetime()
 
         self.logger.info(f"Current KWh: {current_kwh}")
 

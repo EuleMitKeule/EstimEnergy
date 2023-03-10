@@ -11,4 +11,6 @@ class Collector(ABC):
     async def start(self):
         pass
 
-
+    @abstractmethod
+    async def update_kwh(self, kwh: float):
+        pass
