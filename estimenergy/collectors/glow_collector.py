@@ -58,7 +58,12 @@ class GlowCollector(Collector):
         try:
             await self.api.connect(login=True)
             self.device_info = await self.api.device_info()
-        except ResolveAPIError or APIConnectionError or InvalidEncryptionKeyAPIError or RequiresEncryptionAPIError as err:
+        except (
+            ResolveAPIError, 
+            APIConnectionError, 
+            InvalidEncryptionKeyAPIError, 
+            RequiresEncryptionAPIError
+        ) as err:
             raise err
         finally:
             await self.api.disconnect(force=True)
