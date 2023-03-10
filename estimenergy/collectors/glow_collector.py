@@ -25,7 +25,7 @@ class GlowCollector(Collector):
         collector_data: CollectorData
     ):
         self.collector_data = collector_data
-        self.logger = logging.getLogger("energy_collector").getChild(self.collector_data.name)
+        self.logger = logging.getLogger("estimenergy").getChild(self.collector_data.name)
 
         self.logger.info(f"Creating API Client for {self.collector_data.name} ({self.collector_data.host}:{self.collector_data.port})")
 

@@ -12,6 +12,8 @@ RUN poetry install
 
 ENV CONFIG_PATH /config/config.yml
 ENV DB_PATH /config/estimenergy.db
+ENV LOG_PATH /config/estimenergy.log
+ENV LOG_LEVEL INFO
 ENV ENABLE_METRICS true
 
 VOLUME /config

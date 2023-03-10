@@ -92,9 +92,10 @@ LOGGING_CONFIG = {
             "()": "uvicorn.logging.ColourizedFormatter",
             "format": "%(asctime)-25s %(name)-30s %(levelprefix)-8s %(message)s",
         },
-        "access": {
+        "file": {
             "()": "uvicorn.logging.ColourizedFormatter",
             "format": "%(asctime)-25s %(name)-30s %(levelprefix)-8s %(message)s",
+            "use_colors": False
         },
     },
     "handlers": {
@@ -104,25 +105,30 @@ LOGGING_CONFIG = {
             "stream": "ext://sys.stderr",
         },
         "access": {
-            "formatter": "access",
+            "formatter": "default",
             "class": "logging.StreamHandler",
             "stream": "ext://sys.stdout",
         },
+        "file": {
+            "formatter": "file",
+            "class": "logging.FileHandler",
+            "filename": "energy_collector.log",
+        }
     },
     "loggers": {
         "uvicorn.error": {
             "level": "INFO",
-            "handlers": ["default"],
+            "handlers": ["default", "file"],
             "propagate": False,
         },
         "uvicorn.access": {
             "level": "INFO",
-            "handlers": ["access"],
+            "handlers": ["access", "file"],
             "propagate": False,
         },
-        "energy_collector": {
-            "level": "DEBUG",
-            "handlers": ["default"],
+        "estimenergy": {
+            "level": "INFO",
+            "handlers": ["default", "file"],
             "propagate": False,
         },
     },

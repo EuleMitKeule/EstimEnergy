@@ -1,4 +1,5 @@
 
+import logging
 import uvicorn
 import asyncio
 from fastapi import FastAPI
@@ -31,6 +32,14 @@ app.include_router(energy_router.router)
 app.include_router(collector_router.router)
 
 def start():
+    if settings.log_path is not None and settings.log_path != "":
+        LOGGING_CONFIG["handlers"]["file"]["filename"] = settings.log_path
+
+    if settings.log_level is not None and settings.log_level != "":
+        LOGGING_CONFIG["loggers"]["uvicorn.error"]["level"] = settings.log_level
+        LOGGING_CONFIG["loggers"]["uvicorn.access"]["level"] = settings.log_level
+        LOGGING_CONFIG["loggers"]["estimenergy"]["level"] = settings.log_level
+
     uvicorn.run(
         "estimenergy.main:app",
         host="0.0.0.0",
