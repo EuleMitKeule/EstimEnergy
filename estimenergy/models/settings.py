@@ -9,7 +9,6 @@ class Settings(BaseSettings):
     db_path: str = "estimenergy.db"
     log_path: str = "estimenergy.log"
     log_level: str = "INFO"
-    enable_metrics: bool = True
     reload: bool = False
 
     class Config:

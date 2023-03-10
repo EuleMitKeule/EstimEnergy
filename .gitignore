@@ -32,3 +32,4 @@ old/
 config.yml
 poetry.lock
 .venv
+*.log
