@@ -53,3 +53,4 @@ collectors:
 ### Installation
 
 Install the repository in HACS via custom repository option. After restarting Home Assistant you can add and configure the integration via the integrations UI.
+Doing so will create sensor entities for each metric and for each collector you configured.
