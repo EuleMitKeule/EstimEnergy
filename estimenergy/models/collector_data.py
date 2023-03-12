@@ -80,7 +80,6 @@ class CollectorData(models.Model):
                 date = date.replace(year=year, month=month, day=1)
 
                 accuracy = await self.get_accuracy(Metric(MetricType.ACCURACY, MetricPeriod.MONTH, False, False), date)
-                energy_datas = await self.get_energy_datas(MetricPeriod.MONTH, date)
 
                 if not metric.is_raw and accuracy < self.min_accuracy:
                     missing_months += 1

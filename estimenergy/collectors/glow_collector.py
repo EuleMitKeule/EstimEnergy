@@ -48,7 +48,9 @@ class GlowCollector(Collector):
         self.metrics = CollectorMetrics(self.collector_data)
 
     async def start(self):
-        await self.__try_login()
+        if not await self.__try_login():
+            self.logger.error(f"Unable to login to {self.collector_data.name}")
+            return
         await self.reconnect_logic.start()
 
     async def update_kwh(self, kwh: float):
@@ -58,8 +60,14 @@ class GlowCollector(Collector):
         try:
             await self.api.connect(login=True)
             self.device_info = await self.api.device_info()
-        except ResolveAPIError or APIConnectionError or InvalidEncryptionKeyAPIError or RequiresEncryptionAPIError as err:
-            raise err
+            return True
+        except (
+            ResolveAPIError, 
+            APIConnectionError, 
+            InvalidEncryptionKeyAPIError, 
+            RequiresEncryptionAPIError
+        ):
+            return False
         finally:
             await self.api.disconnect(force=True)
 
@@ -68,7 +76,7 @@ class GlowCollector(Collector):
 
         try:
             await self.api.subscribe_states(self.__state_changed)
-        except APIConnectionError as err:
+        except APIConnectionError:
             await self.api.disconnect()
     
     async def __on_disconnect(self):
@@ -79,7 +87,7 @@ class GlowCollector(Collector):
         self.logger.error(exception)
 
     def __state_changed(self, state: EntityState):
-        if not state.key == 3673186328:
+        if state.key != 3673186328:
             return
         
         current_kwh: float = state.state
