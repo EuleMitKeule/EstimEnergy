@@ -45,30 +45,7 @@ collectors:
     base_cost_per_month: <independent_cost_per_month> # 12.34
     payment_per_month: <monthly_payment_in_advance> # 123.4
     billing_month: <month_the_billing_period_begins> # 9
-    max_incomplete_days: <explained_below> # 5
-    min_hour: <explained_below> # 0
-    max_hour: <explained_below> # 24
-```
-
-## EstimEnergy Library
-
-### Installation
-
-```sh
-pip install estimenergy
-```
-
-### Usage
-
-```python
-from estimenergy.client import EstimEnergyClient
-
-client = EstimEnergyClient(
-    host="<estimenergy_api_ip_address",
-    port=<estimenergy_api_port>
-)
-
-data = client.get_data(name="<glow_device_name>")
+    min_accuracy: <min_accuracy_for_days_and_months> # 0.9
 ```
 
 ## Home Assistant Integration
