@@ -89,4 +89,3 @@ base_cost_per_month|`float`|Usage independent cost per month
 payment_per_month|`float`|Money prepaid per month
 billing_month|`int`|Month in which the billing period begins
 min_accuracy|`float`|Minimum accuracy required to avoid estimating the month or day
-
