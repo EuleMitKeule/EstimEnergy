@@ -1,807 +1,844 @@
 {
-    "annotations": {
-      "list": [
-        {
-          "builtIn": 1,
-          "datasource": {
-            "type": "grafana",
-            "uid": "-- Grafana --"
-          },
-          "enable": true,
-          "hide": true,
-          "iconColor": "rgba(0, 211, 255, 1)",
-          "name": "Annotations & Alerts",
-          "target": {
-            "limit": 100,
-            "matchAny": false,
-            "tags": [],
-            "type": "dashboard"
-          },
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
           "type": "dashboard"
-        }
-      ]
-    },
-    "editable": true,
-    "fiscalYearStartMonth": 0,
-    "graphTooltip": 0,
-    "id": 22,
-    "links": [],
-    "liveNow": false,
-    "panels": [
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "5gw-slhnk"
         },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "palette-classic"
-            },
-            "custom": {
-              "axisCenteredZero": false,
-              "axisColorMode": "text",
-              "axisLabel": "",
-              "axisPlacement": "auto",
-              "barAlignment": 0,
-              "drawStyle": "line",
-              "fillOpacity": 0,
-              "gradientMode": "none",
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
-              },
-              "lineInterpolation": "linear",
-              "lineWidth": 1,
-              "pointSize": 5,
-              "scaleDistribution": {
-                "type": "linear"
-              },
-              "showPoints": "auto",
-              "spanNulls": false,
-              "stacking": {
-                "group": "A",
-                "mode": "none"
-              },
-              "thresholdsStyle": {
-                "mode": "off"
-              }
-            },
-            "mappings": [],
-            "min": 0,
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            },
-            "unit": "watt"
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 11,
-          "w": 10,
-          "x": 0,
-          "y": 0
-        },
-        "id": 6,
-        "options": {
-          "legend": {
-            "calcs": [],
-            "displayMode": "list",
-            "placement": "bottom",
-            "showLegend": true
-          },
-          "tooltip": {
-            "mode": "single",
-            "sort": "none"
-          }
-        },
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "expr": "homeassistant_sensor_power_w{entity=\"$power_entity\"}",
-            "legendFormat": "Leistung",
-            "range": true,
-            "refId": "A"
-          }
-        ],
-        "title": "Leistung",
-        "type": "timeseries"
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "5gw-slhnk"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "watt"
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 4,
-          "w": 6,
-          "x": 10,
-          "y": 0
-        },
-        "id": 9,
-        "options": {
-          "colorMode": "value",
-          "graphMode": "none",
-          "justifyMode": "auto",
-          "orientation": "auto",
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
-            "fields": "",
-            "values": false
-          },
-          "textMode": "auto"
-        },
-        "pluginVersion": "9.3.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "expr": "homeassistant_sensor_power_w{entity=\"sensor.house_power_consumption\"}",
-            "legendFormat": "__auto",
-            "range": true,
-            "refId": "A"
-          }
-        ],
-        "title": "Leistung",
-        "type": "stat"
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "5gw-slhnk"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "kwatth"
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 4,
-          "w": 2,
-          "x": 16,
-          "y": 0
-        },
-        "id": 13,
-        "options": {
-          "colorMode": "value",
-          "graphMode": "none",
-          "justifyMode": "auto",
-          "orientation": "auto",
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
-            "fields": "",
-            "values": false
-          },
-          "textMode": "auto"
-        },
-        "pluginVersion": "9.3.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "expr": "estimenergy_total_kwh{name=\"$collector_name\"}",
-            "legendFormat": "__auto",
-            "range": true,
-            "refId": "A"
-          }
-        ],
-        "title": "Energieverbrauch insgesamt",
-        "type": "stat"
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "5gw-slhnk"
-        },
-        "description": "",
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "kwatth"
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 18,
-          "w": 2,
-          "x": 10,
-          "y": 4
-        },
-        "id": 14,
-        "options": {
-          "colorMode": "value",
-          "graphMode": "none",
-          "justifyMode": "auto",
-          "orientation": "auto",
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
-            "fields": "",
-            "values": false
-          },
-          "textMode": "auto"
-        },
-        "pluginVersion": "9.3.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "expr": "estimenergy_day_kwh{name=\"$collector_name\"}",
-            "hide": false,
-            "legendFormat": "Tag",
-            "range": true,
-            "refId": "A"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "expr": "estimenergy_month_kwh_predicted{name=\"$collector_name\"}",
-            "hide": false,
-            "legendFormat": "Monat",
-            "range": true,
-            "refId": "B"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "expr": "estimenergy_year_kwh_predicted{name=\"$collector_name\"}",
-            "hide": false,
-            "legendFormat": "Jahr",
-            "range": true,
-            "refId": "C"
-          }
-        ],
-        "title": "Verbrauch",
-        "type": "stat"
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "5gw-slhnk"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "€"
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 18,
-          "w": 2,
-          "x": 12,
-          "y": 4
-        },
-        "id": 12,
-        "options": {
-          "colorMode": "value",
-          "graphMode": "none",
-          "justifyMode": "auto",
-          "orientation": "auto",
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
-            "fields": "",
-            "values": false
-          },
-          "textMode": "auto"
-        },
-        "pluginVersion": "9.3.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "expr": "estimenergy_day_cost{name=\"$collector_name\"}",
-            "legendFormat": "Tag",
-            "range": true,
-            "refId": "A"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "expr": "estimenergy_month_cost_predicted{name=\"$collector_name\"}",
-            "hide": false,
-            "legendFormat": "Monat",
-            "range": true,
-            "refId": "B"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "expr": "estimenergy_year_cost_predicted{name=\"$collector_name\"}",
-            "hide": false,
-            "legendFormat": "Jahr",
-            "range": true,
-            "refId": "C"
-          }
-        ],
-        "title": "Kosten",
-        "type": "stat"
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "5gw-slhnk"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "€"
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 18,
-          "w": 2,
-          "x": 14,
-          "y": 4
-        },
-        "id": 10,
-        "options": {
-          "colorMode": "value",
-          "graphMode": "none",
-          "justifyMode": "auto",
-          "orientation": "auto",
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
-            "fields": "",
-            "values": false
-          },
-          "textMode": "auto"
-        },
-        "pluginVersion": "9.3.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "expr": "estimenergy_day_cost_difference{name=\"$collector_name\"}",
-            "legendFormat": "Tag",
-            "range": true,
-            "refId": "A"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "expr": "estimenergy_month_cost_difference_predicted{name=\"$collector_name\"}",
-            "hide": false,
-            "legendFormat": "Monat",
-            "range": true,
-            "refId": "B"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "expr": "estimenergy_year_cost_difference_predicted{name=\"$collector_name\"}",
-            "hide": false,
-            "legendFormat": "Jahr",
-            "range": true,
-            "refId": "C"
-          }
-        ],
-        "title": "Kostendifferenz",
-        "type": "stat"
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "5gw-slhnk"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "decimals": 2,
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                }
-              ]
-            },
-            "unit": "percentunit"
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 18,
-          "w": 2,
-          "x": 16,
-          "y": 4
-        },
-        "id": 15,
-        "options": {
-          "colorMode": "value",
-          "graphMode": "none",
-          "justifyMode": "auto",
-          "orientation": "auto",
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
-            "fields": "",
-            "values": false
-          },
-          "textMode": "auto"
-        },
-        "pluginVersion": "9.3.1",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "exemplar": false,
-            "expr": "estimenergy_day_accuracy{name=\"$collector_name\"}",
-            "instant": false,
-            "legendFormat": "Tag",
-            "range": true,
-            "refId": "A"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "exemplar": false,
-            "expr": "estimenergy_month_accuracy{name=\"$collector_name\"}",
-            "hide": false,
-            "instant": false,
-            "legendFormat": "Monat",
-            "range": true,
-            "refId": "B"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "exemplar": false,
-            "expr": "estimenergy_year_accuracy{name=\"$collector_name\"}",
-            "hide": false,
-            "instant": false,
-            "legendFormat": "Jahr",
-            "range": true,
-            "refId": "C"
-          }
-        ],
-        "title": "Genauigkeit",
-        "type": "stat"
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "5gw-slhnk"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "palette-classic"
-            },
-            "custom": {
-              "axisCenteredZero": false,
-              "axisColorMode": "text",
-              "axisLabel": "",
-              "axisPlacement": "auto",
-              "barAlignment": 0,
-              "drawStyle": "line",
-              "fillOpacity": 0,
-              "gradientMode": "none",
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
-              },
-              "lineInterpolation": "linear",
-              "lineWidth": 1,
-              "pointSize": 5,
-              "scaleDistribution": {
-                "type": "linear"
-              },
-              "showPoints": "auto",
-              "spanNulls": false,
-              "stacking": {
-                "group": "A",
-                "mode": "none"
-              },
-              "thresholdsStyle": {
-                "mode": "off"
-              }
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green",
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            },
-            "unit": "kwatth"
-          },
-          "overrides": [
-            {
-              "matcher": {
-                "id": "byFrameRefID",
-                "options": "B"
-              },
-              "properties": [
-                {
-                  "id": "unit",
-                  "value": "currencyEUR"
-                }
-              ]
-            }
-          ]
-        },
-        "gridPos": {
-          "h": 11,
-          "w": 10,
-          "x": 0,
-          "y": 11
-        },
-        "hideTimeOverride": false,
-        "hidetimeoverride": true,
-        "id": 2,
-        "options": {
-          "legend": {
-            "calcs": [],
-            "displayMode": "list",
-            "placement": "bottom",
-            "showLegend": true
-          },
-          "tooltip": {
-            "mode": "single",
-            "sort": "none"
-          }
-        },
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "exemplar": false,
-            "expr": "estimenergy_day_kwh{name=\"$collector_name\"}",
-            "hide": false,
-            "instant": false,
-            "legendFormat": "Energieverbrauch",
-            "range": true,
-            "refId": "A"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "5gw-slhnk"
-            },
-            "editorMode": "code",
-            "expr": "estimenergy_day_cost{name=\"$collector_name\"}",
-            "hide": false,
-            "legendFormat": "Energiekosten",
-            "range": true,
-            "refId": "B"
-          }
-        ],
-        "timeTo": "now/d",
-        "title": "Energie",
-        "transformations": [],
-        "type": "timeseries"
+        "type": "dashboard"
       }
-    ],
-    "refresh": "10s",
-    "schemaVersion": 37,
-    "style": "dark",
-    "tags": [],
-    "templating": {
-      "list": [
-        {
-          "current": {
-            "selected": false,
-            "text": "glow",
-            "value": "glow"
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 22,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${hass_prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
           },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 10,
+        "x": 0,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
           "datasource": {
             "type": "prometheus",
-            "uid": "5gw-slhnk"
+            "uid": "${hass_prometheus}"
           },
-          "definition": "label_values(estimenergy_day_kwh, name)",
-          "hide": 0,
-          "includeAll": false,
-          "label": "Collector Name",
-          "multi": false,
-          "name": "collector_name",
-          "options": [],
-          "query": {
-            "query": "label_values(estimenergy_day_kwh, name)",
-            "refId": "StandardVariableQuery"
+          "editorMode": "code",
+          "expr": "homeassistant_sensor_power_w{entity=\"$power_entity\"}",
+          "legendFormat": "Leistung",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Leistung",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${hass_prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
           },
-          "refresh": 1,
-          "regex": "",
-          "skipUrlSync": false,
-          "sort": 0,
-          "type": "query"
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 10,
+        "y": 0
+      },
+      "id": 9,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${hass_prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "homeassistant_sensor_power_w{entity=\"sensor.house_power_consumption\"}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Leistung",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${estimenergy_prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 16,
+        "y": 0
+      },
+      "id": 13,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "estimenergy_total_kwh{name=\"$collector_name\"}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Energieverbrauch insgesamt",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${estimenergy_prometheus}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 18,
+        "w": 2,
+        "x": 10,
+        "y": 4
+      },
+      "id": 14,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "estimenergy_day_kwh{name=\"$collector_name\"}",
+          "hide": false,
+          "legendFormat": "Tag",
+          "range": true,
+          "refId": "A"
         },
         {
-          "current": {
-            "selected": false,
-            "text": "sensor.house_power_consumption",
-            "value": "sensor.house_power_consumption"
-          },
           "datasource": {
             "type": "prometheus",
-            "uid": "5gw-slhnk"
+            "uid": "${estimenergy_prometheus}"
           },
-          "definition": "label_values(homeassistant_sensor_power_w, entity)",
-          "hide": 0,
-          "includeAll": false,
-          "label": "Power Entity",
-          "multi": false,
-          "name": "power_entity",
-          "options": [],
-          "query": {
-            "query": "label_values(homeassistant_sensor_power_w, entity)",
-            "refId": "StandardVariableQuery"
+          "editorMode": "code",
+          "expr": "estimenergy_month_kwh_predicted{name=\"$collector_name\"}",
+          "hide": false,
+          "legendFormat": "Monat",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
           },
-          "refresh": 1,
-          "regex": "",
-          "skipUrlSync": false,
-          "sort": 0,
-          "type": "query"
+          "editorMode": "code",
+          "expr": "estimenergy_year_kwh_predicted{name=\"$collector_name\"}",
+          "hide": false,
+          "legendFormat": "Jahr",
+          "range": true,
+          "refId": "C"
         }
-      ]
+      ],
+      "title": "Verbrauch",
+      "type": "stat"
     },
-    "time": {
-      "from": "now/d",
-      "to": "now/d"
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${estimenergy_prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "€"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 18,
+        "w": 2,
+        "x": 12,
+        "y": 4
+      },
+      "id": 12,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "estimenergy_day_cost{name=\"$collector_name\"}",
+          "legendFormat": "Tag",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "estimenergy_month_cost_predicted{name=\"$collector_name\"}",
+          "hide": false,
+          "legendFormat": "Monat",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "estimenergy_year_cost_predicted{name=\"$collector_name\"}",
+          "hide": false,
+          "legendFormat": "Jahr",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Kosten",
+      "type": "stat"
     },
-    "timepicker": {
-      "hidden": false
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${estimenergy_prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "€"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 18,
+        "w": 2,
+        "x": 14,
+        "y": 4
+      },
+      "id": 10,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "estimenergy_day_cost_difference{name=\"$collector_name\"}",
+          "legendFormat": "Tag",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "estimenergy_month_cost_difference_predicted{name=\"$collector_name\"}",
+          "hide": false,
+          "legendFormat": "Monat",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "estimenergy_year_cost_difference_predicted{name=\"$collector_name\"}",
+          "hide": false,
+          "legendFormat": "Jahr",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Kostendifferenz",
+      "type": "stat"
     },
-    "timezone": "",
-    "title": "Energie",
-    "uid": "wW1LMs04z",
-    "version": 16,
-    "weekStart": ""
-  }
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${estimenergy_prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 18,
+        "w": 2,
+        "x": 16,
+        "y": 4
+      },
+      "id": 15,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.4.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "estimenergy_day_accuracy{name=\"$collector_name\"}",
+          "instant": false,
+          "legendFormat": "Tag",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "estimenergy_month_accuracy{name=\"$collector_name\"}",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Monat",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "estimenergy_year_accuracy{name=\"$collector_name\"}",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Jahr",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Genauigkeit",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${estimenergy_prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "currencyEUR"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 10,
+        "x": 0,
+        "y": 11
+      },
+      "hideTimeOverride": false,
+      "hidetimeoverride": true,
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "estimenergy_day_kwh{name=\"$collector_name\"}",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Energieverbrauch",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${estimenergy_prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "estimenergy_day_cost{name=\"$collector_name\"}",
+          "hide": false,
+          "legendFormat": "Energiekosten",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "timeTo": "now/d",
+      "title": "Energie",
+      "transformations": [],
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "10s",
+  "revision": 1,
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "glow",
+          "value": "glow"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "5gw-slhnk"
+        },
+        "definition": "label_values(estimenergy_day_kwh, name)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Collector Name",
+        "multi": false,
+        "name": "collector_name",
+        "options": [],
+        "query": {
+          "query": "label_values(estimenergy_day_kwh, name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "sensor.house_power_consumption",
+          "value": "sensor.house_power_consumption"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "5gw-slhnk"
+        },
+        "definition": "label_values(homeassistant_sensor_power_w, entity)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Power Entity",
+        "multi": false,
+        "name": "power_entity",
+        "options": [],
+        "query": {
+          "query": "label_values(homeassistant_sensor_power_w, entity)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "EstimEnergy",
+          "value": "EstimEnergy"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "EstimEnergy Data Source",
+        "multi": false,
+        "name": "estimenergy_prometheus",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "HASS Data Source",
+        "multi": false,
+        "name": "hass_prometheus",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+    ]
+  },
+  "time": {
+    "from": "now/d",
+    "to": "now/d"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Energie",
+  "uid": "wW1LMs04z",
+  "version": 21,
+  "weekStart": ""
+}
