@@ -139,12 +139,12 @@ class CollectorData(models.Model):
             return await EnergyData.filter(collector=self, year=date.year, month=date.month)
         
         if metric_period == MetricPeriod.YEAR:
+            start_year = date.year - 1 if date.month < self.billing_month else date.year
+            end_year = date.year if date.month < self.billing_month else date.year + 1
+
             return await EnergyData.filter(
-                Q(collector=self) & 
-                (
-                    Q(year=date.year - 1, month__lt=self.billing_month) | 
-                    Q(year=date.year, month__gte=self.billing_month)
-                )
+                Q(collector=self, year=start_year, month__gte=self.billing_month) |
+                Q(collector=self, year=end_year, month__lt=self.billing_month)
             )
         
         if metric_period == MetricPeriod.TOTAL:
