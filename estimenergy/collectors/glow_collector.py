@@ -46,6 +46,7 @@ class GlowCollector(Collector):
         )
         
         self.metrics = CollectorMetrics(self.collector_data)
+        self.last_kwh: float | None = None
 
     async def start(self):
         if not await self.__try_login():
@@ -87,7 +88,7 @@ class GlowCollector(Collector):
         self.logger.error(exception)
 
     def __state_changed(self, state: EntityState):
-        if state.key != 3673186328:
+        if state.key != 2690257735:
             return
         
         current_kwh: float = state.state
@@ -95,6 +96,16 @@ class GlowCollector(Collector):
         loop.create_task(self.__on_kwh_changed(current_kwh))
     
     async def __on_kwh_changed(self, current_kwh: float):
+        if self.last_kwh is None:
+            self.last_kwh = current_kwh
+            return
+
+        kwh_diff = current_kwh - self.last_kwh
+
+        if kwh_diff < 0:
+            self.logger.info(f"KWh difference is negative ({kwh_diff}), ignoring")
+            return
+
         date = get_current_datetime()
 
         self.logger.info(f"Current KWh: {current_kwh}")
@@ -116,10 +127,12 @@ class GlowCollector(Collector):
             await self.__update_previous_energy_data(date)
             return
 
-        energy_data.kwh = current_kwh
+        energy_data.kwh += kwh_diff
         energy_data.hour_updated = date.hour
         await energy_data.save()
         await self.metrics.update_metrics()
+
+        self.last_kwh = current_kwh
 
     async def __update_previous_energy_data(self, date):
         date_yesterday = date - datetime.timedelta(days=1)
