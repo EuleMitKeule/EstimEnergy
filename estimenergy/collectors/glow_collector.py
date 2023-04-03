@@ -96,16 +96,6 @@ class GlowCollector(Collector):
         loop.create_task(self.__on_kwh_changed(current_kwh))
     
     async def __on_kwh_changed(self, current_kwh: float):
-        if self.last_kwh is None:
-            self.last_kwh = current_kwh
-            return
-
-        kwh_diff = current_kwh - self.last_kwh
-
-        if kwh_diff < 0:
-            self.logger.info(f"KWh difference is negative ({kwh_diff}), ignoring")
-            return
-
         date = get_current_datetime()
 
         self.logger.info(f"Current KWh: {current_kwh}")
@@ -123,14 +113,24 @@ class GlowCollector(Collector):
                 hour_updated=date.hour,
                 is_completed=False
             )
+
             await energy_data.save()
             await self.__update_previous_energy_data(date)
+            self.last_kwh = current_kwh
             return
 
-        energy_data.kwh += kwh_diff
-        energy_data.hour_updated = date.hour
-        await energy_data.save()
-        await self.metrics.update_metrics()
+        if self.last_kwh is not None:
+            kwh_diff = current_kwh - self.last_kwh
+
+            if kwh_diff < 0:
+                self.logger.info(f"KWh difference is negative ({kwh_diff}), ignoring")
+                self.last_kwh = current_kwh
+                return
+            
+            energy_data.kwh += kwh_diff
+            energy_data.hour_updated = date.hour
+            await energy_data.save()
+            await self.metrics.update_metrics()
 
         self.last_kwh = current_kwh
 
