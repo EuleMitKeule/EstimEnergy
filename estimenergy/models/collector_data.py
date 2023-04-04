@@ -1,11 +1,12 @@
 import datetime
 import logging
+
 from tortoise import fields, models
 from tortoise.expressions import Q
 
+from estimenergy.const import METRICS, Metric, MetricPeriod, MetricType
 from estimenergy.helpers import get_days_in_month
 from estimenergy.models.energy_data import EnergyData
-from estimenergy.const import METRICS, Metric, MetricPeriod, MetricType
 
 
 class CollectorData(models.Model):

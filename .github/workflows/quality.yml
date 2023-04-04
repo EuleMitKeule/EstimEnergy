@@ -17,18 +17,11 @@ jobs:
   black:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: psf/black@stable
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  sonarcloud:
-    runs-on: ubuntu-latest
-    steps:
-
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      
-      - uses: actions/setup-python@v4
+      - name: Install Python
+        uses: actions/setup-python@v4
         with:
           python-version: 3.9
 
@@ -39,11 +32,124 @@ jobs:
         run: |
           poetry install --with dev
 
-      - name: Run tests
+      - name: Run black
+        run: |
+          poetry run black --check estimenergy tests custom_components/estimenergy_integration --diff
+
+  ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Install dependencies
+        run: |
+          poetry install --with dev
+
+      - name: Run ruff
+        run: |
+          poetry run ruff check estimenergy tests custom_components/estimenergy_integration
+
+  isort:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Install dependencies
+        run: |
+          poetry install --with dev
+          
+      - name: Run isort
+        run: |
+          poetry run isort --check-only --diff estimenergy tests custom_components/estimenergy_integration
+
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Install dependencies
+        run: |
+          poetry install --with dev
+          
+      - name: Run mypy
+        run: |
+          poetry run mypy estimenergy tests custom_components/estimenergy_integration
+
+  bandit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Install dependencies
+        run: |
+          poetry install --with dev
+          
+      - name: Run bandit
+        run: |
+          poetry run bandit -r estimenergy custom_components/estimenergy_integration
+
+  sonarcloud:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Install dependencies
+        run: |
+          poetry install --with dev
+
+      - name: Run pytest
         run: |
           poetry run pytest --cov=estimenergy --cov-report=xml      
 
-      - name: SonarCloud Scan
+      - name: Run SonarCloud analysis
         uses: sonarsource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}

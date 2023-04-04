@@ -1,15 +1,10 @@
-from homeassistant import config_entries
 import voluptuous as vol
-
+from homeassistant import config_entries
 from homeassistant.data_entry_flow import FlowResult
 
 from estimenergy.const import DEFAULT_HOST, DEFAULT_PORT
 
-from .const import (
-    DOMAIN,
-    CONF_HOST,
-    CONF_PORT,
-)
+from .const import CONF_HOST, CONF_PORT, DOMAIN
 
 
 class EstimEnergyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):

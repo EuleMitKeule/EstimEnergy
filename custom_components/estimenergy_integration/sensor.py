@@ -1,22 +1,26 @@
 """Sensor for EstimEnergy integration."""
 
 from __future__ import annotations
-from datetime import datetime
+
 import logging
-from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
+from datetime import datetime
+
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorStateClass,
+)
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CURRENCY_EURO, PERCENTAGE, UnitOfEnergy
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import CURRENCY_EURO, PERCENTAGE
-from homeassistant.const import UnitOfEnergy
+
 from estimenergy.client import EstimEnergyClient
-from estimenergy.const import METRICS, Metric, MetricType, MetricPeriod
+from estimenergy.const import METRICS, Metric, MetricPeriod, MetricType
 
 from .const import CONF_HOST, CONF_PORT
 from .coordinator import EstimEnergyCoordinator
-
 
 _LOGGER = logging.getLogger(__name__)
 

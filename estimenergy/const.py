@@ -1,4 +1,5 @@
 from enum import Enum
+
 from prometheus_client import Gauge
 
 DEFAULT_HOST = "127.0.0.1"

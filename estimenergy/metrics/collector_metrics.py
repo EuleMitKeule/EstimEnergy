@@ -1,9 +1,9 @@
 from prometheus_client.registry import Collector as Metrics
+
+from estimenergy.common import metric_registry
 from estimenergy.const import METRICS
 from estimenergy.helpers import get_current_datetime
-
 from estimenergy.models.collector_data import CollectorData
-from estimenergy.common import metric_registry
 
 
 class CollectorMetrics(Metrics):
