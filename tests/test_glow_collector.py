@@ -1,5 +1,5 @@
-import pytest
 from freezegun import freeze_time
+import pytest
 
 from estimenergy.collectors.glow_collector import GlowCollector
 from estimenergy.models.energy_data import EnergyData

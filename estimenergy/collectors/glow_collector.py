@@ -2,9 +2,15 @@ import asyncio
 import datetime
 import logging
 
-from aioesphomeapi import (APIClient, APIConnectionError, EntityState,
-                           InvalidEncryptionKeyAPIError, ReconnectLogic,
-                           RequiresEncryptionAPIError, ResolveAPIError)
+from aioesphomeapi import (
+    APIClient,
+    APIConnectionError,
+    InvalidEncryptionKeyAPIError,
+    ReconnectLogic,
+    RequiresEncryptionAPIError,
+    ResolveAPIError,
+    SensorState,
+)
 from zeroconf import Zeroconf
 
 from estimenergy.collectors import Collector
@@ -83,7 +89,7 @@ class GlowCollector(Collector):
         )
         self.logger.error(exception)
 
-    def __state_changed(self, state: EntityState):
+    def __state_changed(self, state: SensorState):
         if state.key != 3673186328:
             return
 

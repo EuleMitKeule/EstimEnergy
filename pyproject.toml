@@ -17,12 +17,13 @@ version = "0.0.0"
 run = { "script" = "estimenergy.main:start" }
 test = "pytest --cov estimenergy --cov-report term-missing --cov-report xml"
 black = "black estimenergy tests custom_components/estimenergy_integration"
-ruff = "ruff check estimenergy tests custom_components/estimenergy_integration"
 isort = "isort estimenergy tests custom_components/estimenergy_integration"
 mypy = "mypy estimenergy tests custom_components/estimenergy_integration"
 bandit = "bandit -r estimenergy custom_components/estimenergy_integration"
-format.sequence = ["black", "ruff", "isort", "mypy", "bandit"]
+format.sequence = ["black", "isort", "mypy"]
 format.ignore_fail = true
+security.sequence = ["bandit"]
+security.ignore_fail = true
 
 [tool.poetry-dynamic-versioning]
 enable = true
@@ -41,6 +42,8 @@ prometheus_client = "~0.16.0"
 prometheus-fastapi-instrumentator = "~5.10.0"
 python-dotenv = "~0.21.1"
 PyYAML = "~6.0"
+types-requests = "^2.28.11.17"
+types-pyyaml = "^6.0.12.9"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "~7.2.1"
@@ -61,3 +64,15 @@ poethepoet = "^0.19.0"
 [tool.poetry.group.build.dependencies]
 poetry-dynamic-versioning = "~0.21.4"
 twine = "~4.0.2"
+
+[tool.isort]
+profile = "black"
+force_sort_within_sections = true
+forced_separate = [
+    "tests",
+]
+combine_as_imports = true
+
+[tool.mypy]
+ignore_missing_imports = true
+disable_error_code = "call-arg"

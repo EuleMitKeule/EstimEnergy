@@ -1,6 +1,6 @@
-import pytest
 from freezegun import freeze_time
 from httpx import AsyncClient
+import pytest
 
 from estimenergy.const import Metric, MetricPeriod, MetricType
 from estimenergy.models.collector_data import CollectorData
@@ -23,7 +23,7 @@ async def test_day_kwh(client: AsyncClient, get_metric_value, create_collector_m
     )
     await collector_data.save()
 
-    energy_data = await EnergyData.create(
+    created_energy_data = await EnergyData.create(
         collector_id=1,
         year=2023,
         month=6,
@@ -33,11 +33,13 @@ async def test_day_kwh(client: AsyncClient, get_metric_value, create_collector_m
         hour_updated=23,
         is_completed=True,
     )
-    await energy_data.save()
+    await created_energy_data.save()
 
     energy_data = await EnergyData.filter(
         collector=collector_data, year=2023, month=6, day=5
     ).first()
+
+    assert energy_data is not None
 
     assert energy_data.kwh == 10
 

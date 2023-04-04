@@ -1,9 +1,9 @@
 import asyncio
 
-import uvicorn
-import yaml
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
+import uvicorn
+import yaml
 
 from estimenergy.collectors.glow_collector import GlowCollector
 from estimenergy.common import instrumentator, settings

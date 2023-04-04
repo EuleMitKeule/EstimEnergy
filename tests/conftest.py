@@ -1,6 +1,6 @@
-import pytest
 from httpx import AsyncClient
 from prometheus_client.parser import text_string_to_metric_families
+import pytest
 from tortoise import Tortoise
 
 from estimenergy.collectors.glow_collector import GlowCollector
