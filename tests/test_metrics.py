@@ -1,11 +1,8 @@
-
 from freezegun import freeze_time
 from httpx import AsyncClient
 import pytest
-from estimenergy.const import Metric, MetricPeriod, MetricType
-from estimenergy.main import app
-from fastapi.testclient import TestClient
 
+from estimenergy.const import Metric, MetricPeriod, MetricType
 from estimenergy.models.collector_data import CollectorData
 from estimenergy.models.energy_data import EnergyData
 
@@ -22,11 +19,11 @@ async def test_day_kwh(client: AsyncClient, get_metric_value, create_collector_m
         base_cost_per_month=1,
         payment_per_month=100,
         billing_month=1,
-        min_accuracy=0
+        min_accuracy=0,
     )
     await collector_data.save()
 
-    energy_data = await EnergyData.create(
+    created_energy_data = await EnergyData.create(
         collector_id=1,
         year=2023,
         month=6,
@@ -36,21 +33,22 @@ async def test_day_kwh(client: AsyncClient, get_metric_value, create_collector_m
         hour_updated=23,
         is_completed=True,
     )
-    await energy_data.save()
+    await created_energy_data.save()
 
-    energy_data = await EnergyData.filter(collector=collector_data, year=2023, month=6, day=5).first()
+    energy_data = await EnergyData.filter(
+        collector=collector_data, year=2023, month=6, day=5
+    ).first()
+
+    assert energy_data is not None
 
     assert energy_data.kwh == 10
 
     await create_collector_metrics(collector_data)
     value = await get_metric_value(
         Metric(
-            MetricType.ENERGY, 
-            MetricPeriod.DAY, 
-            is_predicted=False, 
-            is_raw=False
-        ).json_key, 
-        collector_data.name
+            MetricType.ENERGY, MetricPeriod.DAY, is_predicted=False, is_raw=False
+        ).json_key,
+        collector_data.name,
     )
 
     assert value == 10
@@ -58,7 +56,9 @@ async def test_day_kwh(client: AsyncClient, get_metric_value, create_collector_m
 
 @pytest.mark.anyio
 @freeze_time("2023-06-05")
-async def test_month_kwh(client: AsyncClient, get_metric_value, create_collector_metrics):
+async def test_month_kwh(
+    client: AsyncClient, get_metric_value, create_collector_metrics
+):
     collector_data = await CollectorData.create(
         name="glow_test",
         host="0.0.0.0",
@@ -68,7 +68,7 @@ async def test_month_kwh(client: AsyncClient, get_metric_value, create_collector
         base_cost_per_month=1,
         payment_per_month=100,
         billing_month=1,
-        min_accuracy=0
+        min_accuracy=0,
     )
     await collector_data.save()
 
@@ -84,16 +84,13 @@ async def test_month_kwh(client: AsyncClient, get_metric_value, create_collector
             is_completed=True,
         )
         await energy_data.save()
-        
+
     await create_collector_metrics(collector_data)
     value = await get_metric_value(
         Metric(
-            MetricType.ENERGY,
-            MetricPeriod.MONTH,
-            is_predicted=False,
-            is_raw=False
+            MetricType.ENERGY, MetricPeriod.MONTH, is_predicted=False, is_raw=False
         ).json_key,
-        collector_data.name
+        collector_data.name,
     )
 
     assert value == 50
@@ -101,7 +98,9 @@ async def test_month_kwh(client: AsyncClient, get_metric_value, create_collector
 
 @pytest.mark.anyio
 @freeze_time("2023-06-05")
-async def test_year_kwh(client: AsyncClient, get_metric_value, create_collector_metrics):
+async def test_year_kwh(
+    client: AsyncClient, get_metric_value, create_collector_metrics
+):
     collector_data = await CollectorData.create(
         name="glow_test",
         host="0.0.0.0",
@@ -111,7 +110,7 @@ async def test_year_kwh(client: AsyncClient, get_metric_value, create_collector_
         base_cost_per_month=1,
         payment_per_month=100,
         billing_month=1,
-        min_accuracy=0
+        min_accuracy=0,
     )
     await collector_data.save()
 
@@ -132,12 +131,9 @@ async def test_year_kwh(client: AsyncClient, get_metric_value, create_collector_
     await create_collector_metrics(collector_data)
     value = await get_metric_value(
         Metric(
-            MetricType.ENERGY,
-            MetricPeriod.YEAR,
-            is_predicted=False,
-            is_raw=False
+            MetricType.ENERGY, MetricPeriod.YEAR, is_predicted=False, is_raw=False
         ).json_key,
-        collector_data.name
+        collector_data.name,
     )
 
     assert value == 250

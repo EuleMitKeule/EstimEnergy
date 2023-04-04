@@ -1,33 +1,34 @@
-
 import asyncio
 import datetime
 import logging
+
 from aioesphomeapi import (
     APIClient,
-    EntityState,
-    ResolveAPIError,
     APIConnectionError,
     InvalidEncryptionKeyAPIError,
-    RequiresEncryptionAPIError,
     ReconnectLogic,
+    RequiresEncryptionAPIError,
+    ResolveAPIError,
+    SensorState,
 )
 from zeroconf import Zeroconf
 
 from estimenergy.collectors import Collector
-from estimenergy.models import CollectorData, EnergyData
-from estimenergy.metrics import CollectorMetrics
 from estimenergy.helpers import get_current_datetime
+from estimenergy.metrics import CollectorMetrics
+from estimenergy.models import CollectorData, EnergyData
 
 
 class GlowCollector(Collector):
-    def __init__(
-        self,
-        collector_data: CollectorData
-    ):
+    def __init__(self, collector_data: CollectorData):
         self.collector_data = collector_data
-        self.logger = logging.getLogger("estimenergy").getChild(self.collector_data.name)
+        self.logger = logging.getLogger("estimenergy").getChild(
+            self.collector_data.name
+        )
 
-        self.logger.info(f"Creating API Client for {self.collector_data.name} ({self.collector_data.host}:{self.collector_data.port})")
+        self.logger.info(
+            f"Creating API Client for {self.collector_data.name} ({self.collector_data.host}:{self.collector_data.port})"
+        )
 
         self.zeroconf = Zeroconf()
         self.api = APIClient(
@@ -36,7 +37,7 @@ class GlowCollector(Collector):
             self.collector_data.password,
             zeroconf_instance=self.zeroconf,
         )
-        self.reconnect_logic = ReconnectLogic(        
+        self.reconnect_logic = ReconnectLogic(
             client=self.api,
             on_connect=self.__on_connect,
             on_disconnect=self.__on_disconnect,
@@ -44,7 +45,7 @@ class GlowCollector(Collector):
             name=self.collector_data.name,
             on_connect_error=self.__on_connect_error,
         )
-        
+
         self.metrics = CollectorMetrics(self.collector_data)
 
     async def start(self):
@@ -62,10 +63,10 @@ class GlowCollector(Collector):
             self.device_info = await self.api.device_info()
             return True
         except (
-            ResolveAPIError, 
-            APIConnectionError, 
-            InvalidEncryptionKeyAPIError, 
-            RequiresEncryptionAPIError
+            ResolveAPIError,
+            APIConnectionError,
+            InvalidEncryptionKeyAPIError,
+            RequiresEncryptionAPIError,
         ):
             return False
         finally:
@@ -78,37 +79,47 @@ class GlowCollector(Collector):
             await self.api.subscribe_states(self.__state_changed)
         except APIConnectionError:
             await self.api.disconnect()
-    
+
     async def __on_disconnect(self):
         self.logger.warn(f"Disconnected from ESPHome Device {self.collector_data.name}")
 
     async def __on_connect_error(self, exception: Exception):
-        self.logger.error(f"Error connecting to ESPHome Device {self.collector_data.name}")
+        self.logger.error(
+            f"Error connecting to ESPHome Device {self.collector_data.name}"
+        )
         self.logger.error(exception)
 
-    def __state_changed(self, state: EntityState):
+    def __state_changed(self, state: SensorState):
         if state.key != 3673186328:
             return
 
         current_kwh: float = state.state
         loop = asyncio.get_event_loop()
         loop.create_task(self.__on_kwh_changed(current_kwh))
-    
+
     async def __on_kwh_changed(self, current_kwh: float):
         date = get_current_datetime()
 
         self.logger.info(f"Current KWh: {current_kwh}")
 
-        energy_data = await EnergyData.filter(collector=self.collector_data, year=date.year, month=date.month, day=date.day).first()
+        energy_data = await EnergyData.filter(
+            collector=self.collector_data,
+            year=date.year,
+            month=date.month,
+            day=date.day,
+        ).first()
         previous_energy_data = await self.__get_previous_energy_data(date)
-        
+
         if energy_data is None:
-            if previous_energy_data is not None and current_kwh > previous_energy_data.kwh:
+            if (
+                previous_energy_data is not None
+                and current_kwh > previous_energy_data.kwh
+            ):
                 previous_energy_data.kwh = current_kwh
                 previous_energy_data.hour_updated = 23
                 previous_energy_data.is_completed = True
                 await previous_energy_data.save()
-                return                
+                return
 
             energy_data = EnergyData(
                 collector=self.collector_data,
@@ -118,16 +129,16 @@ class GlowCollector(Collector):
                 kwh=current_kwh,
                 hour_created=date.hour,
                 hour_updated=date.hour,
-                is_completed=False
+                is_completed=False,
             )
 
             await energy_data.save()
             await self.__update_previous_energy_data(date)
             return
-        
+
         if energy_data.kwh > current_kwh:
             return
-        
+
         energy_data.kwh = current_kwh
         energy_data.hour_updated = date.hour
         await energy_data.save()
@@ -138,10 +149,10 @@ class GlowCollector(Collector):
 
         if previous_energy_data is None:
             return
-        
+
         if previous_energy_data.hour_updated < 23:
             return
-        
+
         previous_energy_data.is_completed = True
         await previous_energy_data.save()
 
@@ -151,5 +162,5 @@ class GlowCollector(Collector):
             collector=self.collector_data,
             year=date_yesterday.year,
             month=date_yesterday.month,
-            day=date_yesterday.day
+            day=date_yesterday.day,
         ).first()

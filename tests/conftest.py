@@ -1,26 +1,26 @@
-import prometheus_client
-import pytest
-import pytest
 from httpx import AsyncClient
-from tortoise import Tortoise
 from prometheus_client.parser import text_string_to_metric_families
-import estimenergy
-from estimenergy.collectors.glow_collector import GlowCollector
+import pytest
+from tortoise import Tortoise
 
-from estimenergy.main import app
+from estimenergy.collectors.glow_collector import GlowCollector
 from estimenergy.common import metric_registry
+from estimenergy.main import app
 from estimenergy.models.collector_data import CollectorData
 
 DB_URL = "sqlite://:memory:"
+
 
 @pytest.fixture(scope="session")
 def anyio_backend():
     return "asyncio"
 
+
 @pytest.fixture(scope="session")
 async def client():
     async with AsyncClient(app=app, base_url="http://test") as client:
         yield client
+
 
 @pytest.fixture(scope="function", autouse=True)
 async def initialize_tests():
@@ -34,15 +34,18 @@ async def initialize_tests():
     yield
     await Tortoise._drop_databases()
 
+
 @pytest.fixture(scope="function")
 async def create_collector_metrics():
     async def create_collector_metrics(collector_data: CollectorData):
         from estimenergy.metrics import CollectorMetrics
+
         collector_metrics = CollectorMetrics(collector_data)
         await collector_metrics.update_metrics()
         return collector_metrics
-    
+
     return create_collector_metrics
+
 
 @pytest.fixture(scope="function")
 async def get_metric_value(client: AsyncClient):
@@ -56,10 +59,11 @@ async def get_metric_value(client: AsyncClient):
                 for sample in family.samples:
                     if sample.labels["name"] == collector_name:
                         return sample.value
-        
+
         return None
-    
+
     return get_metric_value
+
 
 @pytest.fixture(scope="function")
 async def collector_data():
@@ -72,10 +76,11 @@ async def collector_data():
         base_cost_per_month=1,
         payment_per_month=100,
         billing_month=1,
-        min_accuracy=0
+        min_accuracy=0,
     )
     await collector_data.save()
     return collector_data
+
 
 @pytest.fixture(scope="function")
 async def glow_collector(collector_data):

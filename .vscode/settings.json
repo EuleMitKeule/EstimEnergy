@@ -4,4 +4,13 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/poetry.lock": true,
+        "**/.venv": true,
+        "**/.mypy_cache": true,
+        "**/.coverage": true,
+        "**/.ruff_cache": true,
+    }
 }
