@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     db_path: str = "estimenergy.db"
     log_path: str = "estimenergy.log"
     log_level: str = "INFO"
+    host: str = "127.0.0.1"
     reload: bool = False
 
     class Config:

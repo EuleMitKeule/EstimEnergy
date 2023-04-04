@@ -41,7 +41,7 @@ def start():
 
     uvicorn.run(
         "estimenergy.main:app",
-        host="0.0.0.0",
+        host=settings.host,
         port=DEFAULT_PORT,
         log_config=LOGGING_CONFIG,
         reload=settings.reload,
