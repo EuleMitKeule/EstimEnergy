@@ -1,4 +1,4 @@
-name: Sonar
+name: Code Quality
 
 on:
   push:
@@ -14,6 +14,12 @@ env:
   SONAR_PROJECT_ORGANIZATION: eule
 
 jobs:
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: psf/black@stable
+
   sonarcloud:
     runs-on: ubuntu-latest
     steps:
