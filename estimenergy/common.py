@@ -1,4 +1,3 @@
-
 from prometheus_client import CollectorRegistry
 from prometheus_fastapi_instrumentator import Instrumentator
 from dotenv import load_dotenv

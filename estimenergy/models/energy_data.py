@@ -1,9 +1,10 @@
-
 from tortoise import fields, models
 
 
 class EnergyData(models.Model):
-    collector = fields.ForeignKeyField("models.CollectorData", related_name="energy_datas")
+    collector = fields.ForeignKeyField(
+        "models.CollectorData", related_name="energy_datas"
+    )
     year = fields.IntField()
     month = fields.IntField()
     day = fields.IntField()

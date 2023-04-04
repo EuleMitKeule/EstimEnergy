@@ -1,4 +1,3 @@
-
 from fastapi_crudrouter import TortoiseCRUDRouter
 
 from estimenergy.models import CollectorData

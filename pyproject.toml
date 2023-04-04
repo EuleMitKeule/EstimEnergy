@@ -43,6 +43,7 @@ poetry = "~1.4.0"
 pytest-asyncio = "^0.20.3"
 pytest-mock = "^3.10.0"
 freezegun = "^1.2.2"
+black = "^23.3.0"
 
 [tool.poetry.group.build.dependencies]
 poetry-dynamic-versioning = "~0.21.4"
