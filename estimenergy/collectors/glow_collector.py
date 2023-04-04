@@ -2,15 +2,9 @@ import asyncio
 import datetime
 import logging
 
-from aioesphomeapi import (
-    APIClient,
-    APIConnectionError,
-    EntityState,
-    InvalidEncryptionKeyAPIError,
-    ReconnectLogic,
-    RequiresEncryptionAPIError,
-    ResolveAPIError,
-)
+from aioesphomeapi import (APIClient, APIConnectionError, EntityState,
+                           InvalidEncryptionKeyAPIError, ReconnectLogic,
+                           RequiresEncryptionAPIError, ResolveAPIError)
 from zeroconf import Zeroconf
 
 from estimenergy.collectors import Collector

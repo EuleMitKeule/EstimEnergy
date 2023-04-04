@@ -5,11 +5,8 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 
-from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorEntity,
-    SensorStateClass,
-)
+from homeassistant.components.sensor import (SensorDeviceClass, SensorEntity,
+                                             SensorStateClass)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CURRENCY_EURO, PERCENTAGE, UnitOfEnergy
 from homeassistant.core import HomeAssistant

@@ -13,8 +13,16 @@ packages = [{include = "estimenergy"}]
 license = "MIT"
 version = "0.0.0"
 
-[tool.poetry.scripts]
-api = "estimenergy.main:start"
+[tool.poe.tasks]
+run = { "script" = "estimenergy.main:start" }
+test = "pytest --cov estimenergy --cov-report term-missing --cov-report xml"
+black = "black estimenergy tests custom_components/estimenergy_integration"
+ruff = "ruff check estimenergy tests custom_components/estimenergy_integration"
+isort = "isort estimenergy tests custom_components/estimenergy_integration"
+mypy = "mypy estimenergy tests custom_components/estimenergy_integration"
+bandit = "bandit -r estimenergy custom_components/estimenergy_integration"
+format.sequence = ["black", "ruff", "isort", "mypy", "bandit"]
+format.ignore_fail = true
 
 [tool.poetry-dynamic-versioning]
 enable = true
@@ -48,6 +56,7 @@ mypy = "^1.1.1"
 isort = "^5.12.0"
 ruff = "^0.0.260"
 bandit = "^1.7.5"
+poethepoet = "^0.19.0"
 
 [tool.poetry.group.build.dependencies]
 poetry-dynamic-versioning = "~0.21.4"
