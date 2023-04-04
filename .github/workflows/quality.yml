@@ -124,10 +124,53 @@ jobs:
         run: |
           poetry run bandit -r estimenergy custom_components/estimenergy_integration
 
+  hassfest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Install dependencies
+        run: |
+          poetry install --with dev
+
+      - name: Run hassfest
+        uses: home-assistant/actions/hassfest@master
+
+  hacs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Install dependencies
+        run: |
+          poetry install --with dev
+
+      - name: Run hacs
+        uses: hacs/action@main
+        with:
+          category: integration
+
   sonarcloud:
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout
         uses: actions/checkout@v3
         with:
