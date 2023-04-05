@@ -1,0 +1,28 @@
+{
+    "name": "EstimEnergy",
+    "image": "mcr.microsoft.com/vscode/devcontainers/python:0-3.9",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "GitHub.vscode-pull-request-github",
+                "GitHub.copilot",
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.pylint",
+                "ryanluker.vscode-coverage-gutters",
+                "ms-azuretools.vscode-docker",
+                "ms-vsliveshare.vsliveshare"
+            ]
+        }
+    },
+    "forwardPorts": [
+        12321
+    ],
+    "portsAttributes": {
+        "12321": {
+            "label": "EstimEnergy",
+            "onAutoForward": "silent"
+        }
+    },
+    "onCreateCommand": "bash .devcontainer/setup.sh"
+}

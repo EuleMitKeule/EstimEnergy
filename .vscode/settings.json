@@ -1,16 +1,29 @@
 {
-    "python.testing.pytestArgs": [
-        "tests"
-    ],
+    "python.defaultInterpreterPath": ".venv/bin/python",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.formatting.blackPath": ".venv/bin/black",
+    "python.linting.pycodestylePath": ".venv/bin/pycodestyle",
+    "python.linting.pydocstylePath": ".venv/bin/pydocstyle",
+    "python.linting.mypyPath": ".venv/bin/mypy",
+    "python.linting.pylintPath": ".venv/bin/pylint",
+    "python.formatting.provider": "black",
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "files.trimTrailingWhitespace": true,
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "files.exclude": {
         "**/__pycache__": true,
         "**/.pytest_cache": true,
         "**/poetry.lock": true,
-        "**/.venv": true,
         "**/.mypy_cache": true,
         "**/.coverage": true,
         "**/.ruff_cache": true,
-    }
+        "**/.venv": true,
+    },
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
 }
