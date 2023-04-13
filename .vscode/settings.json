@@ -7,6 +7,9 @@
     "python.linting.pydocstylePath": ".venv/bin/pydocstyle",
     "python.linting.mypyPath": ".venv/bin/mypy",
     "python.linting.pylintPath": ".venv/bin/pylint",
+    "python.linting.pylintArgs": [
+        "--extension-pkg-whitelist=pydantic",
+    ],
     "python.formatting.provider": "black",
     "editor.formatOnPaste": false,
     "editor.formatOnSave": true,

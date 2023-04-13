@@ -3,8 +3,8 @@ from httpx import AsyncClient
 import pytest
 
 from estimenergy.const import Metric, MetricPeriod, MetricType
-from estimenergy.models.collector_data import CollectorData
-from estimenergy.models.energy_data import EnergyData
+from estimenergy.models.device_config import CollectorData
+from estimenergy.models.obsolete.energy_data import EnergyData
 
 
 @pytest.mark.anyio
@@ -47,7 +47,7 @@ async def test_day_kwh(client: AsyncClient, get_metric_value, create_collector_m
     value = await get_metric_value(
         Metric(
             MetricType.ENERGY, MetricPeriod.DAY, is_predicted=False, is_raw=False
-        ).json_key,
+        ).metric_key,
         collector_data.name,
     )
 
@@ -89,7 +89,7 @@ async def test_month_kwh(
     value = await get_metric_value(
         Metric(
             MetricType.ENERGY, MetricPeriod.MONTH, is_predicted=False, is_raw=False
-        ).json_key,
+        ).metric_key,
         collector_data.name,
     )
 
@@ -132,7 +132,7 @@ async def test_year_kwh(
     value = await get_metric_value(
         Metric(
             MetricType.ENERGY, MetricPeriod.YEAR, is_predicted=False, is_raw=False
-        ).json_key,
+        ).metric_key,
         collector_data.name,
     )
 

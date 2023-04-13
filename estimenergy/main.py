@@ -1,75 +1,52 @@
+"""Entrypoint for the EstimEnergy application."""
 import asyncio
 
 from fastapi import FastAPI
-from tortoise.contrib.fastapi import register_tortoise
+from sqlmodel import SQLModel, Session
 import uvicorn
-import yaml
 
-from estimenergy.collectors.glow_collector import GlowCollector
-from estimenergy.common import instrumentator, settings
-from estimenergy.const import DEFAULT_PORT, LOGGING_CONFIG
-from estimenergy.models import CollectorData
-from estimenergy.routers import collector_router, energy_router
+from estimenergy.common import instrumentator, config, db_engine
+from estimenergy.const import LOGGING_CONFIG, DeviceType
+from estimenergy.devices.glow_device import GlowDevice
 
 app = FastAPI(
     title="EstimEnergy",
 )
 
-register_tortoise(
-    app,
-    db_url=f"sqlite://{settings.db_path}",
-    modules={"models": ["estimenergy.models"]},
-    generate_schemas=True,
-    add_exception_handlers=True,
-)
-
 instrumentator.instrument(app, "estimenergy")
 instrumentator.expose(app, include_in_schema=True)
 
-app.include_router(energy_router.router)
-app.include_router(collector_router.router)
-
 
 def start():
-    if settings.log_path is not None and settings.log_path != "":
-        LOGGING_CONFIG["handlers"]["file"]["filename"] = settings.log_path
+    """Start the EstimEnergy application."""
 
-    if settings.log_level is not None and settings.log_level != "":
-        LOGGING_CONFIG["loggers"]["uvicorn.error"]["level"] = settings.log_level
-        LOGGING_CONFIG["loggers"]["uvicorn.access"]["level"] = settings.log_level
-        LOGGING_CONFIG["loggers"]["estimenergy"]["level"] = settings.log_level
+    LOGGING_CONFIG["handlers"]["file"]["filename"] = config.logging_config.log_path
+    LOGGING_CONFIG["loggers"]["uvicorn.error"][
+        "level"
+    ] = config.logging_config.log_level
+    LOGGING_CONFIG["loggers"]["uvicorn.access"][
+        "level"
+    ] = config.logging_config.log_level
+    LOGGING_CONFIG["loggers"]["estimenergy"]["level"] = config.logging_config.log_level
 
     uvicorn.run(
         "estimenergy.main:app",
-        host=settings.host,
-        port=DEFAULT_PORT,
+        host=config.networking_config.host,
+        port=config.networking_config.port,
         log_config=LOGGING_CONFIG,
-        reload=settings.reload,
+        reload=config.dev_config.reload,
     )
 
 
 @app.on_event("startup")
-async def start_energy_collectors():
-    with open(settings.config_path) as f:
-        config_dict = yaml.safe_load(f)
+async def startup():
+    """Application startup event."""
 
-    collector_names = [
-        collector_data_dict["name"] for collector_data_dict in config_dict["collectors"]
-    ]
-    collector_datas = await CollectorData.all()
+    with Session(db_engine) as session:
+        SQLModel.metadata.create_all(db_engine)
+        session.commit()
 
-    for collector_data in collector_datas:
-        if collector_data.name not in collector_names:
-            await collector_data.delete()
-
-    for collector_dict in config_dict["collectors"]:
-        collector_data = await CollectorData.filter(name=collector_dict["name"]).first()
-        if collector_data is None:
-            collector_data = CollectorData(**collector_dict)
-            await collector_data.save()
-
-    collector_datas = await CollectorData.all()
-
-    for collector_data in collector_datas:
-        collector = GlowCollector(collector_data)
-        asyncio.create_task(collector.start())
+    for device_config in config.device_configs:
+        if device_config.type == DeviceType.GLOW:
+            device = GlowDevice(device_config)
+            asyncio.create_task(device.start())

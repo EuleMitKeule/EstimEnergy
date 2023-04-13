@@ -60,7 +60,7 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
         self.metric = metric
         self.collector = collector
         self._attr_name = f"EstimEnergy {collector['name']} {metric.friendly_name}"
-        self._attr_unique_id = f"estimenergy-{collector['name']}-{metric.json_key}"
+        self._attr_unique_id = f"estimenergy-{collector['name']}-{metric.metric_key}"
 
     @property
     def device_class(self) -> SensorDeviceClass | None:
@@ -116,11 +116,12 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
         if (
             self.coordinator.data is None
             or self.collector["name"] not in self.coordinator.data
-            or self.metric.json_key not in self.coordinator.data[self.collector["name"]]
+            or self.metric.metric_key
+            not in self.coordinator.data[self.collector["name"]]
         ):
             return None
 
-        return self.coordinator.data[self.collector["name"]][self.metric.json_key]
+        return self.coordinator.data[self.collector["name"]][self.metric.metric_key]
 
     @property
     def suggested_display_precision(self) -> int | None:

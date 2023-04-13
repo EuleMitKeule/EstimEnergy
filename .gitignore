@@ -22,7 +22,7 @@ venv
 docs.zip
 archive.zip
 *.egg-info
-config
+/config/
 
 # vim temporary files
 *~

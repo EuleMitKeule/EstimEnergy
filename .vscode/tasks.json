@@ -3,7 +3,7 @@
         {
             "label": "Run EstimEnergy API",
             "type": "shell",
-            "command": "poetry run poe run",
+            "command": "poetry run api",
             "detail": "Run the EstimEnergy API using uvicorn.",
             "isBackground": false,
             "presentation": {
@@ -21,47 +21,47 @@
                 "instanceLimit": 1,
             },
         },
-        {
-            "label": "Format",
-            "type": "shell",
-            "command": "poetry run poe format",
-            "detail": "Run code formatting tools.",
-            "isBackground": true,
-            "presentation": {
-                "echo": false,
-                "reveal": "silent",
-                "focus": true,
-                "panel": "dedicated",
-                "showReuseMessage": true,
-                "clear": true,
-                "close": false
-            },
-            "problemMatcher": [],
-            "promptOnClose": false,
-            "runOptions": {
-                "instanceLimit": 1,
-            },
-        },
-        {
-            "label": "Security",
-            "type": "shell",
-            "command": "poetry run poe security",
-            "detail": "Run security scanning tools.",
-            "isBackground": true,
-            "presentation": {
-                "echo": false,
-                "reveal": "silent",
-                "focus": true,
-                "panel": "dedicated",
-                "showReuseMessage": true,
-                "clear": true,
-                "close": false
-            },
-            "problemMatcher": [],
-            "promptOnClose": false,
-            "runOptions": {
-                "instanceLimit": 1,
-            },
-        }
+        // {
+        //     "label": "Format",
+        //     "type": "shell",
+        //     "command": "poetry run format",
+        //     "detail": "Run code formatting tools.",
+        //     "isBackground": true,
+        //     "presentation": {
+        //         "echo": false,
+        //         "reveal": "silent",
+        //         "focus": true,
+        //         "panel": "dedicated",
+        //         "showReuseMessage": true,
+        //         "clear": true,
+        //         "close": false
+        //     },
+        //     "problemMatcher": [],
+        //     "promptOnClose": false,
+        //     "runOptions": {
+        //         "instanceLimit": 1,
+        //     },
+        // },
+        // {
+        //     "label": "Security",
+        //     "type": "shell",
+        //     "command": "poetry run security",
+        //     "detail": "Run security scanning tools.",
+        //     "isBackground": true,
+        //     "presentation": {
+        //         "echo": false,
+        //         "reveal": "silent",
+        //         "focus": true,
+        //         "panel": "dedicated",
+        //         "showReuseMessage": true,
+        //         "clear": true,
+        //         "close": false
+        //     },
+        //     "problemMatcher": [],
+        //     "promptOnClose": false,
+        //     "runOptions": {
+        //         "instanceLimit": 1,
+        //     },
+        // }
     ]
 }

@@ -3,10 +3,10 @@ from prometheus_client.parser import text_string_to_metric_families
 import pytest
 from tortoise import Tortoise
 
-from estimenergy.collectors.glow_collector import GlowCollector
+from estimenergy.devices.glow_device import GlowDevice
 from estimenergy.common import metric_registry
 from estimenergy.main import app
-from estimenergy.models.collector_data import CollectorData
+from estimenergy.models.device_config import CollectorData
 
 DB_URL = "sqlite://:memory:"
 
@@ -66,7 +66,7 @@ async def get_metric_value(client: AsyncClient):
 
 
 @pytest.fixture(scope="function")
-async def collector_data():
+async def collector_config():
     collector_data = await CollectorData.create(
         name="glow_test",
         host="0.0.0.0",
@@ -84,4 +84,4 @@ async def collector_data():
 
 @pytest.fixture(scope="function")
 async def glow_collector(collector_data):
-    return GlowCollector(collector_data)
+    return GlowDevice(collector_data)
