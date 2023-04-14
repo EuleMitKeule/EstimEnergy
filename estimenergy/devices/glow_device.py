@@ -1,3 +1,4 @@
+"""Home Assistant Glow device."""
 import asyncio
 import datetime
 from typing import Optional
@@ -5,6 +6,7 @@ from typing import Optional
 from aioesphomeapi import (
     APIClient,
     APIConnectionError,
+    DeviceInfo,
     InvalidEncryptionKeyAPIError,
     ReconnectLogic,
     RequiresEncryptionAPIError,
@@ -14,16 +16,23 @@ from aioesphomeapi import (
 from zeroconf import Zeroconf
 from estimenergy.const import Metric, MetricPeriod, MetricType
 
-from estimenergy.devices import Device
+from estimenergy.devices import BaseDevice
+from estimenergy.models.config.config import Config
 from estimenergy.models.config.device_config import DeviceConfig
 
 
-class GlowDevice(Device):
-    last_kwh: Optional[float]
-    last_time: Optional[datetime.datetime]
+class GlowDevice(BaseDevice):
+    """Home Assistant Glow device."""
 
-    def __init__(self, device_config: DeviceConfig):
-        super().__init__(device_config)
+    zeroconf: Zeroconf
+    api: APIClient
+    reconnect_logic: ReconnectLogic
+    device_info: Optional[DeviceInfo] = None
+    last_kwh: Optional[float] = None
+    last_time: Optional[datetime.datetime] = None
+
+    def __init__(self, device_config: DeviceConfig, config: Config):
+        super().__init__(device_config, config)
 
         self.zeroconf = Zeroconf()
         self.api = APIClient(
@@ -40,10 +49,6 @@ class GlowDevice(Device):
             name=self.device_config.name,
             on_connect_error=self.__on_connect_error,
         )
-
-        self.device_info = None
-        self.last_kwh = None
-        self.last_time = None
 
     @property
     def provided_metrics(self) -> list[Metric]:
@@ -136,71 +141,3 @@ class GlowDevice(Device):
         await self.write(
             Metric(MetricType.POWER, MetricPeriod.TOTAL, False, False), value
         )
-
-    # async def __on_kwh_changed(self, current_kwh: float):
-    # date = get_current_datetime()
-
-    # self.logger.info(f"Current KWh: {current_kwh}")
-
-    # energy_data = await EnergyData.filter(
-    #     collector=self.collector_config,
-    #     year=date.year,
-    #     month=date.month,
-    #     day=date.day,
-    # ).first()
-    # previous_energy_data = await self.__get_previous_energy_data(date)
-
-    # if energy_data is None:
-    #     if (
-    #         previous_energy_data is not None
-    #         and current_kwh > previous_energy_data.kwh
-    #     ):
-    #         previous_energy_data.kwh = current_kwh
-    #         previous_energy_data.hour_updated = 23
-    #         previous_energy_data.is_completed = True
-    #         await previous_energy_data.save()
-    #         return
-
-    #     energy_data = EnergyData(
-    #         collector=self.collector_config,
-    #         year=date.year,
-    #         month=date.month,
-    #         day=date.day,
-    #         kwh=current_kwh,
-    #         hour_created=date.hour,
-    #         hour_updated=date.hour,
-    #         is_completed=False,
-    #     )
-
-    #     await energy_data.save()
-    #     await self.__update_previous_energy_data(date)
-    #     return
-
-    # if energy_data.kwh > current_kwh:
-    #     return
-
-    # energy_data.kwh = current_kwh
-    # energy_data.hour_updated = date.hour
-    # await energy_data.save()
-    # await self.metrics.update_metrics()
-
-    # async def __update_previous_energy_data(self, date):
-    #     previous_energy_data = await self.__get_previous_energy_data(date)
-
-    #     if previous_energy_data is None:
-    #         return
-
-    #     if previous_energy_data.hour_updated < 23:
-    #         return
-
-    #     previous_energy_data.is_completed = True
-    #     await previous_energy_data.save()
-
-    # async def __get_previous_energy_data(self, date):
-    #     date_yesterday = date - datetime.timedelta(days=1)
-    #     return await EnergyData.filter(
-    #         collector=self.collector_config,
-    #         year=date_yesterday.year,
-    #         month=date_yesterday.month,
-    #         day=date_yesterday.day,
-    #     ).first()

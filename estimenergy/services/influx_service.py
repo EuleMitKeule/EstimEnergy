@@ -1,13 +1,15 @@
+"""InfluxDB data service."""
 import datetime
-
 from influxdb_client import Point, WritePrecision
 from influxdb_client.client.flux_table import FluxTable, FluxRecord
 from estimenergy.const import Metric, MetricPeriod, MetricType
 from estimenergy.services.data_service import DataService
-from estimenergy.common import influx_client, config
+from estimenergy.influx import influx_client
 
 
 class InfluxService(DataService):
+    """InfluxDB data service."""
+
     @property
     def supported_metrics(self) -> list[Metric]:
         """Return a list of metrics supported by this service."""
@@ -48,7 +50,7 @@ class InfluxService(DataService):
         timestamp = date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         result: list[FluxTable] = influx_client.query_api().query(
-            f'from(bucket:"{config.influx_config.bucket}") |> range(start: 0) |> filter(fn: (r) => r._measurement == "energy" and r._field == "{metric.metric_type.value[0]}") |> filter(fn: (r) => r._time >= {timestamp}) |> sort(columns: ["_time"], desc: false) |> limit(n: 1)'
+            f'from(bucket:"{self.config.influx_config.bucket}") |> range(start: 0) |> filter(fn: (r) => r._measurement == "energy" and r._field == "{metric.metric_type.value[0]}") |> filter(fn: (r) => r._time >= {timestamp}) |> sort(columns: ["_time"], desc: false) |> limit(n: 1)'
         )
 
         if len(result) == 0:
@@ -85,17 +87,12 @@ class InfluxService(DataService):
         )
 
         influx_client.write_api().write(
-            bucket=config.influx_config.bucket, record=point
+            bucket=self.config.influx_config.bucket, record=point
         )
 
-    async def _predict(
+    async def update(
         self,
-        metric: Metric,
         date: datetime.datetime = datetime.datetime.now(),
     ):
-        pass
-
-    async def _calculate(
-        self, metric: Metric, date: datetime.datetime = datetime.datetime.now()
-    ):
-        pass
+        """Update the database with the latest values."""
+        _ = date

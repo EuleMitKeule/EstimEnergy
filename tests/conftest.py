@@ -4,7 +4,7 @@ import pytest
 from tortoise import Tortoise
 
 from estimenergy.devices.glow_device import GlowDevice
-from estimenergy.common import metric_registry
+from estimenergy.config import metric_registry
 from estimenergy.main import app
 from estimenergy.models.device_config import CollectorData
 

@@ -16,8 +16,11 @@ class Month(SQLModel, table=True):
     cost_difference: float = Field(default=0)
     accuracy: float = Field(default=0)
 
+    energy_predicted_raw: float = Field(default=0)
     energy_predicted: float = Field(default=0)
+    cost_predicted_raw: float = Field(default=0)
     cost_predicted: float = Field(default=0)
+    cost_difference_predicted_raw: float = Field(default=0)
     cost_difference_predicted: float = Field(default=0)
 
     def __init__(

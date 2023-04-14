@@ -11,6 +11,7 @@ class Day(SQLModel, table=True):
     device_name: str = Field(default=None, index=True)
     date: datetime.date = Field(default=None, index=True)
 
+    year_id: Optional[int] = Field(default=None, foreign_key="year.id")
     month_id: Optional[int] = Field(default=None, foreign_key="month.id")
 
     energy: float = Field(default=0)

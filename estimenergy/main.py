@@ -5,9 +5,12 @@ from fastapi import FastAPI
 from sqlmodel import SQLModel, Session
 import uvicorn
 
-from estimenergy.common import instrumentator, config, db_engine
-from estimenergy.const import LOGGING_CONFIG, DeviceType
-from estimenergy.devices.glow_device import GlowDevice
+from estimenergy.prometheus import instrumentator
+from estimenergy.config import config
+from estimenergy.device import devices
+from estimenergy.db import db_engine
+from estimenergy.const import LOGGING_CONFIG
+
 
 app = FastAPI(
     title="EstimEnergy",
@@ -46,7 +49,5 @@ async def startup():
         SQLModel.metadata.create_all(db_engine)
         session.commit()
 
-    for device_config in config.device_configs:
-        if device_config.type == DeviceType.GLOW:
-            device = GlowDevice(device_config)
-            asyncio.create_task(device.start())
+    for device in devices:
+        asyncio.create_task(device.start())

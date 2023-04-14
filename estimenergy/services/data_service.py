@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 import datetime
 from estimenergy.const import Metric
+from estimenergy.models.config.config import Config
 from estimenergy.models.config.device_config import DeviceConfig
 
 
@@ -9,12 +10,11 @@ class DataService(ABC):
     """Abstract class for all data services."""
 
     device_config: DeviceConfig
+    config: Config
 
-    def __init__(
-        self,
-        device_config: DeviceConfig,
-    ):
+    def __init__(self, device_config: DeviceConfig, config: Config):
         self.device_config = device_config
+        self.config = config
 
     async def last(
         self,
@@ -71,19 +71,6 @@ class DataService(ABC):
 
         await self.write(metric, last_value - value, date)
 
-    async def update(
-        self,
-        metric: Metric,
-        date: datetime.datetime = datetime.datetime.now(),
-    ):
-        """Update a metric."""
-
-        if metric.is_predicted:
-            await self._predict(metric, date)
-            return
-
-        await self._calculate(metric, date)
-
     @property
     @abstractmethod
     def supported_metrics(self) -> list[Metric]:
@@ -107,17 +94,8 @@ class DataService(ABC):
         """Write a metric to the database."""
 
     @abstractmethod
-    async def _calculate(
+    async def update(
         self,
-        metric: Metric,
         date: datetime.datetime = datetime.datetime.now(),
     ):
-        """Calculate a metric."""
-
-    @abstractmethod
-    async def _predict(
-        self,
-        metric: Metric,
-        date: datetime.datetime = datetime.datetime.now(),
-    ):
-        """Predict a metric."""
+        """Update metrics."""
