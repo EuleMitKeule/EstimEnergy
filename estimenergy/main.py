@@ -9,6 +9,10 @@ from estimenergy.prometheus import instrumentator
 from estimenergy.config import config
 from estimenergy.device import devices
 from estimenergy.db import db_engine
+from estimenergy.routers.day_router import day_router
+from estimenergy.routers.month_router import month_router
+from estimenergy.routers.year_router import year_router
+from estimenergy.routers.total_router import total_router
 from estimenergy.const import LOGGING_CONFIG
 
 
@@ -18,6 +22,11 @@ app = FastAPI(
 
 instrumentator.instrument(app, "estimenergy")
 instrumentator.expose(app, include_in_schema=True)
+
+app.include_router(day_router)
+app.include_router(month_router)
+app.include_router(year_router)
+app.include_router(total_router)
 
 
 def start():

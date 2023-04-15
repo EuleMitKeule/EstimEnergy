@@ -252,13 +252,13 @@ class SqlService(DataService):
     def get_or_create_row(
         self,
         metric_period: MetricPeriod,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        date: datetime.datetime = datetime.datetime.now(),
     ) -> Day | Month | Year | Total | None:
         """Get or create a row in the database."""
 
-        row = self.get_row(metric_period, value_dt)
+        row = self.get_row(metric_period, date)
         if row is None:
-            row = self.create_row(metric_period, value_dt)
+            row = self.create_row(metric_period, date)
 
         return row
 
@@ -272,7 +272,7 @@ class SqlService(DataService):
         with Session(db_engine, expire_on_commit=False) as session:
             if metric_period == MetricPeriod.DAY:
                 date = date.date()
-                row = Day(device_config=self.device_config, date=date)
+                row = Day(device_name=self.device_config.name, date=date)
                 session.add(row)
                 session.commit()
                 month = session.exec(
@@ -287,7 +287,7 @@ class SqlService(DataService):
 
             elif metric_period == MetricPeriod.MONTH:
                 date = date.date().replace(day=1)
-                row = Month(device_config=self.device_config, date=date)
+                row = Month(device_name=self.device_config.name, date=date)
                 session.add(row)
                 session.commit()
                 days = session.exec(
@@ -320,7 +320,7 @@ class SqlService(DataService):
                     month=self.device_config.billing_month,
                     day=1,
                 )
-                row = Year(device_config=self.device_config, date=date)
+                row = Year(device_name=self.device_config.name, date=date)
                 session.add(row)
                 session.commit()
                 months = session.exec(
@@ -349,7 +349,7 @@ class SqlService(DataService):
                     session.add(day)
 
             elif metric_period == MetricPeriod.TOTAL:
-                row = Total(device_config=self.device_config, date=date.date())
+                row = Total(device_name=self.device_config.name)
 
             else:
                 raise ValueError(f"Unknown metric period {metric_period}")
@@ -362,21 +362,33 @@ class SqlService(DataService):
     def get_rows(
         self,
         metric_period: MetricPeriod,
-        _: datetime.datetime = datetime.datetime.now(),
+        date: datetime.datetime = datetime.datetime.now(),
     ) -> list[Day | Month | Year | Total]:
         """Get rows from the database."""
 
         with Session(db_engine, expire_on_commit=False) as session:
             if metric_period == MetricPeriod.DAY:
+                date = date.date()
                 query = select(Day).where(
+                    Day.date == date,
                     Day.device_name == self.device_config.name,
                 )
             elif metric_period == MetricPeriod.MONTH:
+                date = date.date().replace(day=1)
                 query = select(Month).where(
+                    Month.date == date,
                     Month.device_name == self.device_config.name,
                 )
             elif metric_period == MetricPeriod.YEAR:
+                date = date.date().replace(
+                    year=date.year - 1
+                    if date.month <= self.device_config.billing_month
+                    else date.year,
+                    month=self.device_config.billing_month,
+                    day=1,
+                )
                 query = select(Year).where(
+                    Year.date == date,
                     Year.device_name == self.device_config.name,
                 )
             elif metric_period == MetricPeriod.TOTAL:
