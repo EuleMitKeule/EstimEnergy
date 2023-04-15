@@ -2,6 +2,7 @@
 import asyncio
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel, Session
 import uvicorn
 
@@ -18,6 +19,14 @@ from estimenergy.const import LOGGING_CONFIG
 
 app = FastAPI(
     title="EstimEnergy",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=config.networking_config.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 instrumentator.instrument(app, "estimenergy")

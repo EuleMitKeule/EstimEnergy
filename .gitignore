@@ -23,7 +23,7 @@ docs.zip
 archive.zip
 *.egg-info
 /config/
-
+openapi.json
 # vim temporary files
 *~
 .*.sw?
