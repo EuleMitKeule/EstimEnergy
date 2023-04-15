@@ -1,30 +1,29 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { TestButtonComponent } from './test-button/test-button.component';
 import { HttpClientModule } from '@angular/common/http';
 import { BASE_PATH } from './api';
+import { EnergyTableComponent } from './energy-table/energy-table.component';
+import { DayModalComponent } from './day-modal/day-modal.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    TestButtonComponent
-  ],
+  declarations: [AppComponent, EnergyTableComponent, DayModalComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     NgbModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule,
   ],
   providers: [
     {
       provide: BASE_PATH,
-      useValue: 'http://localhost:12321'
-    }
+      useValue: 'http://localhost:12321',
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

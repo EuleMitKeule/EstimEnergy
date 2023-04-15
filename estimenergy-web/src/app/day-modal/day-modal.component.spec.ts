@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TestButtonComponent } from './test-button.component';
+import { DayModalComponent } from './day-modal.component';
 
-describe('TestButtonComponent', () => {
-  let component: TestButtonComponent;
-  let fixture: ComponentFixture<TestButtonComponent>;
+describe('DayModalComponent', () => {
+  let component: DayModalComponent;
+  let fixture: ComponentFixture<DayModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TestButtonComponent ]
+      declarations: [ DayModalComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TestButtonComponent);
+    fixture = TestBed.createComponent(DayModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

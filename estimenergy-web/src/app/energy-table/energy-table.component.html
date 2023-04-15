@@ -1,0 +1,21 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Energy</th>
+            <td>
+                <button type="button" class="btn" (click)="onCreateClick()">create</button>
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let day of days">
+            <th scope="row">{{ day.id }}</th>
+            <td>{{ day.energy }}</td>
+            <td>
+                <button type="button" class="btn">edit</button>
+                <button type="button" class="btn">delete</button>
+            </td>
+        </tr>
+    </tbody>
+</table>

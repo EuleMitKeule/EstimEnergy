@@ -7,7 +7,7 @@ from estimenergy.db import db_engine
 from estimenergy.device import devices
 
 
-year_router = APIRouter(prefix="/year")
+year_router = APIRouter(prefix="/year", tags=["year"])
 
 
 @year_router.get(

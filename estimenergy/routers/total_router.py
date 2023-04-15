@@ -7,7 +7,7 @@ from estimenergy.db import db_engine
 from estimenergy.device import devices
 
 
-total_router = APIRouter(prefix="/total")
+total_router = APIRouter(prefix="/total", tags=["total"])
 
 
 @total_router.get(

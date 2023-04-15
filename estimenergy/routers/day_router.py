@@ -10,7 +10,7 @@ from estimenergy.db import db_engine
 from estimenergy.device import devices
 
 
-day_router = APIRouter(prefix="/day")
+day_router = APIRouter(prefix="/day", tags=["day"])
 
 
 @day_router.get(

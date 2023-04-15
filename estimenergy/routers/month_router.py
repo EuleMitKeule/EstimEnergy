@@ -7,7 +7,7 @@ from estimenergy.db import db_engine
 from estimenergy.device import devices
 
 
-month_router = APIRouter(prefix="/month")
+month_router = APIRouter(prefix="/month", tags=["month"])
 
 
 @month_router.get(
