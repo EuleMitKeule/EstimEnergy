@@ -23,22 +23,25 @@ export class DayModalComponent {
   @ViewChild('content', { static: false }) content!: TemplateRef<any>;
   @Input() device: string = '';
   @Input() modalTitle: string = '';
+  @Input() dayCreate!: DayCreate;
   @Output() save: EventEmitter<DayCreate> = new EventEmitter<DayCreate>();
   @Output() abort: EventEmitter<void> = new EventEmitter<void>();
 
   selectedDate!: NgbDateStruct;
 
-  dayCreate: DayCreate = {};
 
-  constructor(private calendar: NgbCalendar) {}
+  constructor(private calendar: NgbCalendar) { }
 
   ngOnInit() {
-    this.dayCreate = {
-      device_name: this.device,
-      date: '1970-01-01',
-      energy: 0,
-      accuracy: 1,
-    };
+    // Assign default values if no dayCreate is given
+    if (!this.dayCreate) {
+      this.dayCreate = {
+        device_name: this.device,
+        date: '1970-01-01',
+        energy: 0,
+        accuracy: 1,
+      };
+    }
     this.selectedDate = this.calendar.getToday();
   }
 

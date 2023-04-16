@@ -8,3 +8,5 @@ if config.influx_config:
         token=config.influx_config.token.get_secret_value(),
         org=config.influx_config.org,
     )
+else:
+    influx_client = None

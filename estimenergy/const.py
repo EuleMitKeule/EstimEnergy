@@ -2,7 +2,7 @@ from enum import Enum
 
 from prometheus_client import Gauge
 
-DEFAULT_CONFIG_PATH = "config.yaml"
+DEFAULT_CONFIG_PATH = "config.yml"
 DEFAULT_LOG_PATH = "estimenergy.log"
 DEFAULT_LOG_LEVEL = "INFO"
 

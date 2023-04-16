@@ -1,5 +1,6 @@
 """The main config class."""
 from pydantic import BaseModel, Field
+from typing import Optional
 import yaml
 from estimenergy.models.config.db_config import SqlConfig
 from estimenergy.models.config.device_config import DeviceConfig
@@ -16,7 +17,7 @@ class Config(BaseModel):
     networking_config: NetworkingConfig = Field(NetworkingConfig(), alias="networking")
     logging_config: LoggingConfig = Field(LoggingConfig(), alias="logging")
     sql_config: SqlConfig = Field(alias="db")
-    influx_config: InfluxConfig = Field(alias="influxdb")
+    influx_config: Optional[InfluxConfig] = Field(alias="influxdb")
     device_configs: list[DeviceConfig] = Field(alias="devices")
 
     @classmethod

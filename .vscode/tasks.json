@@ -21,6 +21,48 @@
                 "instanceLimit": 1,
             },
         },
+        {
+            "label": "Generate OpenAPI",
+            "type": "shell",
+            "command": "poetry run generate",
+            "detail": "Generate OpenAPI JSON specification.",
+            "isBackground": true,
+            "presentation": {
+                "echo": false,
+                "reveal": "never",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": true,
+                "close": true
+            },
+            "problemMatcher": [],
+            "promptOnClose": false,
+            "runOptions": {
+                "instanceLimit": 1,
+            },
+        },
+        {
+            "label": "Generate Client",
+            "type": "shell",
+            "command": "cd ${workspaceFolder}/estimenergy-web && npm run generate-client",
+            "detail": "Generate API Client.",
+            "isBackground": true,
+            "presentation": {
+                "echo": false,
+                "reveal": "never",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": true,
+                "close": true
+            },
+            "problemMatcher": [],
+            "promptOnClose": false,
+            "runOptions": {
+                "instanceLimit": 1,
+            },
+        },
         // {
         //     "label": "Format",
         //     "type": "shell",

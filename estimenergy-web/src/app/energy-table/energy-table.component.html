@@ -1,3 +1,13 @@
+<div ngbDropdown class="d-inline-block">
+    <button type="button" class="btn btn-outline-primary" id="dropdownDevice" ngbDropdownToggle>
+        {{ selectedDevice?.name || 'Select device' }}
+    </button>
+    <div ngbDropdownMenu aria-labelledby="dropdownDevice">
+        <button *ngFor="let device of devices" ngbDropdownItem (click)="onSelectDevice(device)">{{ device.name
+            }}</button>
+    </div>
+</div>
+
 <table class="table">
     <thead>
         <tr>
@@ -13,8 +23,8 @@
             <th scope="row">{{ day.id }}</th>
             <td>{{ day.energy }}</td>
             <td>
-                <button type="button" class="btn">edit</button>
-                <button type="button" class="btn">delete</button>
+                <button type="button" class="btn" (click)="onEditClick(day)">edit</button>
+                <button type="button" class="btn" (click)="onDeleteClick(day)">delete</button>
             </td>
         </tr>
     </tbody>

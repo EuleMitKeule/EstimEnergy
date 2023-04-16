@@ -37,7 +37,7 @@ async def get_days(device_name: Optional[str] = None):
 
 
 @day_router.get(
-    "/{id}",
+    "/{day_id}",
     response_model=DayRead,
     responses={
         404: {"description": "Day not found"},
@@ -87,7 +87,7 @@ async def create_day(day: DayCreate):
 
 
 @day_router.put(
-    "/{id}",
+    "/{day_id}",
     response_model=DayRead,
     responses={
         404: {"description": "Day not found"},
@@ -108,7 +108,11 @@ async def update_day(day_id: int, day: DayCreate):
         db_day = session.exec(select(Day).where(Day.id == day_id)).first()
         if db_day is None:
             raise HTTPException(status_code=404, detail="Day not found")
-        db_day.update_from_orm(day)
+
+        db_day.energy = day.energy
+        db_day.date = day.date
+        db_day.accuracy = day.accuracy
+
         session.add(db_day)
         session.commit()
         session.refresh(db_day)
@@ -120,3 +124,24 @@ async def update_day(day_id: int, day: DayCreate):
         session.refresh(db_day)
 
         return db_day
+
+
+@day_router.delete(
+    "/{day_id}",
+    response_model=DayRead,
+    responses={
+        404: {"description": "Day not found"},
+    },
+)
+async def delete_day(day_id: int):
+    """Delete a day."""
+
+    with Session(db_engine) as session:
+        day = session.exec(select(Day).where(Day.id == day_id)).first()
+        if day is None:
+            raise HTTPException(status_code=404, detail="Day not found")
+
+        session.delete(day)
+        session.commit()
+
+        return day

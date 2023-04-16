@@ -1,5 +1,6 @@
 """Entrypoint for the EstimEnergy application."""
 import asyncio
+import json
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +11,7 @@ from estimenergy.prometheus import instrumentator
 from estimenergy.config import config
 from estimenergy.device import devices
 from estimenergy.db import db_engine
+from estimenergy.routers.device_router import device_router
 from estimenergy.routers.day_router import day_router
 from estimenergy.routers.month_router import month_router
 from estimenergy.routers.year_router import year_router
@@ -32,6 +34,7 @@ app.add_middleware(
 instrumentator.instrument(app, "estimenergy")
 instrumentator.expose(app, include_in_schema=True)
 
+app.include_router(device_router)
 app.include_router(day_router)
 app.include_router(month_router)
 app.include_router(year_router)
@@ -57,6 +60,14 @@ def start():
         log_config=LOGGING_CONFIG,
         reload=config.dev_config.reload,
     )
+
+
+def generate_openapi():
+    """Generate the OpenAPI schema for the EstimEnergy application."""
+
+    with open("openapi.json", "w", encoding="utf-8") as f:
+        dump = json.dumps(app.openapi(), indent=2)
+        f.write(dump)
 
 
 @app.on_event("startup")
