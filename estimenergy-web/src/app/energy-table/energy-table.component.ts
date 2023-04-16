@@ -10,8 +10,11 @@ import { DayModalComponent } from '../day-modal/day-modal.component';
 })
 export class EnergyTableComponent {
   days: DayRead[] = [];
+  sortedDays: DayRead[] = [];
   devices: DeviceConfigRead[] = [];
   selectedDevice: DeviceConfigRead | undefined;
+  sortKey: keyof DayRead = 'id';
+  sortOrder: 'asc' | 'desc' = 'asc';
 
   constructor(private dayService: DayService, private deviceService: DeviceService, private modalService: NgbModal) {
     this.deviceService = deviceService;
@@ -24,9 +27,43 @@ export class EnergyTableComponent {
     this.updateDays();
   }
 
+  onTableHeaderClick(key: keyof DayRead): void {
+    if (this.sortKey === key) {
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortKey = key;
+      this.sortOrder = 'asc';
+    }
+
+    this.sortTable(this.sortKey);
+  }
+
+  sortTable(key: keyof DayRead): void {
+    this.sortedDays = this.days.sort((a: DayRead, b: DayRead) => {
+      const aValue = a[key] as any;
+      const bValue = b[key] as any;
+
+      if (aValue < bValue) {
+        return this.sortOrder === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return this.sortOrder === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  }
+
+  getSortClass(key: keyof DayRead): string {
+    if (this.sortKey !== key) {
+      return '';
+    }
+    return this.sortOrder === 'asc' ? 'bi-arrow-up' : 'bi-arrow-down';
+  }
+
   updateDays() {
     this.dayService.getDaysDayGet(this.selectedDevice?.name).subscribe((days: DayRead[]) => {
       this.days = days;
+      this.sortTable(this.sortKey);
     });
   }
 

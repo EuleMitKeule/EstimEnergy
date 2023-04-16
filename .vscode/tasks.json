@@ -22,6 +22,27 @@
             },
         },
         {
+            "label": "Run EstimEnergy Web",
+            "type": "shell",
+            "command": "cd estimenergy-web && ng serve",
+            "detail": "Run EstimEnergy Web using Angular.",
+            "isBackground": false,
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated",
+                "showReuseMessage": true,
+                "clear": true,
+                "close": false
+            },
+            "problemMatcher": [],
+            "promptOnClose": false,
+            "runOptions": {
+                "instanceLimit": 1,
+            },
+        },
+        {
             "label": "Generate OpenAPI",
             "type": "shell",
             "command": "poetry run generate",

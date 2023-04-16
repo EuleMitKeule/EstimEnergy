@@ -26,4 +26,4 @@ import { DayModalComponent } from './day-modal/day-modal.component';
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }
