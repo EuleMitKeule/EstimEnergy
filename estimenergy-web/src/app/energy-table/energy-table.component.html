@@ -11,8 +11,8 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th scope="col" (click)="onTableHeaderClick('id')">ID <i class="bi bi-arrow-up-down"
-                    [ngClass]="getSortClass('id')"></i></th>
+            <th scope="col" (click)="onTableHeaderClick('date')">Date <i class="bi bi-arrow-up-down"
+                    [ngClass]="getSortClass('date')"></i></th>
             <th scope="col" (click)="onTableHeaderClick('energy')">Energy <i class="bi bi-arrow-up-down"
                     [ngClass]="getSortClass('energy')"></i></th>
             <th scope="col" (click)="onTableHeaderClick('cost')">Cost <i class="bi bi-arrow-up-down"
@@ -24,7 +24,7 @@
     </thead>
     <tbody>
         <tr *ngFor="let day of days">
-            <th scope="row">{{ day.id }}</th>
+            <td>{{ day.date }}</td>
             <td>{{ day.energy }}</td>
             <td>{{ day.cost }}</td>
             <td>

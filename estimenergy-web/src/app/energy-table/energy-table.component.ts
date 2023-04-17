@@ -13,8 +13,8 @@ export class EnergyTableComponent {
   sortedDays: DayRead[] = [];
   devices: DeviceConfigRead[] = [];
   selectedDevice: DeviceConfigRead | undefined;
-  sortKey: keyof DayRead = 'id';
-  sortOrder: 'asc' | 'desc' = 'asc';
+  sortKey: keyof DayRead = 'date';
+  sortOrder: 'asc' | 'desc' = 'desc';
 
   constructor(private dayService: DayService, private deviceService: DeviceService, private modalService: NgbModal) {
     this.deviceService = deviceService;
