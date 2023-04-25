@@ -1,5 +1,6 @@
 """Service for predicting energy usage."""
 import datetime
+
 from estimenergy.const import MetricPeriod
 from estimenergy.helpers import get_days_in_month, get_days_in_year
 from estimenergy.models.config.config import Config

@@ -1,14 +1,14 @@
 """Day router."""
 import datetime
 from typing import Optional
+
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
-from estimenergy.devices.base_device import BaseDevice
 
-from estimenergy.models.day import Day, DayCreate, DayRead
 from estimenergy.db import db_engine
 from estimenergy.device import devices
-
+from estimenergy.devices.base_device import BaseDevice
+from estimenergy.models.day import Day, DayCreate, DayRead
 
 day_router = APIRouter(prefix="/day", tags=["day"])
 
@@ -19,6 +19,7 @@ day_router = APIRouter(prefix="/day", tags=["day"])
     responses={
         404: {"description": "Device not found"},
     },
+    operation_id="get_days",
 )
 async def get_days(device_name: Optional[str] = None):
     """Get all days."""
@@ -42,6 +43,7 @@ async def get_days(device_name: Optional[str] = None):
     responses={
         404: {"description": "Day not found"},
     },
+    operation_id="get_day",
 )
 async def get_day(day_id: int):
     """Get a day."""
@@ -59,6 +61,7 @@ async def get_day(day_id: int):
     responses={
         404: {"description": "Device not found"},
     },
+    operation_id="create_day",
 )
 async def create_day(day: DayCreate):
     """Create a day."""
@@ -92,6 +95,7 @@ async def create_day(day: DayCreate):
     responses={
         404: {"description": "Day not found"},
     },
+    operation_id="update_day",
 )
 async def update_day(day_id: int, day: DayCreate):
     """Update a day."""
@@ -132,6 +136,7 @@ async def update_day(day_id: int, day: DayCreate):
     responses={
         404: {"description": "Day not found"},
     },
+    operation_id="delete_day",
 )
 async def delete_day(day_id: int):
     """Delete a day."""

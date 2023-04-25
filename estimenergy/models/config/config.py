@@ -1,13 +1,15 @@
 """The main config class."""
 from typing import Optional
+
 from pydantic import BaseModel, Field
 import yaml
-from estimenergy.models.config.sql_config import SqlConfig
-from estimenergy.models.config.device_config import DeviceConfig
+
 from estimenergy.models.config.dev_config import DevConfig
+from estimenergy.models.config.device_config import DeviceConfig
 from estimenergy.models.config.influx_config import InfluxConfig
 from estimenergy.models.config.logging_config import LoggingConfig
 from estimenergy.models.config.networking_config import NetworkingConfig
+from estimenergy.models.config.sql_config import SqlConfig
 
 
 class Config(BaseModel):
@@ -28,4 +30,14 @@ class Config(BaseModel):
             config_dict: dict = yaml.safe_load(config_file)
 
         config = cls.parse_obj(config_dict)
+        return config
+
+    @classmethod
+    def with_location(cls, path: str):
+        """Create default config with base location."""
+
+        config = Config()
+        config.sql_config.url = f"sqlite:///{path}/estimenergy.db"
+        config.logging_config.log_path = f"{path}/estimenergy.log"
+
         return config

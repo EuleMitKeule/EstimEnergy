@@ -1,10 +1,12 @@
 """InfluxDB data service."""
 import datetime
+
 from influxdb_client import Point, WritePrecision
-from influxdb_client.client.flux_table import FluxTable, FluxRecord
+from influxdb_client.client.flux_table import FluxRecord, FluxTable
+
 from estimenergy.const import Metric, MetricPeriod, MetricType
-from estimenergy.services.data_service import DataService
 from estimenergy.influx import influx_client
+from estimenergy.services.data_service import DataService
 
 
 class InfluxService(DataService):

@@ -2,6 +2,8 @@ from enum import Enum
 
 from prometheus_client import Gauge
 
+API_PREFIX = "/api"
+
 DEFAULT_CONFIG_PATH = "config.yml"
 DEFAULT_LOG_PATH = "estimenergy.log"
 DEFAULT_LOG_LEVEL = "INFO"
@@ -127,13 +129,10 @@ LOGGING_CONFIG = {
     "disable_existing_loggers": False,
     "formatters": {
         "default": {
-            "()": "uvicorn.logging.ColourizedFormatter",
-            "format": "%(asctime)-25s %(name)-30s %(levelprefix)-8s %(message)s",
+            "format": "%(asctime)-25s %(name)-30s %(levelname)-8s %(message)s",
         },
         "file": {
-            "()": "uvicorn.logging.ColourizedFormatter",
-            "format": "%(asctime)-25s %(name)-30s %(levelprefix)-8s %(message)s",
-            "use_colors": False,
+            "format": "%(asctime)-25s %(name)-30s %(levelname)-8s %(message)s",
         },
     },
     "handlers": {

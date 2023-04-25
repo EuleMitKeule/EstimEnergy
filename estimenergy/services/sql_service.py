@@ -1,8 +1,11 @@
 """Service for writing and reading data from the SQL database."""
 import datetime
+
 from sqlalchemy import extract
 from sqlmodel import Session, select
+
 from estimenergy.const import METRICS, Metric, MetricPeriod, MetricType
+from estimenergy.db import db_engine
 from estimenergy.models.config.config import Config
 from estimenergy.models.config.device_config import DeviceConfig
 from estimenergy.models.day import Day
@@ -10,7 +13,6 @@ from estimenergy.models.month import Month
 from estimenergy.models.total import Total
 from estimenergy.models.year import Year
 from estimenergy.services.data_service import DataService
-from estimenergy.db import db_engine
 from estimenergy.services.prediction_service import PredictionService
 
 

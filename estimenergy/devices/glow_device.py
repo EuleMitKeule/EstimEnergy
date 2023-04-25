@@ -14,9 +14,10 @@ from aioesphomeapi import (
     SensorState,
 )
 from zeroconf import Zeroconf
-from estimenergy.const import Metric, MetricPeriod, MetricType
 
+from estimenergy.const import Metric, MetricPeriod, MetricType
 from estimenergy.devices import BaseDevice
+from estimenergy.log import logger
 from estimenergy.models.config.config import Config
 from estimenergy.models.config.device_config import DeviceConfig
 
@@ -60,7 +61,7 @@ class GlowDevice(BaseDevice):
 
     async def start(self):
         if not await self.__try_login():
-            self.logger.error(f"Unable to login to {self.device_config.name}")
+            logger.error(f"Unable to login to {self.device_config.name}")
             return
         await self.reconnect_logic.start()
 
@@ -80,7 +81,7 @@ class GlowDevice(BaseDevice):
             await self.api.disconnect(force=True)
 
     async def __on_connect(self):
-        self.logger.info(f"Connected to ESPHome Device {self.device_config.name}")
+        logger.info(f"Connected to ESPHome Device {self.device_config.name}")
 
         try:
             await self.api.subscribe_states(self.__state_changed)
@@ -88,13 +89,11 @@ class GlowDevice(BaseDevice):
             await self.api.disconnect()
 
     async def __on_disconnect(self):
-        self.logger.warn(f"Disconnected from ESPHome Device {self.device_config.name}")
+        logger.warn(f"Disconnected from ESPHome Device {self.device_config.name}")
 
     async def __on_connect_error(self, exception: Exception):
-        self.logger.error(
-            f"Error connecting to ESPHome Device {self.device_config.name}"
-        )
-        self.logger.error(exception)
+        logger.error(f"Error connecting to ESPHome Device {self.device_config.name}")
+        logger.error(exception)
 
     def __state_changed(self, state: SensorState):
         loop = asyncio.get_event_loop()
@@ -115,7 +114,7 @@ class GlowDevice(BaseDevice):
 
         if value < self.last_kwh:
             self.last_kwh = value
-            self.logger.warn("Detected a reset of the total kWh counter.")
+            logger.warn("Detected a reset of the total kWh counter.")
             return
 
         time = datetime.datetime.now()

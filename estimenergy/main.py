@@ -1,23 +1,21 @@
 """Entrypoint for the EstimEnergy application."""
-import asyncio
 import json
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import SQLModel, Session
 import uvicorn
 
-from estimenergy.prometheus import instrumentator
 from estimenergy.config import config
-from estimenergy.device import devices
-from estimenergy.db import db_engine
-from estimenergy.routers.device_router import device_router
+from estimenergy.const import API_PREFIX
+from estimenergy.db import create_db
+from estimenergy.device import create_devices, start_devices
+from estimenergy.log import logger
+from estimenergy.prometheus import instrumentator
 from estimenergy.routers.day_router import day_router
+from estimenergy.routers.device_router import device_router
 from estimenergy.routers.month_router import month_router
-from estimenergy.routers.year_router import year_router
 from estimenergy.routers.total_router import total_router
-from estimenergy.const import LOGGING_CONFIG
-
+from estimenergy.routers.year_router import year_router
 
 app = FastAPI(
     title="EstimEnergy",
@@ -34,30 +32,20 @@ app.add_middleware(
 instrumentator.instrument(app, "estimenergy")
 instrumentator.expose(app, include_in_schema=True)
 
-app.include_router(device_router)
-app.include_router(day_router)
-app.include_router(month_router)
-app.include_router(year_router)
-app.include_router(total_router)
+app.include_router(device_router, prefix=API_PREFIX)
+app.include_router(day_router, prefix=API_PREFIX)
+app.include_router(month_router, prefix=API_PREFIX)
+app.include_router(year_router, prefix=API_PREFIX)
+app.include_router(total_router, prefix=API_PREFIX)
 
 
 def start():
     """Start the EstimEnergy application."""
 
-    LOGGING_CONFIG["handlers"]["file"]["filename"] = config.logging_config.log_path
-    LOGGING_CONFIG["loggers"]["uvicorn.error"][
-        "level"
-    ] = config.logging_config.log_level
-    LOGGING_CONFIG["loggers"]["uvicorn.access"][
-        "level"
-    ] = config.logging_config.log_level
-    LOGGING_CONFIG["loggers"]["estimenergy"]["level"] = config.logging_config.log_level
-
     uvicorn.run(
         "estimenergy.main:app",
         host=config.networking_config.host,
         port=config.networking_config.port,
-        log_config=LOGGING_CONFIG,
         reload=config.dev_config.reload,
     )
 
@@ -65,18 +53,19 @@ def start():
 def generate_openapi():
     """Generate the OpenAPI schema for the EstimEnergy application."""
 
-    with open("openapi.json", "w", encoding="utf-8") as f:
+    with open("openapi.json", "w", encoding="utf-8") as openapi_file:
         dump = json.dumps(app.openapi(), indent=2)
-        f.write(dump)
+        openapi_file.write(dump)
 
 
 @app.on_event("startup")
 async def startup():
     """Application startup event."""
 
-    with Session(db_engine) as session:
-        SQLModel.metadata.create_all(db_engine)
-        session.commit()
+    logger.info("Starting EstimEnergy application.")
 
-    for device in devices:
-        asyncio.create_task(device.start())
+    create_db()
+
+    create_devices()
+
+    start_devices()

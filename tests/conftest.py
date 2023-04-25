@@ -3,8 +3,8 @@ from prometheus_client.parser import text_string_to_metric_families
 import pytest
 from tortoise import Tortoise
 
-from estimenergy.devices.glow_device import GlowDevice
 from estimenergy.config import metric_registry
+from estimenergy.devices.glow_device import GlowDevice
 from estimenergy.main import app
 from estimenergy.models.device_config import CollectorData
 
