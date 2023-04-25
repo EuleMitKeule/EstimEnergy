@@ -34,3 +34,7 @@ config.yml
 poetry.lock
 .venv
 *.log
+*.db-journal
+*.db
+*.db-shm
+*.db-wal
