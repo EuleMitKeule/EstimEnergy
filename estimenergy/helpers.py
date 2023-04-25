@@ -1,4 +1,4 @@
-from typing import Literal
+"""Helper functions."""
 
 
 def get_days_in_month(month: int, year: int):
