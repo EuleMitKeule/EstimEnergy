@@ -11,25 +11,42 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th scope="col" (click)="onTableHeaderClick('date')">Date <i class="bi bi-arrow-up-down"
-                    [ngClass]="getSortClass('date')"></i></th>
-            <th scope="col" (click)="onTableHeaderClick('energy')">Energy <i class="bi bi-arrow-up-down"
-                    [ngClass]="getSortClass('energy')"></i></th>
-            <th scope="col" (click)="onTableHeaderClick('cost')">Cost <i class="bi bi-arrow-up-down"
-                    [ngClass]="getSortClass('cost')"></i></th>
+            <th scope="col" (click)="onTableHeaderClick('date')">
+                Date
+                <i class="bi bi-arrow-up-down" [ngClass]="getSortClass('date')"></i>
+            </th>
+            <th scope="col" (click)="onTableHeaderClick('device_name')">
+                Device
+                <i class="bi bi-arrow-up-down" [ngClass]="getSortClass('device_name')"></i>
+            </th>
+            <th scope="col" (click)="onTableHeaderClick('energy')">
+                Energy
+                <i class="bi bi-arrow-up-down" [ngClass]="getSortClass('energy')"></i>
+            </th>
+            <th scope="col" (click)="onTableHeaderClick('cost')">
+                Cost
+                <i class="bi bi-arrow-up-down" [ngClass]="getSortClass('cost')"></i>
+            </th>
             <td>
-                <button type="button" class="btn" (click)="onCreateClick()">create</button>
+                <button type="button" class="btn btn-success" (click)="onCreateClick()">
+                    <i class="bi bi-plus-lg"></i>
+                </button>
             </td>
         </tr>
     </thead>
     <tbody>
         <tr *ngFor="let day of days">
             <td>{{ day.date }}</td>
+            <td>{{ day.device_name }}</td>
             <td>{{ day.energy | number:'1.0-2' }} kWh</td>
             <td>{{ day.cost | number:'1.0-2' }} €</td>
             <td>
-                <button type="button" class="btn" (click)="onEditClick(day)">edit</button>
-                <button type="button" class="btn" (click)="onDeleteClick(day)">delete</button>
+                <button type="button" class="btn btn-primary me-1" (click)="onEditClick(day)">
+                    <i class="bi bi-pen"></i>
+                </button>
+                <button type="button" class="btn btn-danger" (click)="onDeleteClick(day)">
+                    <i class="bi bi-trash"></i>
+                </button>
             </td>
         </tr>
     </tbody>

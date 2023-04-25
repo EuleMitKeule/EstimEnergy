@@ -11,7 +11,7 @@ import {
   NgbDate,
   NgbDateStruct,
 } from '@ng-bootstrap/ng-bootstrap';
-import { DayCreate } from '../api';
+import { DayCreate, DeviceConfigRead } from '../api';
 import { formatDate } from '@angular/common';
 
 @Component({
@@ -21,28 +21,25 @@ import { formatDate } from '@angular/common';
 })
 export class DayModalComponent {
   @ViewChild('content', { static: false }) content!: TemplateRef<any>;
-  @Input() device: string = '';
+  @Input() devices: DeviceConfigRead[] = [];
   @Input() modalTitle: string = '';
   @Input() dayCreate!: DayCreate;
   @Output() save: EventEmitter<DayCreate> = new EventEmitter<DayCreate>();
   @Output() abort: EventEmitter<void> = new EventEmitter<void>();
 
-  selectedDate!: NgbDateStruct;
-
+  selectedDate: NgbDateStruct = this.calendar.getToday();
 
   constructor(private calendar: NgbCalendar) { }
 
   ngOnInit() {
-    // Assign default values if no dayCreate is given
     if (!this.dayCreate) {
       this.dayCreate = {
-        device_name: this.device,
+        device_name: '',
         date: '1970-01-01',
         energy: 0,
         accuracy: 1,
       };
     }
-    this.selectedDate = this.calendar.getToday();
   }
 
   onSaveClick() {
@@ -52,6 +49,10 @@ export class DayModalComponent {
 
   onAbortClick() {
     this.abort.emit();
+  }
+
+  onSelectDevice(device: DeviceConfigRead) {
+    this.dayCreate.device_name = device.name;
   }
 
   dateToString(date: NgbDateStruct): string {

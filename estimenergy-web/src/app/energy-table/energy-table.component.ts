@@ -79,10 +79,9 @@ export class EnergyTableComponent {
   }
 
   onEditClick(day: DayRead) {
-
     const modalRef = this.modalService.open(DayModalComponent);
     modalRef.componentInstance.modalTitle = 'Edit Day';
-    modalRef.componentInstance.device = day.device_name;
+    modalRef.componentInstance.devices = this.devices;
     modalRef.componentInstance.dayCreate = {
       device_name: day.device_name,
       date: day.date,
@@ -110,13 +109,17 @@ export class EnergyTableComponent {
   }
 
   onCreateClick() {
-    if (!this.selectedDevice) {
-      return;
-    }
-
     const modalRef = this.modalService.open(DayModalComponent);
     modalRef.componentInstance.modalTitle = 'Create Day';
-    modalRef.componentInstance.device = this.selectedDevice.name;
+    modalRef.componentInstance.devices = this.devices;
+
+    let selectedDeviceName = this.selectedDevice?.name || this.devices[0].name || '';
+    modalRef.componentInstance.dayCreate = {
+      device_name: selectedDeviceName,
+      date: new Date(),
+      energy: 0,
+      accuracy: 1,
+    };
 
     modalRef.componentInstance.save.subscribe((dayCreate: DayCreate) => {
       this.dayService
