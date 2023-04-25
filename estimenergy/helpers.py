@@ -16,7 +16,7 @@ def get_days_in_month(month: int, year: int) -> Literal[28, 29, 30, 31]:
     return 31
 
 
-def get_days_in_year(year: int) -> Literal[365] | Literal[366]:
+def get_days_in_year(year: int) -> Literal[365] or Literal[366]:
     """Return the number of days in a given year."""
 
     if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):

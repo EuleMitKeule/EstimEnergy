@@ -253,7 +253,7 @@ class SqlService(DataService):
         self,
         metric_period: MetricPeriod,
         date: datetime.datetime = datetime.datetime.now(),
-    ) -> Day | Month | Year | Total | None:
+    ) -> Day or Month or Year or Total or None:
         """Get or create a row in the database."""
 
         row = self.get_row(metric_period, date)
@@ -266,7 +266,7 @@ class SqlService(DataService):
         self,
         metric_period: MetricPeriod,
         date: datetime.datetime = datetime.datetime.now(),
-    ) -> Day | Month | Year | Total | None:
+    ) -> Day or Month or Year or Total or None:
         """Create a row in the database."""
 
         with Session(db_engine, expire_on_commit=False) as session:
@@ -363,7 +363,7 @@ class SqlService(DataService):
         self,
         metric_period: MetricPeriod,
         date: datetime.datetime = datetime.datetime.now(),
-    ) -> list[Day | Month | Year | Total]:
+    ) -> list[Day or Month or Year or Total]:
         """Get rows from the database."""
 
         with Session(db_engine, expire_on_commit=False) as session:
@@ -404,7 +404,7 @@ class SqlService(DataService):
         self,
         metric_period: MetricPeriod,
         date: datetime.datetime = datetime.datetime.now(),
-    ) -> Day | Month | Year | Total | None:
+    ) -> Day or Month or Year or Total or None:
         """Get a row from the database."""
 
         rows = self.get_rows(metric_period, date)

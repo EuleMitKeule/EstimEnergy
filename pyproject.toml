@@ -16,7 +16,7 @@ version = "0.0.0"
 [tool.poetry.scripts]
 api = "estimenergy.main:start"
 drop = "estimenergy.db:drop_all"
-generate = "estimenergy.main:generate_openapi"
+generate-openapi = "estimenergy.main:generate_openapi"
 
 [tool.poe.tasks]
 run = { "script" = "estimenergy.main:start" }
