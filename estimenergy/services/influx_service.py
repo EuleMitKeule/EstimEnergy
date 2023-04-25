@@ -43,6 +43,9 @@ class InfluxService(DataService):
     ) -> float:
         """Get the last value for a metric type."""
 
+        if self.config.influx_config is None:
+            return 0
+
         if metric.metric_period != MetricPeriod.TOTAL:
             return 0
 
@@ -74,6 +77,9 @@ class InfluxService(DataService):
         date: datetime.datetime = datetime.datetime.now(),
     ):
         """Write a metric to the database."""
+
+        if self.config.influx_config is None:
+            return
 
         if metric.metric_period != MetricPeriod.TOTAL:
             return

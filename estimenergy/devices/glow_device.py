@@ -114,7 +114,7 @@ class GlowDevice(BaseDevice):
 
         if value < self.last_kwh:
             self.last_kwh = value
-            logger.warn("Detected a reset of the total kWh counter.")
+            logger.warning("Detected a reset of the total kWh counter.")
             return
 
         time = datetime.datetime.now()

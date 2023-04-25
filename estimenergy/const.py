@@ -124,7 +124,7 @@ JSON_MAX_INCOMPLETE_DAYS = "max_incomplete_days"
 JSON_BILLING_MONTH = "billing_month"
 JSON_DATA = "data"
 
-LOGGING_CONFIG = {
+LOGGING_CONFIG: dict = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {

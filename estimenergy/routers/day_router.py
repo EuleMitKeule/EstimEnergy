@@ -66,7 +66,7 @@ async def get_day(day_id: int):
 async def create_day(day: DayCreate):
     """Create a day."""
 
-    device: BaseDevice = next(
+    device: Optional[BaseDevice] = next(
         (device for device in devices if device.device_config.name == day.device_name),
         None,
     )
@@ -100,7 +100,7 @@ async def create_day(day: DayCreate):
 async def update_day(day_id: int, day: DayCreate):
     """Update a day."""
 
-    device: BaseDevice = next(
+    device: Optional[BaseDevice] = next(
         (device for device in devices if device.device_config.name == day.device_name),
         None,
     )

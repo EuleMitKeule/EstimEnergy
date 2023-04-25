@@ -21,7 +21,7 @@ class PredictionService:
         self,
         metric_period: MetricPeriod,
         energy: float,
-        date: datetime.datetime = datetime.datetime.now(),
+        date: datetime.date = datetime.date.today(),
     ) -> float:
         """Calculate the cost."""
 
@@ -44,7 +44,7 @@ class PredictionService:
         self,
         metric_period: MetricPeriod,
         energy: float,
-        date: datetime.datetime = datetime.datetime.now(),
+        date: datetime.date = datetime.date.today(),
     ) -> float:
         """Calculate the cost difference."""
 
@@ -67,7 +67,7 @@ class PredictionService:
         self,
         metric_period: MetricPeriod,
         accuracy_sum: float,
-        date: datetime.datetime = datetime.datetime.now(),
+        date: datetime.date = datetime.date.today(),
     ) -> float:
         """Calculate the accuracy."""
 
@@ -87,7 +87,7 @@ class PredictionService:
         metric_period: MetricPeriod,
         energy: float,
         accurate_day_count: int,
-        date: datetime.datetime = datetime.datetime.now(),
+        date: datetime.date = datetime.date.today(),
     ) -> float:
         """Predict the energy."""
 
@@ -108,7 +108,7 @@ class PredictionService:
         metric_period: MetricPeriod,
         energy: float,
         accurate_day_count: int,
-        date: datetime.datetime = datetime.datetime.now(),
+        date: datetime.date = datetime.date.today(),
     ) -> float:
         """Predict the cost."""
 
@@ -126,7 +126,7 @@ class PredictionService:
         metric_period: MetricPeriod,
         energy: float,
         accurate_day_count: int,
-        date: datetime.datetime = datetime.datetime.now(),
+        date: datetime.date = datetime.date.today(),
     ) -> float:
         """Predict the cost difference."""
 
