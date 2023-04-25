@@ -23,7 +23,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: "3.10"
 
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2
@@ -45,7 +45,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: "3.10"
 
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2
@@ -67,7 +67,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: "3.10"
 
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2
@@ -89,7 +89,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: "3.10"
 
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2
@@ -111,7 +111,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: "3.10"
 
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2
@@ -132,7 +132,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: "3.10"
 
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2
@@ -157,7 +157,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: "3.10"
 
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2
