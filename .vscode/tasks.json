@@ -5,16 +5,6 @@
             "type": "shell",
             "command": "poetry run api",
             "detail": "Run the EstimEnergy API using uvicorn.",
-            "isBackground": false,
-            "presentation": {
-                "echo": false,
-                "reveal": "always",
-                "focus": true,
-                "panel": "dedicated",
-                "showReuseMessage": true,
-                "clear": true,
-                "close": false
-            },
             "problemMatcher": [],
             "promptOnClose": false,
             "runOptions": {
@@ -26,16 +16,6 @@
             "type": "shell",
             "command": "cd estimenergy-web && ng serve",
             "detail": "Run EstimEnergy Web using Angular.",
-            "isBackground": false,
-            "presentation": {
-                "echo": false,
-                "reveal": "always",
-                "focus": true,
-                "panel": "dedicated",
-                "showReuseMessage": true,
-                "clear": true,
-                "close": false
-            },
             "problemMatcher": [],
             "promptOnClose": false,
             "runOptions": {
@@ -47,16 +27,6 @@
             "type": "shell",
             "command": "poetry run generate-openapi",
             "detail": "Generate OpenAPI JSON specification.",
-            "isBackground": true,
-            "presentation": {
-                "echo": false,
-                "reveal": "never",
-                "focus": false,
-                "panel": "dedicated",
-                "showReuseMessage": true,
-                "clear": true,
-                "close": true
-            },
             "problemMatcher": [],
             "promptOnClose": false,
             "runOptions": {
@@ -68,16 +38,6 @@
             "type": "shell",
             "command": "cd ${workspaceFolder}/estimenergy-web && npm run generate-openapi",
             "detail": "Generate API Client.",
-            "isBackground": true,
-            "presentation": {
-                "echo": false,
-                "reveal": "never",
-                "focus": false,
-                "panel": "dedicated",
-                "showReuseMessage": true,
-                "clear": true,
-                "close": true
-            },
             "problemMatcher": [],
             "promptOnClose": false,
             "runOptions": {

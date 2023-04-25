@@ -1,8 +1,12 @@
 """Service for writing and reading data from the SQL database."""
 import datetime
+
 from sqlalchemy import extract
 from sqlmodel import Session, select
+from sqlmodel.sql.expression import SelectOfScalar
+
 from estimenergy.const import METRICS, Metric, MetricPeriod, MetricType
+from estimenergy.db import db_engine
 from estimenergy.models.config.config import Config
 from estimenergy.models.config.device_config import DeviceConfig
 from estimenergy.models.day import Day
@@ -10,7 +14,6 @@ from estimenergy.models.month import Month
 from estimenergy.models.total import Total
 from estimenergy.models.year import Year
 from estimenergy.services.data_service import DataService
-from estimenergy.db import db_engine
 from estimenergy.services.prediction_service import PredictionService
 
 
@@ -80,6 +83,10 @@ class SqlService(DataService):
 
         with Session(db_engine) as session:
             day = self.get_or_create_row(MetricPeriod.DAY, date)
+
+            if not isinstance(day, Day):
+                raise TypeError("day is not of type Day")
+
             day.cost = await self.prediction_service.calculate_cost(
                 metric_period,
                 day.energy,
@@ -253,10 +260,11 @@ class SqlService(DataService):
         self,
         metric_period: MetricPeriod,
         date: datetime.datetime = datetime.datetime.now(),
-    ) -> Day or Month or Year or Total or None:
+    ) -> Day | Month | Year | Total:
         """Get or create a row in the database."""
 
         row = self.get_row(metric_period, date)
+
         if row is None:
             row = self.create_row(metric_period, date)
 
@@ -265,13 +273,14 @@ class SqlService(DataService):
     def create_row(
         self,
         metric_period: MetricPeriod,
-        date: datetime.datetime = datetime.datetime.now(),
-    ) -> Day or Month or Year or Total or None:
+        date: datetime.date = datetime.date.today(),
+    ) -> Day | Month | Year | Total:
         """Create a row in the database."""
+
+        row: Day | Month | Year | Total
 
         with Session(db_engine, expire_on_commit=False) as session:
             if metric_period == MetricPeriod.DAY:
-                date = date.date()
                 row = Day(device_name=self.device_config.name, date=date)
                 session.add(row)
                 session.commit()
@@ -286,7 +295,7 @@ class SqlService(DataService):
                     row.month_id = month.id
 
             elif metric_period == MetricPeriod.MONTH:
-                date = date.date().replace(day=1)
+                date = date.replace(day=1)
                 row = Month(device_name=self.device_config.name, date=date)
                 session.add(row)
                 session.commit()
@@ -313,7 +322,7 @@ class SqlService(DataService):
                     row.year_id = year.id
 
             elif metric_period == MetricPeriod.YEAR:
-                date = date.date().replace(
+                date = date.replace(
                     year=date.year - 1
                     if date.month <= self.device_config.billing_month
                     else date.year,
@@ -362,25 +371,28 @@ class SqlService(DataService):
     def get_rows(
         self,
         metric_period: MetricPeriod,
-        date: datetime.datetime = datetime.datetime.now(),
-    ) -> list[Day or Month or Year or Total]:
+        date: datetime.date = datetime.date.today(),
+    ) -> list[Day] | list[Month] | list[Year] | list[Total]:
         """Get rows from the database."""
+
+        query: SelectOfScalar[Day] | SelectOfScalar[Month] | SelectOfScalar[
+            Year
+        ] | SelectOfScalar[Total]
 
         with Session(db_engine, expire_on_commit=False) as session:
             if metric_period == MetricPeriod.DAY:
-                date = date.date()
                 query = select(Day).where(
                     Day.date == date,
                     Day.device_name == self.device_config.name,
                 )
             elif metric_period == MetricPeriod.MONTH:
-                date = date.date().replace(day=1)
+                date = date.replace(day=1)
                 query = select(Month).where(
                     Month.date == date,
                     Month.device_name == self.device_config.name,
                 )
             elif metric_period == MetricPeriod.YEAR:
-                date = date.date().replace(
+                date = date.replace(
                     year=date.year - 1
                     if date.month <= self.device_config.billing_month
                     else date.year,
@@ -403,8 +415,8 @@ class SqlService(DataService):
     def get_row(
         self,
         metric_period: MetricPeriod,
-        date: datetime.datetime = datetime.datetime.now(),
-    ) -> Day or Month or Year or Total or None:
+        date: datetime.date = datetime.date.today(),
+    ) -> Day | Month | Year | Total | None:
         """Get a row from the database."""
 
         rows = self.get_rows(metric_period, date)

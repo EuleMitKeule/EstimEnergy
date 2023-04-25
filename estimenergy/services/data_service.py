@@ -1,6 +1,7 @@
 """Abstract class for all data services."""
 from abc import ABC, abstractmethod
 import datetime
+
 from estimenergy.const import Metric
 from estimenergy.models.config.config import Config
 from estimenergy.models.config.device_config import DeviceConfig

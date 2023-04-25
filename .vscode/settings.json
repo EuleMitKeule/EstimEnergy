@@ -25,6 +25,8 @@
         "**/.coverage": true,
         "**/.ruff_cache": true,
         "**/.venv": true,
+        "**/.angular": true,
+        "**/node_modules": true,
     },
     "terminal.integrated.defaultProfile.linux": "zsh",
     "terminal.integrated.defaultProfile.osx": "zsh",

@@ -1,6 +1,7 @@
 """Year model."""
-from typing import Optional
 import datetime
+from typing import Optional
+
 from sqlmodel import Field, SQLModel
 
 

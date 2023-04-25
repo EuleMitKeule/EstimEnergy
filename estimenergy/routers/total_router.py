@@ -1,11 +1,11 @@
 from typing import Optional
+
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
 
-from estimenergy.models.total import Total
 from estimenergy.db import db_engine
 from estimenergy.device import devices
-
+from estimenergy.models.total import Total
 
 total_router = APIRouter(prefix="/total", tags=["total"])
 
@@ -16,6 +16,7 @@ total_router = APIRouter(prefix="/total", tags=["total"])
     responses={
         404: {"description": "Device not found"},
     },
+    operation_id="get_totals",
 )
 async def get_totals(device_name: Optional[str] = None):
     """Get all totals."""
@@ -41,6 +42,7 @@ async def get_totals(device_name: Optional[str] = None):
     responses={
         404: {"description": "Total not found"},
     },
+    operation_id="get_total",
 )
 async def get_total(total_id: int):
     """Get a total."""

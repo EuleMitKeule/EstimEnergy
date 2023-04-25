@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+
 from estimenergy.const import DEFAULT_HOST, DEFAULT_PORT
 
 

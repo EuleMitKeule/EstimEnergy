@@ -1,11 +1,11 @@
 from typing import Optional
+
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
 
-from estimenergy.models.year import Year
 from estimenergy.db import db_engine
 from estimenergy.device import devices
-
+from estimenergy.models.year import Year
 
 year_router = APIRouter(prefix="/year", tags=["year"])
 
@@ -16,6 +16,7 @@ year_router = APIRouter(prefix="/year", tags=["year"])
     responses={
         404: {"description": "Device not found"},
     },
+    operation_id="get_years",
 )
 async def get_years(device_name: Optional[str] = None):
     """Get all years."""
@@ -41,6 +42,7 @@ async def get_years(device_name: Optional[str] = None):
     responses={
         404: {"description": "Year not found"},
     },
+    operation_id="get_year",
 )
 async def get_year(year_id: int):
     """Get a year."""

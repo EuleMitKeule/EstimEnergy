@@ -1,7 +1,6 @@
 from prometheus_client import CollectorRegistry
 from prometheus_fastapi_instrumentator import Instrumentator
 
-
 metric_registry = CollectorRegistry()
 instrumentator = Instrumentator(
     should_group_status_codes=False,

@@ -1,7 +1,8 @@
 """Abstract class for all devices."""
+from abc import ABC, abstractmethod
 import datetime
 import logging
-from abc import ABC, abstractmethod
+
 from estimenergy.const import Metric
 from estimenergy.models.config.config import Config
 from estimenergy.models.config.device_config import DeviceConfig
@@ -27,8 +28,6 @@ class BaseDevice(ABC):
         if config.influx_config:
             influx_service = InfluxService(self.device_config, config)
             self.data_services.append(influx_service)
-
-        self.logger = logging.getLogger("estimenergy").getChild(self.device_config.name)
 
     @property
     @abstractmethod
