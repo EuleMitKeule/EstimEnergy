@@ -1,11 +1,11 @@
 from typing import Optional
+
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
 
-from estimenergy.models.month import Month
 from estimenergy.db import db_engine
 from estimenergy.device import devices
-
+from estimenergy.models.month import Month
 
 month_router = APIRouter(prefix="/month", tags=["month"])
 
@@ -16,6 +16,7 @@ month_router = APIRouter(prefix="/month", tags=["month"])
     responses={
         404: {"description": "Device not found"},
     },
+    operation_id="get_months",
 )
 async def get_months(device_name: Optional[str] = None):
     """Get all months."""
@@ -41,6 +42,7 @@ async def get_months(device_name: Optional[str] = None):
     responses={
         404: {"description": "Month not found"},
     },
+    operation_id="get_month",
 )
 async def get_month(month_id: int):
     """Get a month."""

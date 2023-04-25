@@ -1,14 +1,18 @@
 services:
   estimenergy:
+    # change this part to image: ghcr.io/eulemitkeule/estimenergy:<version>
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: estimenergy
     restart: unless-stopped
     networks:
       - estimenergy
     ports:
-      - 12322:12321
+      - 80:80
+    # change this part to /path/to/config.yml:/config/config.yml
+    volumes:
+      - ./config.yml:/config/config.yml
 
   estimenergy-postgres:
     image: postgres:15.2-alpine

@@ -3,13 +3,11 @@ from fastapi import APIRouter
 from estimenergy.device import devices
 from estimenergy.models.config.device_config import DeviceConfigRead
 
-
 device_router = APIRouter(prefix="/device", tags=["device"])
 
 
 @device_router.get(
-    "",
-    response_model=list[DeviceConfigRead],
+    "", response_model=list[DeviceConfigRead], operation_id="get_devices"
 )
 async def get_devices():
     """Get all devices."""

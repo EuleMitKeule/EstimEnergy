@@ -1,6 +1,6 @@
 from influxdb_client import InfluxDBClient
-from estimenergy.config import config
 
+from estimenergy.config import config
 
 if config.influx_config:
     influx_client = InfluxDBClient(

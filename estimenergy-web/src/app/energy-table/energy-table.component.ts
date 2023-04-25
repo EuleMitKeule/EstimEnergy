@@ -61,14 +61,14 @@ export class EnergyTableComponent {
   }
 
   updateDays() {
-    this.dayService.getDaysDayGet(this.selectedDevice?.name).subscribe((days: DayRead[]) => {
+    this.dayService.getDays(this.selectedDevice?.name).subscribe((days: DayRead[]) => {
       this.days = days;
       this.sortTable(this.sortKey);
     });
   }
 
   updateDevices() {
-    this.deviceService.getDevicesDeviceGet().subscribe((devices: DeviceConfigRead[]) => {
+    this.deviceService.getDevices().subscribe((devices: DeviceConfigRead[]) => {
       this.devices = devices;
     });
   }
@@ -92,7 +92,7 @@ export class EnergyTableComponent {
 
     modalRef.componentInstance.save.subscribe((dayCreate: DayCreate) => {
       this.dayService
-        .updateDayDayDayIdPut(day.id, dayCreate)
+        .updateDay(day.id, dayCreate)
         .subscribe((day: DayRead) => { });
       modalRef.close();
       this.updateDays();
@@ -104,7 +104,7 @@ export class EnergyTableComponent {
   }
 
   onDeleteClick(day: DayRead) {
-    this.dayService.deleteDayDayDayIdDelete(day.id).subscribe(() => {
+    this.dayService.deleteDay(day.id).subscribe(() => {
       this.updateDays();
     });
   }
@@ -120,7 +120,7 @@ export class EnergyTableComponent {
 
     modalRef.componentInstance.save.subscribe((dayCreate: DayCreate) => {
       this.dayService
-        .createDayDayPost(dayCreate)
+        .createDay(dayCreate)
         .subscribe((day: DayRead) => { });
       modalRef.close();
       this.updateDays();
