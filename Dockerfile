@@ -42,4 +42,4 @@ RUN chown -R www-data:www-data /config
 ENV CONFIG_PATH /config/config.yml
 
 VOLUME /config
-EXPOSE 80
+EXPOSE 12321

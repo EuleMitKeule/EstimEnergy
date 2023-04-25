@@ -38,10 +38,11 @@ class SqlService(DataService):
     async def _last(
         self,
         metric: Metric,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ) -> float:
         """Get a metric value."""
 
+        date = value_dt.date()
         row = self.get_or_create_row(metric.metric_period, date)
         value = getattr(row, metric.key, 0)
 
@@ -51,10 +52,11 @@ class SqlService(DataService):
         self,
         metric: Metric,
         value: float,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ):
         """Write a metric value."""
 
+        date = value_dt.date()
         row = self.get_or_create_row(metric.metric_period, date)
         setattr(row, metric.key, value)
 
@@ -64,10 +66,11 @@ class SqlService(DataService):
 
     async def update(
         self,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ):
         """Update all metrics."""
 
+        date = value_dt.date()
         await self.update_day(date)
         await self.update_month(date)
         await self.update_year(date)
@@ -75,7 +78,7 @@ class SqlService(DataService):
 
     async def update_day(
         self,
-        date: datetime.datetime = datetime.datetime.now(),
+        date: datetime.date = datetime.date.today(),
     ):
         """Update the day metrics."""
 
@@ -105,7 +108,7 @@ class SqlService(DataService):
 
     async def update_month(
         self,
-        date: datetime.datetime = datetime.datetime.now(),
+        date: datetime.date = datetime.date.today(),
     ):
         """Update the month metrics."""
 
@@ -113,7 +116,7 @@ class SqlService(DataService):
 
     async def update_year(
         self,
-        date: datetime.datetime = datetime.datetime.now(),
+        date: datetime.date = datetime.date.today(),
     ):
         """Update the year metrics."""
 
@@ -122,7 +125,7 @@ class SqlService(DataService):
     async def update_accumulative(
         self,
         metric_period: MetricPeriod,
-        date: datetime.datetime = datetime.datetime.now(),
+        date: datetime.date = datetime.date.today(),
     ):
         """Update accumulative metrics."""
 
@@ -259,7 +262,7 @@ class SqlService(DataService):
     def get_or_create_row(
         self,
         metric_period: MetricPeriod,
-        date: datetime.datetime = datetime.datetime.now(),
+        date: datetime.date = datetime.date.today(),
     ) -> Day | Month | Year | Total:
         """Get or create a row in the database."""
 

@@ -18,12 +18,12 @@ import { DayModalComponent } from './day-modal/day-modal.component';
     HttpClientModule,
     FormsModule,
   ],
-  // providers: [
-  //   {
-  //     provide: BASE_PATH,
-  //     useValue:
-  //   },
-  // ],
+  providers: [
+    {
+      provide: BASE_PATH,
+      useValue: 'http://localhost:12321',
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule { }

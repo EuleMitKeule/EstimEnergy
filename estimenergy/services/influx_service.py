@@ -39,7 +39,7 @@ class InfluxService(DataService):
     async def _last(
         self,
         metric: Metric,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ) -> float:
         """Get the last value for a metric type."""
 
@@ -52,7 +52,7 @@ class InfluxService(DataService):
         if metric.metric_type not in [MetricType.ENERGY, MetricType.COST]:
             return 0
 
-        timestamp = date.strftime("%Y-%m-%dT%H:%M:%SZ")
+        timestamp = value_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         result: list[FluxTable] = influx_client.query_api().query(
             f'from(bucket:"{self.config.influx_config.bucket}") |> range(start: 0) |> filter(fn: (r) => r._measurement == "energy" and r._field == "{metric.metric_type.value[0]}") |> filter(fn: (r) => r._time >= {timestamp}) |> sort(columns: ["_time"], desc: false) |> limit(n: 1)'
@@ -74,7 +74,7 @@ class InfluxService(DataService):
         self,
         metric: Metric,
         value: float,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ):
         """Write a metric to the database."""
 
@@ -91,7 +91,7 @@ class InfluxService(DataService):
             Point("energy")
             .tag("device", self.device_config.name)
             .field(metric.metric_type.value[0], value)
-            .time(date, WritePrecision.MS)
+            .time(value_dt, WritePrecision.MS)
         )
 
         influx_client.write_api().write(
@@ -100,7 +100,7 @@ class InfluxService(DataService):
 
     async def update(
         self,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ):
         """Update the database with the latest values."""
-        _ = date
+        _ = value_dt

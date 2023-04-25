@@ -9,7 +9,7 @@ services:
     networks:
       - estimenergy
     ports:
-      - 80:80
+      - 12321:12321
     # change this part to /path/to/config.yml:/config/config.yml
     volumes:
       - ./config.yml:/config/config.yml

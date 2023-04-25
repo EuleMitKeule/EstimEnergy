@@ -124,6 +124,8 @@ class GlowDevice(BaseDevice):
         us_per_day = 1000 * 1000 * 60 * 60 * 24
         accuracy_increase = time_increase_us / us_per_day
 
+        logger.info(f"Detected {kwh_increase} kWh increase in {time_increase_us} us.")
+
         await self.increment(
             Metric(MetricType.ENERGY, MetricPeriod.DAY, False, False), kwh_increase
         )

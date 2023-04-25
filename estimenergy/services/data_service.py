@@ -20,57 +20,57 @@ class DataService(ABC):
     async def last(
         self,
         metric: Metric,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ) -> float:
         """Return the last value for a metric."""
 
         if metric not in self.supported_metrics:
             return 0
 
-        return await self._last(metric, date)
+        return await self._last(metric, value_dt)
 
     async def write(
         self,
         metric: Metric,
         value: float,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ):
         """Write a metric to the database."""
 
         if metric not in self.supported_metrics:
             return
 
-        await self._write(metric, value, date)
+        await self._write(metric, value, value_dt)
 
     async def increment(
         self,
         metric: Metric,
         value: float,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ):
         """Increment a metric in the database."""
 
         if metric not in self.supported_metrics:
             return
 
-        last_value = await self.last(metric, date)
+        last_value = await self.last(metric, value_dt)
 
-        await self.write(metric, last_value + value, date)
+        await self.write(metric, last_value + value, value_dt)
 
     async def decrement(
         self,
         metric: Metric,
         value: float,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ):
         """Decrement a metric in the database."""
 
         if metric not in self.supported_metrics:
             return
 
-        last_value = await self.last(metric, date)
+        last_value = await self.last(metric, value_dt)
 
-        await self.write(metric, last_value - value, date)
+        await self.write(metric, last_value - value, value_dt)
 
     @property
     @abstractmethod
@@ -81,7 +81,7 @@ class DataService(ABC):
     async def _last(
         self,
         metric: Metric,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ) -> float:
         """Get the last value for a metric."""
 
@@ -90,13 +90,13 @@ class DataService(ABC):
         self,
         metric: Metric,
         value: float,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ):
         """Write a metric to the database."""
 
     @abstractmethod
     async def update(
         self,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ):
         """Update metrics."""
