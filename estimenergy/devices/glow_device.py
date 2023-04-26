@@ -19,7 +19,7 @@ from estimenergy.const import Metric, MetricPeriod, MetricType
 from estimenergy.devices import BaseDevice
 from estimenergy.log import logger
 from estimenergy.models.config.config import Config
-from estimenergy.models.config.device_config import DeviceConfig
+from estimenergy.models.device_config import DeviceConfig
 
 
 class GlowDevice(BaseDevice):
@@ -64,6 +64,11 @@ class GlowDevice(BaseDevice):
             logger.error(f"Unable to login to {self.device_config.name}")
             return
         await self.reconnect_logic.start()
+
+    async def stop(self):
+        await self.api.disconnect(force=True)
+        await self.reconnect_logic.stop()
+        self.zeroconf.close()
 
     async def __try_login(self):
         try:
@@ -124,7 +129,9 @@ class GlowDevice(BaseDevice):
         us_per_day = 1000 * 1000 * 60 * 60 * 24
         accuracy_increase = time_increase_us / us_per_day
 
-        logger.info(f"Detected {kwh_increase} kWh increase in {time_increase_us} us.")
+        logger.info(
+            f"Detected {kwh_increase} kWh increase in {time_increase_us} us for device {self.device_config.name}."
+        )
 
         await self.increment(
             Metric(MetricType.ENERGY, MetricPeriod.DAY, False, False), kwh_increase

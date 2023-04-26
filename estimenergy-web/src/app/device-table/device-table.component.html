@@ -1,0 +1,30 @@
+<div class="row">
+    <div class="col">
+        <button type="button" class="btn btn-success float-end" (click)="onCreateClick()">
+            <i class="bi bi-plus-lg"></i>
+        </button>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="col" *ngFor="let device of devices">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h5 class="card-title">{{ device.name }}</h5>
+                    </div>
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary me-1" (click)="onEditClick(device)">
+                            <i class="bi bi-pen"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger" (click)="onDeleteClick(device)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="card-text"></p>
+            </div>
+        </div>
+    </div>
+</div>

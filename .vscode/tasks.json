@@ -1,6 +1,6 @@
 {
+    "version": "2.0.0",
     "tasks": [
-        // run api and web tasks
         {
             "label": "Run EstimEnergy",
             "detail": "Run the EstimEnergy API and Web using uvicorn and Angular.",

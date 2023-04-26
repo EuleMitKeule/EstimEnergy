@@ -4,7 +4,7 @@ import datetime
 
 from estimenergy.const import Metric
 from estimenergy.models.config.config import Config
-from estimenergy.models.config.device_config import DeviceConfig
+from estimenergy.models.device_config import DeviceConfig
 
 
 class DataService(ABC):

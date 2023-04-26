@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DayCreate, DayRead, DayService, DeviceConfigRead, DeviceService } from '../api';
 import { DayModalComponent } from '../day-modal/day-modal.component';
@@ -8,22 +8,21 @@ import { DayModalComponent } from '../day-modal/day-modal.component';
   templateUrl: './energy-table.component.html',
   styleUrls: ['./energy-table.component.css'],
 })
-export class EnergyTableComponent {
+export class EnergyTableComponent implements OnChanges, OnInit {
   days: DayRead[] = [];
   sortedDays: DayRead[] = [];
-  devices: DeviceConfigRead[] = [];
-  selectedDevice: DeviceConfigRead | undefined;
+  @Input() devices: DeviceConfigRead[] = [];
+  @Input() selectedDevice: DeviceConfigRead | undefined;
   sortKey: keyof DayRead = 'date';
   sortOrder: 'asc' | 'desc' = 'desc';
 
-  constructor(private dayService: DayService, private deviceService: DeviceService, private modalService: NgbModal) {
-    this.deviceService = deviceService;
-    this.dayService = dayService;
-    this.modalService = modalService;
-  }
+  constructor(private dayService: DayService, private modalService: NgbModal) { }
 
   ngOnInit(): void {
-    this.updateDevices();
+    this.updateDays();
+  }
+
+  ngOnChanges(): void {
     this.updateDays();
   }
 
@@ -65,17 +64,6 @@ export class EnergyTableComponent {
       this.days = days;
       this.sortTable(this.sortKey);
     });
-  }
-
-  updateDevices() {
-    this.deviceService.getDevices().subscribe((devices: DeviceConfigRead[]) => {
-      this.devices = devices;
-    });
-  }
-
-  onSelectDevice(device: DeviceConfigRead) {
-    this.selectedDevice = device;
-    this.updateDays();
   }
 
   onEditClick(day: DayRead) {
@@ -122,11 +110,10 @@ export class EnergyTableComponent {
     };
 
     modalRef.componentInstance.save.subscribe((dayCreate: DayCreate) => {
-      this.dayService
-        .createDay(dayCreate)
-        .subscribe((day: DayRead) => { });
-      modalRef.close();
-      this.updateDays();
+      this.dayService.createDay(dayCreate).subscribe((day: DayRead) => {
+        this.updateDays();
+        modalRef.close();
+      });
     });
 
     modalRef.componentInstance.abort.subscribe(() => {

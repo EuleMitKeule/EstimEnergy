@@ -1,0 +1,72 @@
+<div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">{{ modalTitle }}</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="onAbortClick()"></button>
+</div>
+
+<div class="modal-body">
+    <form name="deviceForm" #f="ngForm" (ngSubmit)="f.form.valid && onSubmit()" novalidate>
+        <div class="input-group mb-2">
+            <label class="input-group-text">Name</label>
+            <input name="name" class="form-control" type="text" [(ngModel)]="deviceConfig.name" required #name="ngModel"
+                [ngClass]="{ 'is-invalid': f.submitted && name.errors}" />
+        </div>
+        <div class="input-group mb-2">
+            <label class="input-group-text">Type</label>
+            <select class="form-select" name="type" [(ngModel)]="deviceConfig.type" required #type="ngModel"
+                [ngClass]="{ 'is-invalid': f.submitted && type.errors}">
+                <option *ngFor="let type of DEVICE_TYPES" [value]="type">
+                    {{ type }}
+                </option>
+            </select>
+        </div>
+        <div class="input-group mb-2" *ngIf="displaySecrets">
+            <label class="input-group-text">Host</label>
+            <input name="host" class="form-control" type="text" [(ngModel)]="deviceConfig.host" #host="ngModel"
+                [ngClass]="{ 'is-invalid': f.submitted && host.errors}" />
+        </div>
+        <div class="input-group mb-2" *ngIf="displaySecrets">
+            <label class="input-group-text">Port</label>
+            <input name="port" class="form-control" type="number" [(ngModel)]="deviceConfig.port" #port="ngModel"
+                [ngClass]="{ 'is-invalid': f.submitted && port.errors}" min="1" max="65535" />
+        </div>
+        <div class="input-group mb-2" *ngIf="displaySecrets">
+            <label class="input-group-text">Password</label>
+            <input name="password" class="form-control" type="password" [(ngModel)]="deviceConfig.password"
+                #password="ngModel" [ngClass]="{ 'is-invalid': f.submitted && password.errors}" />
+        </div>
+        <div class="input-group mb-2">
+            <label class="input-group-text">Cost / kWh</label>
+            <input name="cost-per-kwh" class="form-control" type="number" step="0.001"
+                [(ngModel)]="deviceConfig.cost_per_kwh" required min="0" #costPerKwh="ngModel"
+                [ngClass]="{ 'is-invalid': f.submitted && costPerKwh.errors}" />
+            <label class="input-group-text">€</label>
+        </div>
+        <div class="input-group mb-2">
+            <label class="input-group-text">Base Cost / Month</label>
+            <input name="base-cost-per-month" class="form-control" type="number" step="0.01"
+                [(ngModel)]="deviceConfig.base_cost_per_month" required min="0" #baseCostPerMonth="ngModel"
+                [ngClass]="{ 'is-invalid': f.submitted && baseCostPerMonth.errors}" />
+            <label class="input-group-text">€</label>
+        </div>
+        <div class="input-group mb-2">
+            <label class="input-group-text">Payment / Month</label>
+            <input name="payment-per-month" class="form-control" type="number" step="0.01"
+                [(ngModel)]="deviceConfig.payment_per_month" required min="0" #paymentPerMonth="ngModel"
+                [ngClass]="{ 'is-invalid': f.submitted && paymentPerMonth.errors}" />
+            <label class="input-group-text">€</label>
+        </div>
+        <div class="input-group mb-2">
+            <label class="input-group-text">Billing Month</label>
+            <input name="billing-month" class="form-control" type="number" [(ngModel)]="deviceConfig.billing_month"
+                required min="1" max="12" #billingMonth="ngModel"
+                [ngClass]="{ 'is-invalid': f.submitted && billingMonth.errors}" />
+        </div>
+        <div class="input-group mb-2">
+            <label class="input-group-text">Minimum Accuracy</label>
+            <input name="min-accuracy" class="form-control" type="number" [(ngModel)]="deviceConfig.min_accuracy"
+                required min="0" max="1" step="0.01" #minAccuracy="ngModel"
+                [ngClass]="{ 'is-invalid': f.submitted && minAccuracy.errors}" />
+        </div>
+        <button class="btn btn-primary float-end mb-2" type="submit">Save</button>
+    </form>
+</div>

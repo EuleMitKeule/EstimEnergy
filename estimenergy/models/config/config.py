@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 import yaml
 
 from estimenergy.models.config.dev_config import DevConfig
-from estimenergy.models.config.device_config import DeviceConfig
+from estimenergy.models.device_config import DeviceConfig
 from estimenergy.models.config.influx_config import InfluxConfig
 from estimenergy.models.config.logging_config import LoggingConfig
 from estimenergy.models.config.networking_config import NetworkingConfig
@@ -20,7 +20,6 @@ class Config(BaseModel):
     logging_config: LoggingConfig = Field(LoggingConfig(), alias="logging")
     sql_config: SqlConfig = Field(SqlConfig(), alias="db")
     influx_config: Optional[InfluxConfig] = Field(alias="influxdb")
-    device_configs: list[DeviceConfig] = Field([], alias="devices")
 
     @classmethod
     def from_file(cls, config_path: str):

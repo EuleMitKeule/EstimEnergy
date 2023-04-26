@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
 
 from estimenergy.db import db_engine
-from estimenergy.device import devices
+from estimenergy.devices import device_registry
 from estimenergy.devices.base_device import BaseDevice
 from estimenergy.models.day import Day, DayCreate, DayRead
 
@@ -24,9 +24,7 @@ day_router = APIRouter(prefix="/day", tags=["day"])
 async def get_days(device_name: Optional[str] = None):
     """Get all days."""
 
-    if device_name is not None and device_name not in [
-        device.device_config.name for device in devices
-    ]:
+    if device_name is not None and not await device_registry.device_exists(device_name):
         raise HTTPException(status_code=404, detail="Device not found")
 
     with Session(db_engine) as session:
@@ -66,10 +64,7 @@ async def get_day(day_id: int):
 async def create_day(day: DayCreate):
     """Create a day."""
 
-    device: Optional[BaseDevice] = next(
-        (device for device in devices if device.device_config.name == day.device_name),
-        None,
-    )
+    device: Optional[BaseDevice] = device_registry.get_device(day.device_name)
 
     if device is None:
         raise HTTPException(status_code=404, detail="Device not found")
@@ -100,10 +95,7 @@ async def create_day(day: DayCreate):
 async def update_day(day_id: int, day: DayCreate):
     """Update a day."""
 
-    device: Optional[BaseDevice] = next(
-        (device for device in devices if device.device_config.name == day.device_name),
-        None,
-    )
+    device: Optional[BaseDevice] = device_registry.get_device(day.device_name)
 
     if device is None:
         raise HTTPException(status_code=404, detail="Device not found")

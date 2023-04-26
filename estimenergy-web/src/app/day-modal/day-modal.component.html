@@ -4,10 +4,11 @@
 </div>
 
 <div class="modal-body">
-    <form>
+    <form name="dayForm" #f="ngForm" (ngSubmit)="f.form.valid && onSubmit()" novalidate>
         <div class="input-group mb-2">
             <label class="input-group-text">Device</label>
-            <select class="form-select" name="device" [(ngModel)]="dayCreate.device_name">
+            <select class="form-select" name="device" [(ngModel)]="dayCreate.device_name" required #device="ngModel"
+                [ngClass]="{ 'is-invalid': f.submitted && device.errors}">
                 <option *ngFor="let device of devices" [value]="device.name">
                     {{ device.name }}
                 </option>
@@ -16,17 +17,20 @@
         <div class="input-group mb-2">
             <label class="input-group-text">Date</label>
             <input id="date" class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #dp="ngbDatepicker"
-                [(ngModel)]="selectedDate" />
+                [(ngModel)]="selectedDate" required #date="ngModel"
+                [ngClass]="{ 'is-invalid': f.submitted && date.errors}" />
             <button class="btn btn-outline-secondary bi bi-calendar3" (click)="dp.toggle()" type="button"></button>
         </div>
         <div class="input-group mb-2">
             <label class="input-group-text">Energy</label>
-            <input id="energy" class="form-control" name="energy" type="number" [(ngModel)]="dayCreate.energy" />
+            <input id="energy" class="form-control" name="energy" type="number" [(ngModel)]="dayCreate.energy" required
+                min="0" step="0.01" #energy="ngModel" [ngClass]="{ 'is-invalid': f.submitted && energy.errors}" />
         </div>
         <div class="input-group mb-2">
             <label class="input-group-text">Accuracy</label>
-            <input class="form-control" type="number" name="accuracy" [(ngModel)]="dayCreate.accuracy" />
+            <input class="form-control" type="number" name="accuracy" [(ngModel)]="dayCreate.accuracy" required min="0"
+                max="1" step="0.01" #accuracy="ngModel" [ngClass]="{ 'is-invalid': f.submitted && accuracy.errors}" />
         </div>
-        <button type="button" class="btn btn-primary" (click)="onSaveClick()">Save</button>
+        <button class="btn btn-primary float-end mb-2" type="submit">Save</button>
     </form>
 </div>

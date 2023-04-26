@@ -4,7 +4,7 @@ import datetime
 from estimenergy.const import MetricPeriod
 from estimenergy.helpers import get_days_in_month, get_days_in_year
 from estimenergy.models.config.config import Config
-from estimenergy.models.config.device_config import DeviceConfig
+from estimenergy.models.device_config import DeviceConfig
 
 
 class PredictionService:
@@ -98,6 +98,8 @@ class PredictionService:
         else:
             raise ValueError("Invalid metric period")
 
+        if accurate_day_count == 0:
+            return 0
         mean_energy_per_day = energy / accurate_day_count
         predicted_energy = mean_energy_per_day * day_count
 

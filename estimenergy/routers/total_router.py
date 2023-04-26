@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
 
 from estimenergy.db import db_engine
-from estimenergy.device import devices
+from estimenergy.devices import device_registry
 from estimenergy.models.total import Total
 
 total_router = APIRouter(prefix="/total", tags=["total"])
@@ -21,9 +21,7 @@ total_router = APIRouter(prefix="/total", tags=["total"])
 async def get_totals(device_name: Optional[str] = None):
     """Get all totals."""
 
-    if device_name is not None and device_name not in [
-        device.device_config.name for device in devices
-    ]:
+    if device_name is not None and not await device_registry.device_exists(device_name):
         raise HTTPException(status_code=404, detail="Device not found")
 
     with Session(db_engine) as session:

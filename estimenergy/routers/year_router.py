@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
 
 from estimenergy.db import db_engine
-from estimenergy.device import devices
+from estimenergy.devices import device_registry
 from estimenergy.models.year import Year
 
 year_router = APIRouter(prefix="/year", tags=["year"])
@@ -21,9 +21,7 @@ year_router = APIRouter(prefix="/year", tags=["year"])
 async def get_years(device_name: Optional[str] = None):
     """Get all years."""
 
-    if device_name is not None and device_name not in [
-        device.device_config.name for device in devices
-    ]:
+    if device_name is not None and not await device_registry.device_exists(device_name):
         raise HTTPException(status_code=404, detail="Device not found")
 
     with Session(db_engine) as session:

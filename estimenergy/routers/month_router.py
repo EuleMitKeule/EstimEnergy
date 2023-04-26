@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
 
 from estimenergy.db import db_engine
-from estimenergy.device import devices
+from estimenergy.devices import device_registry
 from estimenergy.models.month import Month
 
 month_router = APIRouter(prefix="/month", tags=["month"])
@@ -21,9 +21,7 @@ month_router = APIRouter(prefix="/month", tags=["month"])
 async def get_months(device_name: Optional[str] = None):
     """Get all months."""
 
-    if device_name is not None and device_name not in [
-        device.device_config.name for device in devices
-    ]:
+    if device_name is not None and not await device_registry.device_exists(device_name):
         raise HTTPException(status_code=404, detail="Device not found")
 
     with Session(db_engine) as session:

@@ -42,7 +42,7 @@ export class DayModalComponent {
     }
   }
 
-  onSaveClick() {
+  onSubmit() {
     this.dayCreate.date = this.dateToString(this.selectedDate);
     this.save.emit(this.dayCreate);
   }

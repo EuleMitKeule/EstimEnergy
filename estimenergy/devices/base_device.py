@@ -5,7 +5,7 @@ import logging
 
 from estimenergy.const import Metric
 from estimenergy.models.config.config import Config
-from estimenergy.models.config.device_config import DeviceConfig
+from estimenergy.models.device_config import DeviceConfig
 from estimenergy.services.data_service import DataService
 from estimenergy.services.influx_service import InfluxService
 from estimenergy.services.sql_service import SqlService
@@ -37,6 +37,10 @@ class BaseDevice(ABC):
     @abstractmethod
     async def start(self):
         """Start the device."""
+
+    @abstractmethod
+    async def stop(self):
+        """Stop the device."""
 
     async def increment(
         self,
