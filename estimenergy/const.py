@@ -154,7 +154,7 @@ LOGGING_CONFIG: dict = {
         "file": {
             "formatter": "file",
             "class": "logging.FileHandler",
-            "filename": "energy_collector.log",
+            "filename": "estimenergy.log",
         },
     },
     "loggers": {
