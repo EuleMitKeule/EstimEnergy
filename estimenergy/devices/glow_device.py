@@ -13,13 +13,16 @@ from aioesphomeapi import (
     ResolveAPIError,
     SensorState,
 )
+from sqlmodel import Session
 from zeroconf import Zeroconf
 
 from estimenergy.const import Metric, MetricPeriod, MetricType
 from estimenergy.devices import BaseDevice
+from estimenergy.devices.device_error import DeviceError
 from estimenergy.log import logger
 from estimenergy.models.config.config import Config
 from estimenergy.models.device_config import DeviceConfig
+from estimenergy.db import db_engine
 
 
 class GlowDevice(BaseDevice):
@@ -27,8 +30,7 @@ class GlowDevice(BaseDevice):
 
     zeroconf: Zeroconf
     api: APIClient
-    reconnect_logic: ReconnectLogic
-    device_info: Optional[DeviceInfo] = None
+    reconnect_logic: Optional[ReconnectLogic] = None
     last_kwh: Optional[float] = None
     last_time: Optional[datetime.datetime] = None
 
@@ -42,14 +44,6 @@ class GlowDevice(BaseDevice):
             self.device_config.password,
             zeroconf_instance=self.zeroconf,
         )
-        self.reconnect_logic = ReconnectLogic(
-            client=self.api,
-            on_connect=self.__on_connect,
-            on_disconnect=self.__on_disconnect,
-            zeroconf_instance=self.zeroconf,
-            name=self.device_config.name,
-            on_connect_error=self.__on_connect_error,
-        )
 
     @property
     def provided_metrics(self) -> list[Metric]:
@@ -60,20 +54,80 @@ class GlowDevice(BaseDevice):
         ]
 
     async def start(self):
-        if not await self.__try_login():
+        """Start the device."""
+        with Session(db_engine) as session:
+            self.device_config.is_active = True
+            session.add(self.device_config)
+            session.commit()
+            session.refresh(self.device_config)
+
+        if not await self.can_connect():
             logger.error(f"Unable to login to {self.device_config.name}")
-            return
+            raise DeviceError(f"Unable to login to {self.device_config.name}")
+
+        event = asyncio.Event()
+
+        async def on_connect():
+            logger.info(f"Connected to ESPHome Device {self.device_config.name}")
+            event.set()
+
+            with Session(db_engine) as session:
+                self.device_config.is_connected = True
+                session.add(self.device_config)
+                session.commit()
+                session.refresh(self.device_config)
+
+            await self.api.subscribe_states(self.__state_changed)
+
+        async def on_connect_error():
+            with Session(db_engine) as session:
+                self.device_config.is_connected = False
+                session.add(self.device_config)
+                session.commit()
+                session.refresh(self.device_config)
+
+            raise DeviceError(f"Unable to connect to {self.device_config.name}")
+
+        async def on_disconnect():
+            with Session(db_engine) as session:
+                self.device_config.is_connected = False
+                session.add(self.device_config)
+                session.commit()
+                session.refresh(self.device_config)
+
+        self.reconnect_logic = ReconnectLogic(
+            client=self.api,
+            on_connect=on_connect,
+            on_disconnect=on_disconnect,
+            zeroconf_instance=self.zeroconf,
+            name=self.device_config.name,
+            on_connect_error=on_connect_error,
+        )
+
         await self.reconnect_logic.start()
 
+        await event.wait()
+
     async def stop(self):
+        """Stop the device."""
+
+        logger.info(f"Stopping ESPHome Device {self.device_config.name}")
+
+        with Session(db_engine) as session:
+            self.device_config.is_active = False
+            session.add(self.device_config)
+            session.commit()
+            session.refresh(self.device_config)
+
         await self.api.disconnect(force=True)
-        await self.reconnect_logic.stop()
+        if self.reconnect_logic is not None:
+            await self.reconnect_logic.stop()
         self.zeroconf.close()
 
-    async def __try_login(self):
+    async def can_connect(self) -> bool:
+        """Check if we can connect to the device."""
         try:
             await self.api.connect(login=True)
-            self.device_info = await self.api.device_info()
             return True
         except (
             ResolveAPIError,
@@ -84,21 +138,6 @@ class GlowDevice(BaseDevice):
             return False
         finally:
             await self.api.disconnect(force=True)
-
-    async def __on_connect(self):
-        logger.info(f"Connected to ESPHome Device {self.device_config.name}")
-
-        try:
-            await self.api.subscribe_states(self.__state_changed)
-        except APIConnectionError:
-            await self.api.disconnect()
-
-    async def __on_disconnect(self):
-        logger.warn(f"Disconnected from ESPHome Device {self.device_config.name}")
-
-    async def __on_connect_error(self, exception: Exception):
-        logger.error(f"Error connecting to ESPHome Device {self.device_config.name}")
-        logger.error(exception)
 
     def __state_changed(self, state: SensorState):
         loop = asyncio.get_event_loop()

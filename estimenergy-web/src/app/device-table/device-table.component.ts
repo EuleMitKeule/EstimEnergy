@@ -65,6 +65,26 @@ export class DeviceTableComponent {
     });
   }
 
+  onStartClick(device: DeviceConfigRead) {
+    if (device.name === undefined) {
+      return;
+    }
+
+    this.deviceService.startDevice(device.name).subscribe(() => {
+      this.updateDevices();
+    });
+  }
+
+  onStopClick(device: DeviceConfigRead) {
+    if (device.name === undefined) {
+      return;
+    }
+
+    this.deviceService.stopDevice(device.name).subscribe(() => {
+      this.updateDevices();
+    });
+  }
+
   onCreateClick() {
     const modalRef = this.modalService.open(DeviceModalComponent);
     modalRef.componentInstance.modalTitle = 'Create Device';
@@ -83,8 +103,13 @@ export class DeviceTableComponent {
     };
 
     modalRef.componentInstance.save.subscribe((deviceConfig: DeviceConfig) => {
-      this.deviceService.createDevice(deviceConfig).subscribe(() => {
-        this.updateDevices();
+      this.deviceService.createDevice(deviceConfig).subscribe({
+        next: () => {
+          this.updateDevices();
+        },
+        error: (err) => {
+          this.updateDevices();
+        }
       });
 
       modalRef.close();

@@ -1,11 +1,10 @@
 """Abstract class for all devices."""
 from abc import ABC, abstractmethod
 import datetime
-import logging
 
 from estimenergy.const import Metric
 from estimenergy.models.config.config import Config
-from estimenergy.models.device_config import DeviceConfig
+from estimenergy.models.device_config import DeviceConfig, DeviceConfigRead
 from estimenergy.services.data_service import DataService
 from estimenergy.services.influx_service import InfluxService
 from estimenergy.services.sql_service import SqlService
@@ -16,9 +15,10 @@ class BaseDevice(ABC):
 
     config: Config
     device_config: DeviceConfig
-    data_services: list[DataService] = []
+    data_services: list[DataService]
 
     def __init__(self, device_config: DeviceConfig, config: Config):
+        self.data_services = []
         self.config = config
         self.device_config = device_config
 
@@ -35,12 +35,12 @@ class BaseDevice(ABC):
         """Return a list of metrics provided by this device."""
 
     @abstractmethod
-    async def start(self):
-        """Start the device."""
-
-    @abstractmethod
     async def stop(self):
         """Stop the device."""
+
+    @abstractmethod
+    async def start(self):
+        """Start the device."""
 
     async def increment(
         self,

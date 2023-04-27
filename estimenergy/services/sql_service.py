@@ -1,5 +1,6 @@
 """Service for writing and reading data from the SQL database."""
 import datetime
+import traceback
 
 from sqlalchemy import extract
 from sqlmodel import Session, select

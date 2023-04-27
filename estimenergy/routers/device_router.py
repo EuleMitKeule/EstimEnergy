@@ -1,6 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from estimenergy.devices import device_registry
+from estimenergy.devices.device_error import DeviceError
 from estimenergy.models.device_config import DeviceConfig, DeviceConfigRead
 
 
@@ -11,8 +12,16 @@ device_router = APIRouter(prefix="/device", tags=["device"])
 async def create_device(device_config: DeviceConfig):
     """Create a new device."""
 
+    _ = device_registry
+
     device = await device_registry.create_device(device_config)
-    await device_registry.start_device(device)
+
+    try:
+        await device.start()
+    except DeviceError as device_error:
+        raise HTTPException(
+            status_code=500, detail="Device failed to start"
+        ) from device_error
 
     return device.device_config
 
@@ -57,5 +66,35 @@ async def delete_device(device_name: str):
 
     device = await device_registry.get_device(device_name)
     await device_registry.delete_device(device)
+
+    return device.device_config
+
+
+@device_router.post(
+    "/{device_name}/start", response_model=DeviceConfigRead, operation_id="start_device"
+)
+async def start_device(device_name: str):
+    """Start a device."""
+
+    device = await device_registry.get_device(device_name)
+
+    try:
+        await device.start()
+    except DeviceError as device_error:
+        raise HTTPException(
+            status_code=500, detail="Device failed to start"
+        ) from device_error
+
+    return device.device_config
+
+
+@device_router.post(
+    "/{device_name}/stop", response_model=DeviceConfigRead, operation_id="stop_device"
+)
+async def stop_device(device_name: str):
+    """Stop a device."""
+
+    device = await device_registry.get_device(device_name)
+    await device.stop()
 
     return device.device_config

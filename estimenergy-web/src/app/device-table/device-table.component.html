@@ -8,7 +8,7 @@
 
 <div class="row row-cols-1 row-cols-md-2 g-4">
     <div class="col" *ngFor="let device of devices">
-        <div class="card">
+        <div class="card" [ngClass]="{ 'border-success': device.is_connected, 'border-danger': !device.is_connected }">
             <div class="card-body">
                 <div class="row">
                     <div class="col">
@@ -17,6 +17,14 @@
                     <div class="col d-flex justify-content-end">
                         <button type="button" class="btn btn-primary me-1" (click)="onEditClick(device)">
                             <i class="bi bi-pen"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger me-1" (click)="onStopClick(device)"
+                            *ngIf="device.is_connected">
+                            <i class="bi bi-stop"></i>
+                        </button>
+                        <button type="button" class="btn btn-success me-1" (click)="onStartClick(device)"
+                            *ngIf="!device.is_connected">
+                            <i class="bi bi-play"></i>
                         </button>
                         <button type="button" class="btn btn-danger" (click)="onDeleteClick(device)">
                             <i class="bi bi-trash"></i>

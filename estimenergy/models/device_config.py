@@ -14,6 +14,8 @@ class BaseDeviceConfig(SQLModel):
     payment_per_month: float = Field(default=0)
     billing_month: int = Field(default=1)
     min_accuracy: float = Field(default=0)
+    is_active: bool = Field(default=True)
+    is_connected: bool = Field(default=False)
 
 
 class DeviceConfig(BaseDeviceConfig, table=True):
@@ -22,6 +24,7 @@ class DeviceConfig(BaseDeviceConfig, table=True):
     host: str = Field(default=None)
     port: int = Field(default=None)
     password: str = Field(default="")
+    is_active: bool = Field(default=True, exclude=True)
 
 
 class DeviceConfigRead(BaseDeviceConfig):

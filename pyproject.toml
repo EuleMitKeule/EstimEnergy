@@ -92,3 +92,6 @@ disable_error_code = "call-arg"
 disable = [
     "not-context-manager",
 ]
+
+[tool.pylint.LOGGING]
+logging-format-style="fstr"

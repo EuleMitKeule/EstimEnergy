@@ -1,9 +1,8 @@
-import asyncio
 from typing import Optional
-
 from sqlmodel import Session, select
 from estimenergy.config import config
 from estimenergy.const import DeviceType
+from estimenergy.devices.device_error import DeviceError
 from estimenergy.devices.glow_device import GlowDevice
 from estimenergy.log import logger
 from estimenergy.devices.base_device import BaseDevice
@@ -22,9 +21,14 @@ class DeviceRegistry:
         with Session(db_engine) as session:
             device_configs = session.exec(select(DeviceConfig)).all()
 
-            for device_config in device_configs:
-                device = await self.create_device(device_config)
-                await self.start_device(device)
+        for device_config in device_configs:
+            device = await self.create_device(device_config)
+
+            if device_config.is_active:
+                try:
+                    await device.start()
+                except DeviceError:
+                    continue
 
     async def device_exists(self, device_name: str) -> bool:
         """Check if a device exists."""
@@ -45,16 +49,10 @@ class DeviceRegistry:
 
         logger.info(f"Creating device {device_config.name}...")
 
-        # check if the device_config is already present in the database
         with Session(db_engine) as session:
-            device_config_db = session.exec(
-                select(DeviceConfig).where(DeviceConfig.name == device_config.name)
-            ).first()
-
-            if device_config_db is None:
-                session.add(device_config)
-                session.commit()
-                session.refresh(device_config)
+            session.add(device_config)
+            session.commit()
+            session.refresh(device_config)
 
         if device_config.type == DeviceType.GLOW:
             device = GlowDevice(device_config, config)
@@ -77,7 +75,7 @@ class DeviceRegistry:
         await self.delete_device(device)
 
         device = await device_registry.create_device(device_config)
-        await device_registry.start_device(device)
+        await device.start()
 
         return device
 
@@ -93,13 +91,6 @@ class DeviceRegistry:
             session.commit()
 
         self.devices.remove(device)
-
-    async def start_device(self, device: BaseDevice):
-        """Start a device for the EstimEnergy application."""
-
-        logger.info(f"Starting device {device.device_config.name}...")
-
-        asyncio.create_task(device.start())
 
 
 device_registry = DeviceRegistry()
