@@ -7,6 +7,7 @@ from estimenergy.models.config.config import Config
 from estimenergy.models.device_config import DeviceConfig, DeviceConfigRead
 from estimenergy.services.data_service import DataService
 from estimenergy.services.influx_service import InfluxService
+from estimenergy.services.prometheus_service import PrometheusService
 from estimenergy.services.sql_service import SqlService
 
 
@@ -24,6 +25,9 @@ class BaseDevice(ABC):
 
         sql_service = SqlService(self.device_config, config)
         self.data_services.append(sql_service)
+
+        prometheus_service = PrometheusService(sql_service, self.device_config, config)
+        self.data_services.append(prometheus_service)
 
         if config.influx_config:
             influx_service = InfluxService(self.device_config, config)

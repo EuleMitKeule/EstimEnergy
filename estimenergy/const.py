@@ -68,7 +68,7 @@ class Metric:
         return Gauge(
             f"{self.metric_key}",
             f"EstimEnergy {self.friendly_name}",
-            ["name", "id"],
+            ["name"],
             registry=registry,
         )
 
@@ -81,6 +81,11 @@ class Metric:
                 and self.is_raw == __value.is_raw
             )
         return False
+
+    def __hash__(self) -> int:
+        return hash(
+            (self.metric_type, self.metric_period, self.is_predicted, self.is_raw)
+        )
 
 
 METRICS = [
