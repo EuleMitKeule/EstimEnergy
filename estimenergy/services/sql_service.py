@@ -9,8 +9,8 @@ from sqlmodel.sql.expression import SelectOfScalar
 from estimenergy.const import METRICS, Metric, MetricPeriod, MetricType
 from estimenergy.db import db_engine
 from estimenergy.models.config.config import Config
-from estimenergy.models.device_config import DeviceConfig
 from estimenergy.models.day import Day
+from estimenergy.models.device_config import DeviceConfig
 from estimenergy.models.month import Month
 from estimenergy.models.total import Total
 from estimenergy.models.year import Year

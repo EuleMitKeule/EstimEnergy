@@ -1,14 +1,12 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 from sqlmodel import Session
 
+from estimenergy.db import db_engine
 from estimenergy.devices import device_registry
 from estimenergy.devices.device_error import DeviceError
 from estimenergy.models.device_config import DeviceConfig, DeviceConfigRead
-from estimenergy.db import db_engine
-from fastapi.responses import JSONResponse
-
 from estimenergy.models.message import Message
-
 
 device_router = APIRouter(prefix="/device", tags=["device"])
 

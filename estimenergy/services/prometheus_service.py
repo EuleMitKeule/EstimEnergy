@@ -1,12 +1,12 @@
 import datetime
 
-from prometheus_client import Gauge
-from prometheus_client import Metric as PrometheusMetric
+from prometheus_client import Gauge, Metric as PrometheusMetric
+
 from estimenergy.const import METRICS, Metric
 from estimenergy.models.config.config import Config
 from estimenergy.models.device_config import DeviceConfig
-from estimenergy.services.data_service import DataService
 from estimenergy.prometheus import metric_registry
+from estimenergy.services.data_service import DataService
 from estimenergy.services.sql_service import SqlService
 
 

@@ -1,13 +1,15 @@
 from typing import Optional
+
 from sqlmodel import Session, select
+
 from estimenergy.config import config
 from estimenergy.const import DeviceType
+from estimenergy.db import db_engine
+from estimenergy.devices.base_device import BaseDevice
 from estimenergy.devices.device_error import DeviceError
 from estimenergy.devices.glow_device import GlowDevice
 from estimenergy.log import logger
-from estimenergy.devices.base_device import BaseDevice
 from estimenergy.models.device_config import DeviceConfig
-from estimenergy.db import db_engine
 
 
 class DeviceRegistry:

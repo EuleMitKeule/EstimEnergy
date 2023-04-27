@@ -17,12 +17,12 @@ from sqlmodel import Session
 from zeroconf import Zeroconf
 
 from estimenergy.const import Metric, MetricPeriod, MetricType
+from estimenergy.db import db_engine
 from estimenergy.devices import BaseDevice
 from estimenergy.devices.device_error import DeviceError
 from estimenergy.log import logger
 from estimenergy.models.config.config import Config
 from estimenergy.models.device_config import DeviceConfig
-from estimenergy.db import db_engine
 
 
 class GlowDevice(BaseDevice):
