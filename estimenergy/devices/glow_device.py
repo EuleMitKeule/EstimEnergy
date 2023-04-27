@@ -35,6 +35,8 @@ class GlowDevice(BaseDevice):
     last_time: Optional[datetime.datetime] = None
 
     def __init__(self, device_config: DeviceConfig, config: Config):
+        """Initialize the Glow device."""
+
         super().__init__(device_config, config)
 
         self.zeroconf = Zeroconf()
@@ -168,7 +170,7 @@ class GlowDevice(BaseDevice):
         us_per_day = 1000 * 1000 * 60 * 60 * 24
         accuracy_increase = time_increase_us / us_per_day
 
-        logger.info(
+        logger.debug(
             f"Detected {kwh_increase} kWh increase in {time_increase_us} us for device {self.device_config.name}."
         )
 

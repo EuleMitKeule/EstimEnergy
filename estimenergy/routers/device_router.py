@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException
+from sqlmodel import Session
 
 from estimenergy.devices import device_registry
 from estimenergy.devices.device_error import DeviceError
 from estimenergy.models.device_config import DeviceConfig, DeviceConfigRead
+from estimenergy.db import db_engine
 
 
 device_router = APIRouter(prefix="/device", tags=["device"])
@@ -11,8 +13,6 @@ device_router = APIRouter(prefix="/device", tags=["device"])
 @device_router.post("", response_model=DeviceConfigRead, operation_id="create_device")
 async def create_device(device_config: DeviceConfig):
     """Create a new device."""
-
-    _ = device_registry
 
     device = await device_registry.create_device(device_config)
 

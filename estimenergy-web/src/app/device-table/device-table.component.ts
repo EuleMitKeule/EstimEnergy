@@ -31,6 +31,8 @@ export class DeviceTableComponent {
     modalRef.componentInstance.deviceConfig = {
       name: device.name,
       type: device.type,
+      host: device.host,
+      port: device.port,
       cost_per_kwh: device.cost_per_kwh,
       base_cost_per_month: device.base_cost_per_month,
       payment_per_month: device.payment_per_month,

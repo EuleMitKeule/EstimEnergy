@@ -9,6 +9,8 @@ class BaseDeviceConfig(SQLModel):
 
     name: str = Field(default=None, primary_key=True)
     type: DeviceType = Field(default=DeviceType.GLOW)
+    host: str = Field(default=None)
+    port: int = Field(default=None)
     cost_per_kwh: float = Field(default=0)
     base_cost_per_month: float = Field(default=0)
     payment_per_month: float = Field(default=0)
@@ -21,10 +23,7 @@ class BaseDeviceConfig(SQLModel):
 class DeviceConfig(BaseDeviceConfig, table=True):
     """Device config with secrets."""
 
-    host: str = Field(default=None)
-    port: int = Field(default=None)
     password: str = Field(default="")
-    is_active: bool = Field(default=True, exclude=True)
 
 
 class DeviceConfigRead(BaseDeviceConfig):

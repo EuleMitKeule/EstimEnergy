@@ -19,17 +19,17 @@
                 </option>
             </select>
         </div>
-        <div class="input-group mb-2" *ngIf="displaySecrets">
+        <div class="input-group mb-2">
             <label class="input-group-text">Host</label>
             <input name="host" class="form-control" type="text" [(ngModel)]="deviceConfig.host" #host="ngModel"
                 [ngClass]="{ 'is-invalid': f.submitted && host.errors}" />
         </div>
-        <div class="input-group mb-2" *ngIf="displaySecrets">
+        <div class="input-group mb-2">
             <label class="input-group-text">Port</label>
             <input name="port" class="form-control" type="number" [(ngModel)]="deviceConfig.port" #port="ngModel"
                 [ngClass]="{ 'is-invalid': f.submitted && port.errors}" min="1" max="65535" />
         </div>
-        <div class="input-group mb-2" *ngIf="displaySecrets">
+        <div class="input-group mb-2">
             <label class="input-group-text">Password</label>
             <input name="password" class="form-control" type="password" [(ngModel)]="deviceConfig.password"
                 #password="ngModel" [ngClass]="{ 'is-invalid': f.submitted && password.errors}" />

@@ -67,14 +67,37 @@ class DeviceRegistry:
 
         logger.info(f"Updating device {device.device_config.name}...")
 
-        device_config.host = device.device_config.host
-        device_config.port = device.device_config.port
-        device_config.password = device.device_config.password
+        if device.device_config.is_active:
+            await device.stop()
 
-        await device.stop()
-        await self.delete_device(device)
+        with Session(db_engine) as session:
+            db_device_config: DeviceConfig = session.exec(
+                select(DeviceConfig).where(
+                    DeviceConfig.name == device.device_config.name
+                )
+            ).one()
 
-        device = await device_registry.create_device(device_config)
+            db_device_config.name = device_config.name
+            db_device_config.type = device_config.type
+            db_device_config.host = device_config.host
+            db_device_config.port = device_config.port
+            db_device_config.password = device_config.password
+            db_device_config.cost_per_kwh = device_config.cost_per_kwh
+            db_device_config.base_cost_per_month = device_config.base_cost_per_month
+            db_device_config.payment_per_month = device_config.payment_per_month
+            db_device_config.billing_month = device_config.billing_month
+            db_device_config.min_accuracy = device_config.min_accuracy
+
+            session.add(db_device_config)
+            session.commit()
+            session.refresh(db_device_config)
+
+        self.devices.remove(device)
+
+        if device_config.type == DeviceType.GLOW:
+            device = GlowDevice(db_device_config, config)
+            self.devices.append(device)
+
         await device.start()
 
         return device
@@ -84,11 +107,14 @@ class DeviceRegistry:
 
         logger.info(f"Deleting device {device.device_config.name}...")
 
-        await device.stop()
+        if device.device_config.is_active:
+            await device.stop()
 
         with Session(db_engine) as session:
             session.delete(device.device_config)
             session.commit()
+
+        device.device_config = None
 
         self.devices.remove(device)
 

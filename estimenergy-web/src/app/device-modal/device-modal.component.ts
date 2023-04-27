@@ -15,7 +15,6 @@ export class DeviceModalComponent implements OnInit {
 
   @Input() modalTitle: string = '';
   @Input() deviceConfig!: DeviceConfig;
-  @Input() displaySecrets: boolean = false;
   @Output() save: EventEmitter<DeviceConfig> = new EventEmitter<DeviceConfig>();
   @Output() abort: EventEmitter<void> = new EventEmitter<void>();
 
