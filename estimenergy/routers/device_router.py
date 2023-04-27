@@ -5,6 +5,9 @@ from estimenergy.devices import device_registry
 from estimenergy.devices.device_error import DeviceError
 from estimenergy.models.device_config import DeviceConfig, DeviceConfigRead
 from estimenergy.db import db_engine
+from fastapi.responses import JSONResponse
+
+from estimenergy.models.message import Message
 
 
 device_router = APIRouter(prefix="/device", tags=["device"])
@@ -59,15 +62,30 @@ async def update_device(device_name: str, device_config: DeviceConfig):
 
 
 @device_router.delete(
-    "/{device_name}", response_model=DeviceConfigRead, operation_id="delete_device"
+    "/{device_name}",
+    operation_id="delete_device",
+    responses={
+        404: {"model": Message},
+        201: {"model": Message},
+    },
 )
 async def delete_device(device_name: str):
     """Delete a device."""
 
     device = await device_registry.get_device(device_name)
+
+    if device is None:
+        return JSONResponse(
+            status_code=404,
+            content={"message": f"Device {device_name} not found"},
+        )
+
     await device_registry.delete_device(device)
 
-    return device.device_config
+    return JSONResponse(
+        status_code=201,
+        content={"message": f"Device {device_name} deleted"},
+    )
 
 
 @device_router.post(
