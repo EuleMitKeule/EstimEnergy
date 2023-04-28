@@ -56,7 +56,8 @@ export class DayModalComponent {
   }
 
   dateToString(date: NgbDateStruct): string {
-    const dateObj = new Date(date.year, date.month, date.day);
-    return formatDate(dateObj, 'yyyy-MM-dd', 'en-US');
+    const dateObj = new Date(date.year, date.month - 1, date.day);
+    const dateStr = formatDate(dateObj, 'yyyy-MM-dd', 'en-US');
+    return dateStr;
   }
 }
