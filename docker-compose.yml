@@ -1,20 +1,14 @@
 services:
   estimenergy:
-    # change this part to image: ghcr.io/eulemitkeule/estimenergy:<version>
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/eulemitkeule/estimenergy:latest
     container_name: estimenergy
     restart: unless-stopped
     networks:
       - estimenergy
     ports:
       - 12321:12321
-    # change this part to /path/to/config.yml:/config/config.yml
-    volumes:
-      - ./config.yml:/config/config.yml
 
-  estimenergy-postgres:
+  estimenergy-postgresql:
     image: postgres:15.2-alpine
     container_name: estimenergy-postgres
     restart: unless-stopped
@@ -45,6 +39,16 @@ services:
       - DOCKER_INFLUXDB_REPORTING_DISABLED=true
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_HTTP_AUTH_ENABLED=true
+
+  estimenergy-prometheus:
+    image: prom/prometheus:v2.43.0
+    container_name: estimenergy-prometheus
+    restart: unless-stopped
+    networks:
+      - estimenergy
+    command:
+      - --storage.tsdb.retention.time=5y
+      - --storage.tsdb.retention.size=1TB
 
 networks:
   estimenergy:
