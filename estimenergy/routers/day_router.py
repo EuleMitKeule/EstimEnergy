@@ -64,7 +64,7 @@ async def get_day(day_id: int):
 async def create_day(day: DayCreate):
     """Create a day."""
 
-    device: Optional[BaseDevice] = device_registry.get_device(day.device_name)
+    device: Optional[BaseDevice] = await device_registry.get_device(day.device_name)
 
     if device is None:
         raise HTTPException(status_code=404, detail="Device not found")
@@ -95,7 +95,7 @@ async def create_day(day: DayCreate):
 async def update_day(day_id: int, day: DayCreate):
     """Update a day."""
 
-    device: Optional[BaseDevice] = device_registry.get_device(day.device_name)
+    device: Optional[BaseDevice] = await device_registry.get_device(day.device_name)
 
     if device is None:
         raise HTTPException(status_code=404, detail="Device not found")

@@ -116,8 +116,6 @@ class DeviceRegistry:
             session.delete(device.device_config)
             session.commit()
 
-        device.device_config = None
-
         self.devices.remove(device)
 
 

@@ -28,12 +28,24 @@ async def create_device(device_config: DeviceConfig):
 
 
 @device_router.get(
-    "/{device_name}", response_model=DeviceConfigRead, operation_id="get_device"
+    "/{device_name}",
+    response_model=DeviceConfigRead,
+    operation_id="get_device",
+    responses={
+        404: {"model": Message},
+    },
 )
 async def get_device(device_name: str):
     """Get a device."""
 
     device = await device_registry.get_device(device_name)
+
+    if device is None:
+        return JSONResponse(
+            status_code=404,
+            content={"message": f"Device {device_name} not found"},
+        )
+
     return device.device_config
 
 
@@ -48,12 +60,24 @@ async def get_devices():
 
 
 @device_router.put(
-    "/{device_name}", response_model=DeviceConfigRead, operation_id="update_device"
+    "/{device_name}",
+    response_model=DeviceConfigRead,
+    operation_id="update_device",
+    responses={
+        404: {"model": Message},
+    },
 )
 async def update_device(device_name: str, device_config: DeviceConfig):
     """Update a device."""
 
     device = await device_registry.get_device(device_name)
+
+    if device is None:
+        return JSONResponse(
+            status_code=404,
+            content={"message": f"Device {device_name} not found"},
+        )
+
     device = await device_registry.update_device(device, device_config)
 
     return device.device_config
@@ -87,12 +111,23 @@ async def delete_device(device_name: str):
 
 
 @device_router.post(
-    "/{device_name}/start", response_model=DeviceConfigRead, operation_id="start_device"
+    "/{device_name}/start",
+    response_model=DeviceConfigRead,
+    operation_id="start_device",
+    responses={
+        404: {"model": Message},
+    },
 )
 async def start_device(device_name: str):
     """Start a device."""
 
     device = await device_registry.get_device(device_name)
+
+    if device is None:
+        return JSONResponse(
+            status_code=404,
+            content={"message": f"Device {device_name} not found"},
+        )
 
     try:
         await device.start()
@@ -105,12 +140,24 @@ async def start_device(device_name: str):
 
 
 @device_router.post(
-    "/{device_name}/stop", response_model=DeviceConfigRead, operation_id="stop_device"
+    "/{device_name}/stop",
+    response_model=DeviceConfigRead,
+    operation_id="stop_device",
+    responses={
+        404: {"model": Message},
+    },
 )
 async def stop_device(device_name: str):
     """Stop a device."""
 
     device = await device_registry.get_device(device_name)
+
+    if device is None:
+        return JSONResponse(
+            status_code=404,
+            content={"message": f"Device {device_name} not found"},
+        )
+
     await device.stop()
 
     return device.device_config
