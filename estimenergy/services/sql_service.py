@@ -281,96 +281,139 @@ class SqlService(DataService):
     ) -> Day | Month | Year | Total:
         """Create a row in the database."""
 
-        row: Day | Month | Year | Total
+        if metric_period == MetricPeriod.DAY:
+            return self.create_day(date)
+
+        elif metric_period == MetricPeriod.MONTH:
+            return self.create_month(date)
+
+        elif metric_period == MetricPeriod.YEAR:
+            return self.create_year(date)
+
+        elif metric_period == MetricPeriod.TOTAL:
+            return self.create_total()
+
+        else:
+            raise ValueError(f"Unknown metric period {metric_period}")
+
+    def create_day(
+        self,
+        date: datetime.date = datetime.date.today(),
+    ) -> Day:
+        """Create a day in the database."""
 
         with Session(db_engine, expire_on_commit=False) as session:
-            if metric_period == MetricPeriod.DAY:
-                row = Day(device_name=self.device_config.name, date=date)
-                session.add(row)
-                session.commit()
-                month = session.exec(
-                    select(Month).where(
-                        extract("month", Month.date) == date.month,
-                        extract("year", Month.date) == date.year,
-                        Month.device_name == self.device_config.name,
-                    )
-                ).first()
-                if month is not None:
-                    row.month_id = month.id
-
-            elif metric_period == MetricPeriod.MONTH:
-                date = date.replace(day=1)
-                row = Month(device_name=self.device_config.name, date=date)
-                session.add(row)
-                session.commit()
-                days = session.exec(
-                    select(Day).where(
-                        extract("month", Day.date) == date.month,
-                        extract("year", Day.date) == date.year,
-                        Day.device_name == self.device_config.name,
-                    )
-                ).all()
-                for day in days:
-                    day.month_id = row.id
-                    session.add(day)
-                year = session.exec(
-                    select(Year).where(
-                        extract("year", Year.date) == date.year
-                        and extract("month", Year.date) <= date.month
-                        or extract("year", Year.date) == date.year + 1
-                        and extract("month", Year.date) > date.month,
-                        Year.device_name == self.device_config.name,
-                    )
-                ).first()
-                if year is not None:
-                    row.year_id = year.id
-
-            elif metric_period == MetricPeriod.YEAR:
-                date = date.replace(
-                    year=date.year - 1
-                    if date.month <= self.device_config.billing_month
-                    else date.year,
-                    month=self.device_config.billing_month,
-                    day=1,
+            row = Day(device_name=self.device_config.name, date=date)
+            session.add(row)
+            session.commit()
+            month = session.exec(
+                select(Month).where(
+                    extract("month", Month.date) == date.month,
+                    extract("year", Month.date) == date.year,
+                    Month.device_name == self.device_config.name,
                 )
-                row = Year(device_name=self.device_config.name, date=date)
-                session.add(row)
-                session.commit()
-                months = session.exec(
-                    select(Month).where(
-                        extract("year", Month.date) == date.year
-                        and extract("month", Month.date) >= date.month
-                        or extract("year", Month.date) == date.year + 1
-                        and extract("month", Month.date) < date.month,
-                        Month.device_name == self.device_config.name,
-                    )
-                ).all()
-                for month in months:
-                    month.year_id = row.id
-                    session.add(month)
-                days = session.exec(
-                    select(Day).where(
-                        extract("year", Day.date) == date.year
-                        and extract("month", Day.date) >= date.month
-                        or extract("year", Day.date) == date.year + 1
-                        and extract("month", Day.date) < date.month,
-                        Day.device_name == self.device_config.name,
-                    )
-                ).all()
-                for day in days:
-                    day.year_id = row.id
-                    session.add(day)
-
-            elif metric_period == MetricPeriod.TOTAL:
-                row = Total(device_name=self.device_config.name)
-
-            else:
-                raise ValueError(f"Unknown metric period {metric_period}")
+            ).first()
+            if month is not None:
+                row.month_id = month.id
 
             session.add(row)
             session.commit()
 
-            return row
+        return row
+
+    def create_month(
+        self,
+        date: datetime.date = datetime.date.today(),
+    ) -> Month:
+        """Create a month in the database."""
+
+        with Session(db_engine, expire_on_commit=False) as session:
+            date = date.replace(day=1)
+            row = Month(device_name=self.device_config.name, date=date)
+            session.add(row)
+            session.commit()
+            days = session.exec(
+                select(Day).where(
+                    extract("month", Day.date) == date.month,
+                    extract("year", Day.date) == date.year,
+                    Day.device_name == self.device_config.name,
+                )
+            ).all()
+            for day in days:
+                day.month_id = row.id
+                session.add(day)
+            year = session.exec(
+                select(Year).where(
+                    extract("year", Year.date) == date.year
+                    and extract("month", Year.date) <= date.month
+                    or extract("year", Year.date) == date.year + 1
+                    and extract("month", Year.date) > date.month,
+                    Year.device_name == self.device_config.name,
+                )
+            ).first()
+            if year is not None:
+                row.year_id = year.id
+
+            session.commit()
+
+        return row
+
+    def create_year(
+        self,
+        date: datetime.date = datetime.date.today(),
+    ) -> Year:
+        """Create a year in the database."""
+
+        with Session(db_engine, expire_on_commit=False) as session:
+            date = date.replace(
+                year=date.year - 1
+                if date.month <= self.device_config.billing_month
+                else date.year,
+                month=self.device_config.billing_month,
+                day=1,
+            )
+            row = Year(device_name=self.device_config.name, date=date)
+            session.add(row)
+            session.commit()
+            months = session.exec(
+                select(Month).where(
+                    extract("year", Month.date) == date.year
+                    and extract("month", Month.date) >= date.month
+                    or extract("year", Month.date) == date.year + 1
+                    and extract("month", Month.date) < date.month,
+                    Month.device_name == self.device_config.name,
+                )
+            ).all()
+            for month in months:
+                month.year_id = row.id
+                session.add(month)
+            days = session.exec(
+                select(Day).where(
+                    extract("year", Day.date) == date.year
+                    and extract("month", Day.date) >= date.month
+                    or extract("year", Day.date) == date.year + 1
+                    and extract("month", Day.date) < date.month,
+                    Day.device_name == self.device_config.name,
+                )
+            ).all()
+            for day in days:
+                day.year_id = row.id
+                session.add(day)
+
+            session.commit()
+
+        return row
+
+    def create_total(self) -> Total:
+        """Create a total in the database."""
+
+        with Session(db_engine, expire_on_commit=False) as session:
+            row = Total(device_name=self.device_config.name)
+
+            session.add(row)
+            session.commit()
+
+        return row
 
     def get_rows(
         self,

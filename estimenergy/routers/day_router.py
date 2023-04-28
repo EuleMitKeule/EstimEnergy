@@ -4,11 +4,13 @@ from typing import Optional
 
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, select
-
+from fastapi.responses import JSONResponse
+from estimenergy.const import RESPONSE_DAY_NOT_FOUND, RESPONSE_DEVICE_NOT_FOUND
 from estimenergy.db import db_engine
 from estimenergy.devices import device_registry
 from estimenergy.devices.base_device import BaseDevice
 from estimenergy.models.day import Day, DayCreate, DayRead
+from estimenergy.models.message import Message
 
 day_router = APIRouter(prefix="/day", tags=["day"])
 
@@ -17,7 +19,7 @@ day_router = APIRouter(prefix="/day", tags=["day"])
     "",
     response_model=list[DayRead],
     responses={
-        404: {"description": "Device not found"},
+        404: {"model": Message},
     },
     operation_id="get_days",
 )
@@ -25,7 +27,10 @@ async def get_days(device_name: Optional[str] = None):
     """Get all days."""
 
     if device_name is not None and not await device_registry.device_exists(device_name):
-        raise HTTPException(status_code=404, detail="Device not found")
+        return JSONResponse(
+            status_code=404,
+            content={"message": RESPONSE_DEVICE_NOT_FOUND},
+        )
 
     with Session(db_engine) as session:
         if device_name is None:
@@ -39,7 +44,7 @@ async def get_days(device_name: Optional[str] = None):
     "/{day_id}",
     response_model=DayRead,
     responses={
-        404: {"description": "Day not found"},
+        404: {"model": Message},
     },
     operation_id="get_day",
 )
@@ -48,16 +53,21 @@ async def get_day(day_id: int):
 
     with Session(db_engine) as session:
         day = session.exec(select(Day).where(Day.id == day_id)).first()
-        if day is None:
-            raise HTTPException(status_code=404, detail="Day not found")
-        return day
+
+    if day is None:
+        return JSONResponse(
+            status_code=404,
+            content={"message": RESPONSE_DAY_NOT_FOUND},
+        )
+
+    return day
 
 
 @day_router.post(
     "",
     response_model=DayRead,
     responses={
-        404: {"description": "Device not found"},
+        404: {"model": Message},
     },
     operation_id="create_day",
 )
@@ -67,7 +77,10 @@ async def create_day(day: DayCreate):
     device: Optional[BaseDevice] = await device_registry.get_device(day.device_name)
 
     if device is None:
-        raise HTTPException(status_code=404, detail="Device not found")
+        return JSONResponse(
+            status_code=404,
+            content={"message": RESPONSE_DEVICE_NOT_FOUND},
+        )
 
     with Session(db_engine) as session:
         db_day = Day.from_orm(day)
@@ -88,7 +101,8 @@ async def create_day(day: DayCreate):
     "/{day_id}",
     response_model=DayRead,
     responses={
-        404: {"description": "Day not found"},
+        404: {"model": Message, "description": RESPONSE_DEVICE_NOT_FOUND},
+        404: {"model": Message, "description": RESPONSE_DAY_NOT_FOUND},
     },
     operation_id="update_day",
 )
@@ -98,12 +112,19 @@ async def update_day(day_id: int, day: DayCreate):
     device: Optional[BaseDevice] = await device_registry.get_device(day.device_name)
 
     if device is None:
-        raise HTTPException(status_code=404, detail="Device not found")
+        return JSONResponse(
+            status_code=404,
+            content={"message": RESPONSE_DEVICE_NOT_FOUND},
+        )
 
     with Session(db_engine) as session:
         db_day = session.exec(select(Day).where(Day.id == day_id)).first()
+
         if db_day is None:
-            raise HTTPException(status_code=404, detail="Day not found")
+            return JSONResponse(
+                status_code=404,
+                content={"message": RESPONSE_DAY_NOT_FOUND},
+            )
 
         db_day.energy = day.energy
         db_day.date = day.date
@@ -126,7 +147,7 @@ async def update_day(day_id: int, day: DayCreate):
     "/{day_id}",
     response_model=DayRead,
     responses={
-        404: {"description": "Day not found"},
+        404: {"model": Message},
     },
     operation_id="delete_day",
 )
@@ -135,8 +156,12 @@ async def delete_day(day_id: int):
 
     with Session(db_engine) as session:
         day = session.exec(select(Day).where(Day.id == day_id)).first()
+
         if day is None:
-            raise HTTPException(status_code=404, detail="Day not found")
+            return JSONResponse(
+                status_code=404,
+                content={"message": RESPONSE_DAY_NOT_FOUND},
+            )
 
         session.delete(day)
         session.commit()

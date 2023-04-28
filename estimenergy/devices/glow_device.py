@@ -150,7 +150,6 @@ class GlowDevice(BaseDevice):
 
         if state.key == 2690257735:
             loop.create_task(self.__on_total_kwh_changed(state.state))
-            return
 
     async def __on_total_kwh_changed(self, value: float):
         if self.last_kwh is None or self.last_time is None:

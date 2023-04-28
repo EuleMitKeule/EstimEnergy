@@ -19,6 +19,11 @@ SENSOR_TYPE_JSON = "json"
 SENSOR_TYPE_FRIENDLY_NAME = "friendly_name"
 SENSOR_TYPE_UNIQUE_ID = "unique_id"
 
+RESPONSE_DEVICE_NOT_FOUND = "Device not found"
+RESPONSE_DEVICE_FAILED_TO_START = "Device failed to start"
+RESPONSE_DEVICE_DELETED = "Device deleted"
+RESPONSE_DAY_NOT_FOUND = "Day not found"
+
 
 class DeviceType(Enum):
     GLOW = "glow"

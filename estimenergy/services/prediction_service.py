@@ -56,7 +56,7 @@ class PredictionService:
         elif metric_period == MetricPeriod.YEAR:
             payment = self.device_config.payment_per_month * 12
         else:
-            raise ValueError("Invalid metric period")
+            return 0
 
         cost = await self.calculate_cost(metric_period, energy, date)
         cost_difference = payment - cost
@@ -76,7 +76,7 @@ class PredictionService:
         elif metric_period == MetricPeriod.YEAR:
             day_count = get_days_in_year(date.year)
         else:
-            raise ValueError("Invalid metric period")
+            return 0
 
         total_accuracy = accuracy_sum / day_count
 
@@ -96,7 +96,7 @@ class PredictionService:
         elif metric_period == MetricPeriod.YEAR:
             day_count = get_days_in_year(date.year)
         else:
-            raise ValueError("Invalid metric period")
+            return 0
 
         if accurate_day_count == 0:
             return 0

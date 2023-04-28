@@ -1,6 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from sqlmodel import Session
+from estimenergy.const import (
+    RESPONSE_DEVICE_DELETED,
+    RESPONSE_DEVICE_FAILED_TO_START,
+    RESPONSE_DEVICE_NOT_FOUND,
+)
 
 from estimenergy.db import db_engine
 from estimenergy.devices import device_registry
@@ -11,7 +16,14 @@ from estimenergy.models.message import Message
 device_router = APIRouter(prefix="/device", tags=["device"])
 
 
-@device_router.post("", response_model=DeviceConfigRead, operation_id="create_device")
+@device_router.post(
+    "",
+    response_model=DeviceConfigRead,
+    operation_id="create_device",
+    responses={
+        500: {"model": Message},
+    },
+)
 async def create_device(device_config: DeviceConfig):
     """Create a new device."""
 
@@ -19,10 +31,11 @@ async def create_device(device_config: DeviceConfig):
 
     try:
         await device.start()
-    except DeviceError as device_error:
-        raise HTTPException(
-            status_code=500, detail="Device failed to start"
-        ) from device_error
+    except DeviceError:
+        return JSONResponse(
+            status_code=500,
+            content={"message": RESPONSE_DEVICE_FAILED_TO_START},
+        )
 
     return device.device_config
 
@@ -43,7 +56,7 @@ async def get_device(device_name: str):
     if device is None:
         return JSONResponse(
             status_code=404,
-            content={"message": f"Device {device_name} not found"},
+            content={"message": RESPONSE_DEVICE_NOT_FOUND},
         )
 
     return device.device_config
@@ -75,7 +88,7 @@ async def update_device(device_name: str, device_config: DeviceConfig):
     if device is None:
         return JSONResponse(
             status_code=404,
-            content={"message": f"Device {device_name} not found"},
+            content={"message": RESPONSE_DEVICE_NOT_FOUND},
         )
 
     device = await device_registry.update_device(device, device_config)
@@ -99,14 +112,14 @@ async def delete_device(device_name: str):
     if device is None:
         return JSONResponse(
             status_code=404,
-            content={"message": f"Device {device_name} not found"},
+            content={"message": RESPONSE_DEVICE_NOT_FOUND},
         )
 
     await device_registry.delete_device(device)
 
     return JSONResponse(
         status_code=201,
-        content={"message": f"Device {device_name} deleted"},
+        content={"message": RESPONSE_DEVICE_DELETED},
     )
 
 
@@ -116,6 +129,7 @@ async def delete_device(device_name: str):
     operation_id="start_device",
     responses={
         404: {"model": Message},
+        500: {"model": Message},
     },
 )
 async def start_device(device_name: str):
@@ -126,15 +140,16 @@ async def start_device(device_name: str):
     if device is None:
         return JSONResponse(
             status_code=404,
-            content={"message": f"Device {device_name} not found"},
+            content={"message": RESPONSE_DEVICE_NOT_FOUND},
         )
 
     try:
         await device.start()
-    except DeviceError as device_error:
-        raise HTTPException(
-            status_code=500, detail="Device failed to start"
-        ) from device_error
+    except DeviceError:
+        return JSONResponse(
+            status_code=500,
+            content={"message": RESPONSE_DEVICE_FAILED_TO_START},
+        )
 
     return device.device_config
 
@@ -155,7 +170,7 @@ async def stop_device(device_name: str):
     if device is None:
         return JSONResponse(
             status_code=404,
-            content={"message": f"Device {device_name} not found"},
+            content={"message": RESPONSE_DEVICE_NOT_FOUND},
         )
 
     await device.stop()
