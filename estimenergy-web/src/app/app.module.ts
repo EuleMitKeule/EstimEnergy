@@ -29,7 +29,7 @@ import { DeviceModalComponent } from './device-modal/device-modal.component';
   providers: [
     {
       provide: BASE_PATH,
-      useValue: 'http://localhost:12321',
+      useValue: '.',
     },
   ],
   bootstrap: [AppComponent],

@@ -11,7 +11,8 @@
                     "/api/*",
                     "/docs",
                     "/openapi.json",
-                    "/redoc"
+                    "/redoc",
+                    "/metrics"
                 ]
             },
             "action": {
@@ -20,7 +21,10 @@
         },
         {
             "action": {
-                "share": "/app/estimenergy-web$uri"
+                "share": "/app/estimenergy-web$uri",
+                "fallback": {
+                    "share": "/app/estimenergy-web/index.html"
+                }
             }
         }
     ],
