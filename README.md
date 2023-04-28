@@ -65,7 +65,7 @@ services:
 
 Now you should have EstimEnergy running on port `12321`, a prometheus collector running at port `9090`, InfluxDB at port `8086` and PostgreSQL at port `5432`.
 
-Prometheus will scrape the metrics exposed by EstimEnergy every 15 seconds and keep the data for five years or until 1TB of space is used. This can be configured via the `--storage.tsdb.retention.time` and `--storage.tsdb.retention.size` command options in the docker-compose file.
+Prometheus will scrape the metrics exposed by EstimEnergy every 15 seconds and keep the data for five years or until 1TB of space is used. This can be configured using the `--storage.tsdb.retention.time` and `--storage.tsdb.retention.size` command options in the docker-compose file.
 
 You should now be able to access the web UI at port 12321. You will have to create one or more devices and configure them using your energy contract data.
 
