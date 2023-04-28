@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from sqlmodel import Session
+
 from estimenergy.const import (
     RESPONSE_DEVICE_DELETED,
     RESPONSE_DEVICE_FAILED_TO_START,
     RESPONSE_DEVICE_NOT_FOUND,
 )
-
 from estimenergy.db import db_engine
 from estimenergy.devices import device_registry
 from estimenergy.devices.device_error import DeviceError

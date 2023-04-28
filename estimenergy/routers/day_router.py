@@ -3,8 +3,9 @@ import datetime
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
-from sqlmodel import Session, select
 from fastapi.responses import JSONResponse
+from sqlmodel import Session, select
+
 from estimenergy.const import RESPONSE_DAY_NOT_FOUND, RESPONSE_DEVICE_NOT_FOUND
 from estimenergy.db import db_engine
 from estimenergy.devices import device_registry
