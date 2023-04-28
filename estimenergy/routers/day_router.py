@@ -102,8 +102,7 @@ async def create_day(day: DayCreate):
     "/{day_id}",
     response_model=DayRead,
     responses={
-        404: {"model": Message, "description": RESPONSE_DEVICE_NOT_FOUND},
-        404: {"model": Message, "description": RESPONSE_DAY_NOT_FOUND},
+        404: {"model": Message},
     },
     operation_id="update_day",
 )
