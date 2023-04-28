@@ -10,7 +10,7 @@ services:
 
   estimenergy-postgresql:
     image: postgres:15.2-alpine
-    container_name: estimenergy-postgres
+    container_name: estimenergy-postgresql
     restart: unless-stopped
     networks:
       - estimenergy
