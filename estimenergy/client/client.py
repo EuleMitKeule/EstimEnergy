@@ -7,12 +7,12 @@ class EstimEnergyClient:
         self.port = port
 
     def get_device(self, name: str):
-        url = f"http://{self.host}:{self.port}/device/{name}"
+        url = f"http://{self.host}:{self.port}/api/device/{name}"
         response = requests.get(url, timeout=5)
         return response.json()
 
     def get_devices(self):
-        url = f"http://{self.host}:{self.port}/device"
+        url = f"http://{self.host}:{self.port}/api/device"
         response = requests.get(url, timeout=5)
         return response.json()
 
