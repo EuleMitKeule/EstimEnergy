@@ -1,75 +1,71 @@
-import asyncio
+"""Entrypoint for the EstimEnergy application."""
+import json
 
 from fastapi import FastAPI
-from tortoise.contrib.fastapi import register_tortoise
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-import yaml
 
-from estimenergy.collectors.glow_collector import GlowCollector
-from estimenergy.common import instrumentator, settings
-from estimenergy.const import DEFAULT_PORT, LOGGING_CONFIG
-from estimenergy.models import CollectorData
-from estimenergy.routers import collector_router, energy_router
+from estimenergy.config import config
+from estimenergy.const import API_PREFIX
+from estimenergy.db import create_db
+from estimenergy.devices import device_registry
+from estimenergy.log import logger
+from estimenergy.prometheus import instrumentator
+from estimenergy.routers.day_router import day_router
+from estimenergy.routers.device_router import device_router
+from estimenergy.routers.month_router import month_router
+from estimenergy.routers.total_router import total_router
+from estimenergy.routers.year_router import year_router
 
 app = FastAPI(
     title="EstimEnergy",
 )
 
-register_tortoise(
-    app,
-    db_url=f"sqlite://{settings.db_path}",
-    modules={"models": ["estimenergy.models"]},
-    generate_schemas=True,
-    add_exception_handlers=True,
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=config.networking_config.cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 instrumentator.instrument(app, "estimenergy")
 instrumentator.expose(app, include_in_schema=True)
 
-app.include_router(energy_router.router)
-app.include_router(collector_router.router)
+app.include_router(device_router, prefix=API_PREFIX)
+app.include_router(day_router, prefix=API_PREFIX)
+app.include_router(month_router, prefix=API_PREFIX)
+app.include_router(year_router, prefix=API_PREFIX)
+app.include_router(total_router, prefix=API_PREFIX)
 
 
 def start():
-    if settings.log_path is not None and settings.log_path != "":
-        LOGGING_CONFIG["handlers"]["file"]["filename"] = settings.log_path
-
-    if settings.log_level is not None and settings.log_level != "":
-        LOGGING_CONFIG["loggers"]["uvicorn.error"]["level"] = settings.log_level
-        LOGGING_CONFIG["loggers"]["uvicorn.access"]["level"] = settings.log_level
-        LOGGING_CONFIG["loggers"]["estimenergy"]["level"] = settings.log_level
+    """Start the EstimEnergy application."""
 
     uvicorn.run(
         "estimenergy.main:app",
-        host=settings.host,
-        port=DEFAULT_PORT,
-        log_config=LOGGING_CONFIG,
-        reload=settings.reload,
+        host=config.networking_config.host,
+        port=config.networking_config.port,
+        reload=config.dev_config.reload,
     )
 
 
+def generate_openapi():
+    """Generate the OpenAPI schema for the EstimEnergy application."""
+
+    with open("openapi.json", "w", encoding="utf-8") as openapi_file:
+        dump = json.dumps(app.openapi(), indent=2)
+        openapi_file.write(dump)
+
+
 @app.on_event("startup")
-async def start_energy_collectors():
-    with open(settings.config_path) as f:
-        config_dict = yaml.safe_load(f)
+async def startup():
+    """Application startup event."""
 
-    collector_names = [
-        collector_data_dict["name"] for collector_data_dict in config_dict["collectors"]
-    ]
-    collector_datas = await CollectorData.all()
+    logger.info("Starting EstimEnergy application.")
 
-    for collector_data in collector_datas:
-        if collector_data.name not in collector_names:
-            await collector_data.delete()
+    create_db()
 
-    for collector_dict in config_dict["collectors"]:
-        collector_data = await CollectorData.filter(name=collector_dict["name"]).first()
-        if collector_data is None:
-            collector_data = CollectorData(**collector_dict)
-            await collector_data.save()
+    await device_registry.initialize()
 
-    collector_datas = await CollectorData.all()
-
-    for collector_data in collector_datas:
-        collector = GlowCollector(collector_data)
-        asyncio.create_task(collector.start())
+    logger.info("EstimEnergy application started.")

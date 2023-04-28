@@ -2,12 +2,31 @@ from enum import Enum
 
 from prometheus_client import Gauge
 
+API_PREFIX = "/api"
+
+DEFAULT_CONFIG_PATH = "config.yml"
+DEFAULT_LOG_PATH = "estimenergy.log"
+DEFAULT_LOG_LEVEL = "INFO"
+
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 12321
+
+DEFAULT_INFLUXDB_HOST = "127.0.0.1"
+DEFAULT_INFLUXDB_PORT = 8086
+DEFAULT_INFLUXDB_USERNAME = "estimenergy"
 
 SENSOR_TYPE_JSON = "json"
 SENSOR_TYPE_FRIENDLY_NAME = "friendly_name"
 SENSOR_TYPE_UNIQUE_ID = "unique_id"
+
+RESPONSE_DEVICE_NOT_FOUND = "Device not found"
+RESPONSE_DEVICE_FAILED_TO_START = "Device failed to start"
+RESPONSE_DEVICE_DELETED = "Device deleted"
+RESPONSE_DAY_NOT_FOUND = "Day not found"
+
+
+class DeviceType(Enum):
+    GLOW = "glow"
 
 
 class MetricPeriod(Enum):
@@ -20,8 +39,9 @@ class MetricPeriod(Enum):
 class MetricType(Enum):
     COST = ("cost", "Cost")
     COST_DIFFERENCE = ("cost_difference", "Cost Difference")
-    ENERGY = ("kwh", "Energy")
+    ENERGY = ("energy", "Energy")
     ACCURACY = ("accuracy", "Accuracy")
+    POWER = ("power", "Power")
 
 
 class Metric:
@@ -38,7 +58,11 @@ class Metric:
         self.is_raw = is_raw
 
     @property
-    def json_key(self) -> str:
+    def key(self) -> str:
+        return f"{self.metric_type.value[0]}{'_predicted' if self.is_predicted else ''}{'_raw' if self.is_raw else ''}"
+
+    @property
+    def metric_key(self) -> str:
         return f"estimenergy_{self.metric_period.value[0]}_{self.metric_type.value[0]}{'_predicted' if self.is_predicted else ''}{'_raw' if self.is_raw else ''}"
 
     @property
@@ -47,10 +71,25 @@ class Metric:
 
     def create_gauge(self, registry) -> Gauge:
         return Gauge(
-            f"{self.json_key}",
+            f"{self.metric_key}",
             f"EstimEnergy {self.friendly_name}",
-            ["name", "id"],
+            ["name"],
             registry=registry,
+        )
+
+    def __eq__(self, __value: object) -> bool:
+        if isinstance(__value, Metric):
+            return (
+                self.metric_type == __value.metric_type
+                and self.metric_period == __value.metric_period
+                and self.is_predicted == __value.is_predicted
+                and self.is_raw == __value.is_raw
+            )
+        return False
+
+    def __hash__(self) -> int:
+        return hash(
+            (self.metric_type, self.metric_period, self.is_predicted, self.is_raw)
         )
 
 
@@ -66,6 +105,7 @@ METRICS = [
     Metric(MetricType.COST, MetricPeriod.DAY, False, False),
     Metric(MetricType.COST, MetricPeriod.MONTH, False, False),
     Metric(MetricType.COST, MetricPeriod.YEAR, False, False),
+    Metric(MetricType.COST, MetricPeriod.TOTAL, False, False),
     Metric(MetricType.COST, MetricPeriod.MONTH, True, False),
     Metric(MetricType.COST, MetricPeriod.YEAR, True, False),
     Metric(MetricType.COST, MetricPeriod.MONTH, True, True),
@@ -94,18 +134,15 @@ JSON_MAX_INCOMPLETE_DAYS = "max_incomplete_days"
 JSON_BILLING_MONTH = "billing_month"
 JSON_DATA = "data"
 
-LOGGING_CONFIG = {
+LOGGING_CONFIG: dict = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
         "default": {
-            "()": "uvicorn.logging.ColourizedFormatter",
-            "format": "%(asctime)-25s %(name)-30s %(levelprefix)-8s %(message)s",
+            "format": "%(asctime)-25s %(name)-30s %(levelname)-8s %(message)s",
         },
         "file": {
-            "()": "uvicorn.logging.ColourizedFormatter",
-            "format": "%(asctime)-25s %(name)-30s %(levelprefix)-8s %(message)s",
-            "use_colors": False,
+            "format": "%(asctime)-25s %(name)-30s %(levelname)-8s %(message)s",
         },
     },
     "handlers": {
@@ -122,7 +159,7 @@ LOGGING_CONFIG = {
         "file": {
             "formatter": "file",
             "class": "logging.FileHandler",
-            "filename": "energy_collector.log",
+            "filename": "estimenergy.log",
         },
     },
     "loggers": {

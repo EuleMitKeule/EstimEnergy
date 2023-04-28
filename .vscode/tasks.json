@@ -1,20 +1,25 @@
 {
+    "version": "2.0.0",
     "tasks": [
+        {
+            "label": "Run EstimEnergy",
+            "detail": "Run the EstimEnergy API and Web using uvicorn and Angular.",
+            "dependsOn": [
+                "Run EstimEnergy API",
+                "Run EstimEnergy Web"
+            ],
+            "isBackground": true,
+            "problemMatcher": [],
+            "promptOnClose": false,
+            "runOptions": {
+                "instanceLimit": 1,
+            },
+        },
         {
             "label": "Run EstimEnergy API",
             "type": "shell",
-            "command": "poetry run poe run",
+            "command": "poetry run api",
             "detail": "Run the EstimEnergy API using uvicorn.",
-            "isBackground": false,
-            "presentation": {
-                "echo": false,
-                "reveal": "always",
-                "focus": true,
-                "panel": "dedicated",
-                "showReuseMessage": true,
-                "clear": true,
-                "close": false
-            },
             "problemMatcher": [],
             "promptOnClose": false,
             "runOptions": {
@@ -22,20 +27,10 @@
             },
         },
         {
-            "label": "Format",
+            "label": "Run EstimEnergy Web",
             "type": "shell",
-            "command": "poetry run poe format",
-            "detail": "Run code formatting tools.",
-            "isBackground": true,
-            "presentation": {
-                "echo": false,
-                "reveal": "silent",
-                "focus": true,
-                "panel": "dedicated",
-                "showReuseMessage": true,
-                "clear": true,
-                "close": false
-            },
+            "command": "cd estimenergy-web && ng serve",
+            "detail": "Run EstimEnergy Web using Angular.",
             "problemMatcher": [],
             "promptOnClose": false,
             "runOptions": {
@@ -43,25 +38,68 @@
             },
         },
         {
-            "label": "Security",
+            "label": "Generate OpenAPI",
             "type": "shell",
-            "command": "poetry run poe security",
-            "detail": "Run security scanning tools.",
-            "isBackground": true,
-            "presentation": {
-                "echo": false,
-                "reveal": "silent",
-                "focus": true,
-                "panel": "dedicated",
-                "showReuseMessage": true,
-                "clear": true,
-                "close": false
-            },
+            "command": "poetry run generate-openapi",
+            "detail": "Generate OpenAPI JSON specification.",
             "problemMatcher": [],
             "promptOnClose": false,
             "runOptions": {
                 "instanceLimit": 1,
             },
-        }
+        },
+        {
+            "label": "Generate Client",
+            "type": "shell",
+            "command": "cd ${workspaceFolder}/estimenergy-web && npm run generate-openapi",
+            "detail": "Generate API Client.",
+            "problemMatcher": [],
+            "promptOnClose": false,
+            "runOptions": {
+                "instanceLimit": 1,
+            },
+        },
+        // {
+        //     "label": "Format",
+        //     "type": "shell",
+        //     "command": "poetry run format",
+        //     "detail": "Run code formatting tools.",
+        //     "isBackground": true,
+        //     "presentation": {
+        //         "echo": false,
+        //         "reveal": "silent",
+        //         "focus": true,
+        //         "panel": "dedicated",
+        //         "showReuseMessage": true,
+        //         "clear": true,
+        //         "close": false
+        //     },
+        //     "problemMatcher": [],
+        //     "promptOnClose": false,
+        //     "runOptions": {
+        //         "instanceLimit": 1,
+        //     },
+        // },
+        // {
+        //     "label": "Security",
+        //     "type": "shell",
+        //     "command": "poetry run security",
+        //     "detail": "Run security scanning tools.",
+        //     "isBackground": true,
+        //     "presentation": {
+        //         "echo": false,
+        //         "reveal": "silent",
+        //         "focus": true,
+        //         "panel": "dedicated",
+        //         "showReuseMessage": true,
+        //         "clear": true,
+        //         "close": false
+        //     },
+        //     "problemMatcher": [],
+        //     "promptOnClose": false,
+        //     "runOptions": {
+        //         "instanceLimit": 1,
+        //     },
+        // }
     ]
 }

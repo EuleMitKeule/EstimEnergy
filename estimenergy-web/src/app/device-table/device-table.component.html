@@ -1,0 +1,39 @@
+<div class="row mb-3">
+    <div class="col">
+        <button type="button" class="btn btn-success float-end" (click)="onCreateClick()">
+            <i class="bi bi-plus-lg"></i>
+        </button>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="col" *ngFor="let device of devices">
+        <div class="card" [ngClass]="{ 'border-success': device.is_connected, 'border-danger': !device.is_connected }">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h5 class="card-title">{{ device.name }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ device.host }}:{{ device.port }}</h6>
+                    </div>
+                    <div class="col d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary me-1 my-auto" (click)="onEditClick(device)">
+                            <i class="bi bi-pen"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger me-1 my-auto" (click)="onStopClick(device)"
+                            *ngIf="device.is_connected">
+                            <i class="bi bi-stop"></i>
+                        </button>
+                        <button type="button" class="btn btn-success me-1 my-auto" (click)="onStartClick(device)"
+                            *ngIf="!device.is_connected">
+                            <i class="bi bi-play"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger my-auto" (click)="onDeleteClick(device)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="card-text"></p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,9 @@
 {
     "name": "EstimEnergy",
     "image": "mcr.microsoft.com/vscode/devcontainers/python:0-3.9",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+    },
     "customizations": {
         "vscode": {
             "extensions": [
@@ -24,5 +27,9 @@
             "onAutoForward": "silent"
         }
     },
-    "onCreateCommand": "bash .devcontainer/setup.sh"
+    "onCreateCommand": "bash .devcontainer/setup.sh",
+    "runArgs": [
+        "--name",
+        "estimenergy_devcontainer"
+    ]
 }

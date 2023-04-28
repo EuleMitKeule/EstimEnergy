@@ -35,7 +35,7 @@ class EstimEnergyCoordinator(DataUpdateCoordinator):
         """Get the value for a metric."""
 
         for sample in samples:
-            if sample.name == metric.json_key:
+            if sample.name == metric.metric_key:
                 return sample.value
         return None
 
@@ -45,7 +45,7 @@ class EstimEnergyCoordinator(DataUpdateCoordinator):
         metrics_text = await self.hass.async_add_executor_job(self.client.get_metrics)
 
         families = list(text_string_to_metric_families(metrics_text))
-        metric_keys = [metric.json_key for metric in METRICS]
+        metric_keys = [metric.metric_key for metric in METRICS]
         samples = []
         for family in families:
             if family.name not in metric_keys:
@@ -54,7 +54,7 @@ class EstimEnergyCoordinator(DataUpdateCoordinator):
 
         data = {
             name: {
-                metric.json_key: self.get_value_for_metric(metric, samples)
+                metric.metric_key: self.get_value_for_metric(metric, samples)
                 for metric in METRICS
             }
             for name in set([sample.labels["name"] for sample in samples])

@@ -1,0 +1,38 @@
+{
+    "listeners": {
+        "*:12321": {
+            "pass": "routes"
+        }
+    },
+    "routes": [
+        {
+            "match": {
+                "uri": [
+                    "/api/*",
+                    "/docs",
+                    "/openapi.json",
+                    "/redoc"
+                ]
+            },
+            "action": {
+                "pass": "applications/fastapi"
+            }
+        },
+        {
+            "action": {
+                "share": "/app/estimenergy-web$uri"
+            }
+        }
+    ],
+    "applications": {
+        "fastapi": {
+            "type": "python",
+            "user": "www-data",
+            "group": "www-data",
+            "path": "/app/estimenergy",
+            "working_directory": "/config",
+            "module": "main",
+            "callable": "app"
+        }
+    }
+}

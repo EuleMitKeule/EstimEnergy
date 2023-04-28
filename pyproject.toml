@@ -13,6 +13,11 @@ packages = [{include = "estimenergy"}]
 license = "MIT"
 version = "0.0.0"
 
+[tool.poetry.scripts]
+api = "estimenergy.main:start"
+drop = "estimenergy.db:drop_db"
+generate-openapi = "estimenergy.main:generate_openapi"
+
 [tool.poe.tasks]
 run = { "script" = "estimenergy.main:start" }
 test = "pytest --cov estimenergy --cov-report term-missing"
@@ -44,6 +49,10 @@ python-dotenv = "~0.21.1"
 PyYAML = "~6.0"
 types-requests = "^2.28.11.17"
 types-pyyaml = "^6.0.12.9"
+pydantic-settings-yaml = "^0.1.1"
+influxdb-client = {extras = ["async"], version = "^1.36.1"}
+sqlmodel = "^0.0.8"
+psycopg2-binary = "^2.9.6"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "~7.2.1"
@@ -78,3 +87,11 @@ combine_as_imports = true
 [tool.mypy]
 ignore_missing_imports = true
 disable_error_code = "call-arg"
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = [
+    "not-context-manager",
+]
+
+[tool.pylint.LOGGING]
+logging-format-style="fstr"

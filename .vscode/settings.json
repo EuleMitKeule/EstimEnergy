@@ -7,6 +7,9 @@
     "python.linting.pydocstylePath": ".venv/bin/pydocstyle",
     "python.linting.mypyPath": ".venv/bin/mypy",
     "python.linting.pylintPath": ".venv/bin/pylint",
+    "python.linting.pylintArgs": [
+        "--extension-pkg-whitelist=pydantic",
+    ],
     "python.formatting.provider": "black",
     "editor.formatOnPaste": false,
     "editor.formatOnSave": true,
@@ -22,6 +25,8 @@
         "**/.coverage": true,
         "**/.ruff_cache": true,
         "**/.venv": true,
+        "**/.angular": true,
+        "**/node_modules": true,
     },
     "terminal.integrated.defaultProfile.linux": "zsh",
     "terminal.integrated.defaultProfile.osx": "zsh",

@@ -6,24 +6,14 @@ class EstimEnergyClient:
         self.host = host
         self.port = port
 
-    def get_collector(self, id):
-        url = f"http://{self.host}:{self.port}/collector/{id}"
+    def get_device(self, name: str):
+        url = f"http://{self.host}:{self.port}/device/{name}"
         response = requests.get(url, timeout=5)
         return response.json()
 
-    async def async_get_collector(self, id):
-        url = f"http://{self.host}:{self.port}/collector/{id}"
-        response = await requests.get(url, timeout=5)
-        return response.json()
-
-    def get_collectors(self):
-        url = f"http://{self.host}:{self.port}/collector"
+    def get_devices(self):
+        url = f"http://{self.host}:{self.port}/device"
         response = requests.get(url, timeout=5)
-        return response.json()
-
-    async def async_get_collectors(self):
-        url = f"http://{self.host}:{self.port}/collector"
-        response = await requests.get(url, timeout=5)
         return response.json()
 
     def get_metrics(self):

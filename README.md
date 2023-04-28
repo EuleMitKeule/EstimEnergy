@@ -1,83 +1,93 @@
 [![PyPI](https://img.shields.io/pypi/v/estimenergy)](https://pypi.org/project/estimenergy)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 
-[![Docker](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/docker.yml/badge.svg)](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/docker.yml)
-[![PyPI](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/pypi.yml/badge.svg)](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/pypi.yml)
-[![HACS](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/hacs.yml/badge.svg)](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/hacs.yml)
-[![hassfest](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/hassfest.yml/badge.svg)](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/hassfest.yml)
+[![Publish](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/publish.yml/badge.svg)](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/publish.yml)
+[![Code Quality](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/quality.yml/badge.svg)](https://github.com/EuleMitKeule/EstimEnergy/actions/workflows/quality.yml)
 
 # EstimEnergy
 
 EstimEnergy is tool for monitoring and estimating energy usage and cost.
-It consists of a FastAPI application that collects data from a home-assistant-glow device and a HACS enabled custom integration for Home Assistant that exposes the data via a sensor entity.
+It consists of a FastAPI backend that collects data from a device, an Angular frontend for configuration and a HACS enabled custom integration for Home Assistant that exposes the data via a sensor entity.
 
 ## Installation
 
 Create the following directories:
 
 `/path/to/appdata/estimenergy/config`<br>
+`/path/to/appdata/estimenergy/postgresql`<br>
+`/path/to/appdata/estimenergy/influxdb`<br>
 `/path/to/appdata/estimenergy/prometheus`
 
-Create a configuration file named `config.yml` in the config directory. Change the values of the example configuration according to your energy contract. You can read more about the specific options below.
+Create a configuration file named `config.yml` in the config directory.
 
 ```yaml
-# config.yml
+db:
+  url: "postgresql://estimenergy:<db-password>@estimenergy-postgresql:5432/estimenergy?sslmode=disable"
 
-collectors:
-  - name: glow
-    host: "192.168.0.123"
-    port: 6053
-    password: ""
-    cost_per_kwh: 0.1234
-    base_cost_per_month: 12.34
-    payment_per_month: 123.4
-    billing_month: 1
-    min_accuracy: 0.75
+influxdb:
+  url: http://estimenergy-influxdb:8086
+  org: estimenergy
+  token: <influx-token>
+  bucket: estimenergy
 ```
 
-Now you can deploy the application stack using this example docker-compose configuration.
-Change the mounting paths according to where you created the corresponding directories.
+Now you can deploy the application stack using the example [docker-compose](docker-compose.yml) configuration.
+Add mounting paths according to where you created the corresponding directories.
+
+Using InfluxDB and Prometheus is optional. If you don't want to use InfluxDB, you need to remove the configuration from the `config.yml` file.
+
+Postgres is also optional and can be replaced with any other SQL database including SQLite. If you want to use SQLite, you need to change to database URL in the config file to `sqlite:////config/estimenergy.db`. Using an external database is recommended, since the Grafana dashboard needs to access the database directly.
 
 ```yaml
 # docker-compose
 
 services:
   estimenergy:
-    image: ghcr.io/eulemitkeule/estimenergy:latest
-    container_name: estimenergy
+    # ...
     volumes:
       - /path/to/appdata/estimenergy/config:/config
-      
+
+  estimenergy-postgresql:
+    # ...
+    volumes:
+      - /path/to/appdata/estimenergy/postgresql:/var/lib/postgresql/data
+
+  estimenergy-influxdb:
+    # ...
+    volumes:
+      - /path/to/appdata/estimenergy/influxdb:/var/lib/influxdb2
+
   estimenergy-prometheus:
-    image: prom/prometheus:latest
-    container_name: estimenergy-prometheus
-    command:
-        - --storage.tsdb.retention.time=5y
-        - --storage.tsdb.retention.size=1TB
+    # ...
     volumes:
       - /path/to/appdata/estimenergy/prometheus:/prometheus
 ```
 
-Now you should have the EstimEnergy API running on port `12321` and a prometheus collector running at port `9090`. 
+Now you should have EstimEnergy running on port `12321`, a prometheus collector running at port `9090`, InfluxDB at port `8086` and PostgreSQL at port `5432`.
 
 Prometheus will scrape the metrics exposed by EstimEnergy every 15 seconds and keep the data for five years or until 1TB of space is used. This can be configured via the `--storage.tsdb.retention.time` and `--storage.tsdb.retention.size` command options in the docker-compose file.
 
-To test out whether everything works correctly and the data is being collected you can configure the prometheus data source in Grafana and use the provided [dashboard](dashboard.json). After importing the dashboard you will have to change the dashboards variables to use your collector and data source. 
+You should now be able to access the web UI at port 12321. You will have to create one or more devices and configure them using your energy contract data.
 
 ## Home Assistant Integration
 
 Install the repository in HACS via the custom repository option. After restarting Home Assistant you can add and configure the integration in the integrations UI. You need to provide the hostname or IP of the EstimEnergy docker container and the port on which it is running on.
 
-This will create sensor entities for each collector and each metric that is being collected. You can use the `Total Energy` and `Yearly Cost` entities as data sources for the Home Assistant Energy Dashboard.
+This will create sensor entities for each collector and each metric that is being collected. You can use the `Total Energy` and `Total Cost` entities as data sources for the Home Assistant Energy Dashboard.
 
 ## Specification
 
 #### `config.yml`
 |option|type|description|
 |-|-|-|
-|collectors|`list`|Configure one or multiple energy collectors
+|db|`dict`|Database configuration|
+|db.url|`str`|Database URL|
+|influxdb|`dict`|InfluxDB configuration|
+|influxdb.url|`str`|InfluxDB URL|
+|influxdb.org|`str`|InfluxDB organization|
+|influxdb.token|`str`|InfluxDB token|
 
-#### `collectors`
+#### `device`
 option|type|description
 -|-|-
 name|`str`|User defined name for the collector

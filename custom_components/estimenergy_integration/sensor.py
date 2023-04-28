@@ -31,16 +31,16 @@ async def async_setup_entry(
     """Set up the EstimEnergy sensor platform."""
 
     client = EstimEnergyClient(entry.data[CONF_HOST], entry.data[CONF_PORT])
-    collectors = await hass.async_add_executor_job(client.get_collectors)
+    devices = await hass.async_add_executor_job(client.get_devices)
 
     coordinator = EstimEnergyCoordinator(
         hass,
         entry,
     )
 
-    for collector in collectors:
+    for device in devices:
         sensors = [
-            EstimEnergySensor(coordinator, metric=metric, collector=collector)
+            EstimEnergySensor(coordinator, metric=metric, device=device)
             for metric in METRICS
         ]
 
@@ -54,13 +54,13 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
     """EstimEnergy Sensor class."""
 
     def __init__(
-        self, coordinator: EstimEnergyCoordinator, metric: Metric, collector: dict
+        self, coordinator: EstimEnergyCoordinator, metric: Metric, device: dict
     ) -> None:
         super().__init__(coordinator)
         self.metric = metric
-        self.collector = collector
-        self._attr_name = f"EstimEnergy {collector['name']} {metric.friendly_name}"
-        self._attr_unique_id = f"estimenergy-{collector['name']}-{metric.json_key}"
+        self.device = device
+        self._attr_name = f"EstimEnergy {device['name']} {metric.friendly_name}"
+        self._attr_unique_id = f"estimenergy-{device['name']}-{metric.metric_key}"
 
     @property
     def device_class(self) -> SensorDeviceClass | None:
@@ -97,7 +97,7 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
         if self.metric.metric_period == MetricPeriod.TOTAL:
             return None
 
-        billing_month = self.collector["billing_month"]
+        billing_month = self.device["billing_month"]
         now = datetime.now()
 
         return now.replace(
@@ -115,12 +115,12 @@ class EstimEnergySensor(CoordinatorEntity, SensorEntity):
         """Return the state of the sensor."""
         if (
             self.coordinator.data is None
-            or self.collector["name"] not in self.coordinator.data
-            or self.metric.json_key not in self.coordinator.data[self.collector["name"]]
+            or self.device["name"] not in self.coordinator.data
+            or self.metric.metric_key not in self.coordinator.data[self.device["name"]]
         ):
             return None
 
-        return self.coordinator.data[self.collector["name"]][self.metric.json_key]
+        return self.coordinator.data[self.device["name"]][self.metric.metric_key]
 
     @property
     def suggested_display_precision(self) -> int | None:
