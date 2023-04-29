@@ -21,7 +21,7 @@ COPY --from=generate-openapi /app/openapi.json openapi.json
 RUN apk add --no-cache openjdk11
 RUN npm install
 RUN npm run generate-openapi -- -i openapi.json
-RUN npm run build
+RUN npm run build -- --configuration=production
 
 FROM nginx/unit:1.29.1-python3.11
 
