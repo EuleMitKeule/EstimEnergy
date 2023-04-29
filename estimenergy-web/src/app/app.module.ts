@@ -14,6 +14,7 @@ import { DeviceTableComponent } from './device-table/device-table.component';
 import { EnergyPageComponent } from './energy-page/energy-page.component';
 import { DevicesPageComponent } from './devices-page/devices-page.component';
 import { DeviceModalComponent } from './device-modal/device-modal.component';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [AppComponent, EnergyTableComponent, DayModalComponent, NavbarComponent, DeviceTableComponent, EnergyPageComponent, DevicesPageComponent, DeviceModalComponent],
@@ -29,7 +30,7 @@ import { DeviceModalComponent } from './device-modal/device-modal.component';
   providers: [
     {
       provide: BASE_PATH,
-      useValue: '.',
+      useValue: environment.apiUrl,
     },
   ],
   bootstrap: [AppComponent],
