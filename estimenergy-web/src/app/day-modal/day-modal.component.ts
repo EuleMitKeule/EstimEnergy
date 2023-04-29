@@ -40,6 +40,13 @@ export class DayModalComponent {
         accuracy: 1,
       };
     }
+
+    if (!this.dayCreate.date) {
+      this.selectedDate = this.calendar.getToday();
+    }
+    else {
+      this.selectedDate = this.stringToDate(this.dayCreate.date);
+    }
   }
 
   onSubmit() {
@@ -59,5 +66,11 @@ export class DayModalComponent {
     const dateObj = new Date(date.year, date.month - 1, date.day);
     const dateStr = formatDate(dateObj, 'yyyy-MM-dd', 'en-US');
     return dateStr;
+  }
+
+  stringToDate(dateStr: string): NgbDateStruct {
+    const dateObj = new Date(dateStr);
+    const date = new NgbDate(dateObj.getFullYear(), dateObj.getMonth() + 1, dateObj.getDate());
+    return date;
   }
 }
