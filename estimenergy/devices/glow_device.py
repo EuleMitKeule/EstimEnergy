@@ -174,11 +174,14 @@ class GlowDevice(BaseDevice):
         )
 
         await self.increment(
-            Metric(MetricType.ENERGY, MetricPeriod.DAY, False, False), kwh_increase
+            Metric(MetricType.ENERGY, MetricPeriod.DAY, False, False),
+            kwh_increase,
+            time,
         )
         await self.increment(
             Metric(MetricType.ACCURACY, MetricPeriod.DAY, False, False),
             accuracy_increase,
+            time,
         )
 
         await self.update()

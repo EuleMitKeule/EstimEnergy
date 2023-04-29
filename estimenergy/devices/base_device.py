@@ -50,7 +50,7 @@ class BaseDevice(ABC):
         self,
         metric: Metric,
         value: float,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ):
         """Increment a metric in the database."""
 
@@ -58,13 +58,13 @@ class BaseDevice(ABC):
             raise ValueError(f"Metric {metric} not provided by this device.")
 
         for data_service in self.data_services:
-            await data_service.increment(metric, value, date)
+            await data_service.increment(metric, value, value_dt)
 
     async def decrement(
         self,
         metric: Metric,
         value: float,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ):
         """Decrement a metric in the database."""
 
@@ -72,13 +72,13 @@ class BaseDevice(ABC):
             raise ValueError(f"Metric {metric} not provided by this device.")
 
         for data_service in self.data_services:
-            await data_service.decrement(metric, value, date)
+            await data_service.decrement(metric, value, value_dt)
 
     async def write(
         self,
         metric: Metric,
         value: float,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ):
         """Write a metric to the database."""
 
@@ -86,13 +86,13 @@ class BaseDevice(ABC):
             raise ValueError(f"Metric {metric} not provided by this device.")
 
         for data_service in self.data_services:
-            await data_service.write(metric, value, date)
+            await data_service.write(metric, value, value_dt)
 
     async def update(
         self,
-        date: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime = datetime.datetime.now(),
     ):
         """Calculate metrics based on other metrics."""
 
         for data_service in self.data_services:
-            await data_service.update(date)
+            await data_service.update(value_dt)
