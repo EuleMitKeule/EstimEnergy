@@ -82,12 +82,6 @@ class InfluxService(DataService):
         if self.config.influx_config is None:
             return
 
-        influx_client = InfluxDBClient(
-            url=self.config.influx_config.url,
-            token=self.config.influx_config.token,
-            org=self.config.influx_config.org,
-        )
-
         point: str = (
             Point("energy")
             .tag("device", self.device_config.name)
