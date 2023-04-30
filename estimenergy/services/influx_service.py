@@ -1,9 +1,9 @@
 """InfluxDB data service."""
 import datetime
-from influxdb_client import InfluxDBClient, Point
 
-from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.flux_table import FluxRecord, FluxTable
+from influxdb_client.client.write_api import SYNCHRONOUS
 
 from estimenergy.const import Metric, MetricPeriod, MetricType
 from estimenergy.influx import influx_client
