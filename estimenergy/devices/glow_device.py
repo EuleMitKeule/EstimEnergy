@@ -81,7 +81,8 @@ class GlowDevice(BaseDevice):
 
             await self.api.subscribe_states(self.__state_changed)
 
-        async def on_connect_error():
+        async def on_connect_error(error: Exception):
+            _ = error
             with Session(db_engine) as session:
                 self.device_config.is_connected = False
                 session.add(self.device_config)
@@ -152,9 +153,11 @@ class GlowDevice(BaseDevice):
             loop.create_task(self.__on_total_kwh_changed(state.state))
 
     async def __on_total_kwh_changed(self, value: float):
+        current_timezone = datetime.datetime.now().astimezone().tzinfo
+
         if self.last_kwh is None or self.last_time is None:
             self.last_kwh = value
-            self.last_time = datetime.datetime.now()
+            self.last_time = datetime.datetime.now(tz=current_timezone)
             return
 
         if value < self.last_kwh:
@@ -162,10 +165,10 @@ class GlowDevice(BaseDevice):
             logger.warning("Detected a reset of the total kWh counter.")
             return
 
-        time = datetime.datetime.now()
+        value_dt = datetime.datetime.now(tz=current_timezone)
 
         kwh_increase = value - self.last_kwh
-        time_increase_us = (time - self.last_time).microseconds
+        time_increase_us = (value_dt - self.last_time).microseconds
         us_per_day = 1000 * 1000 * 60 * 60 * 24
         accuracy_increase = time_increase_us / us_per_day
 
@@ -176,19 +179,22 @@ class GlowDevice(BaseDevice):
         await self.increment(
             Metric(MetricType.ENERGY, MetricPeriod.DAY, False, False),
             kwh_increase,
-            time,
+            value_dt,
         )
         await self.increment(
             Metric(MetricType.ACCURACY, MetricPeriod.DAY, False, False),
             accuracy_increase,
-            time,
+            value_dt,
         )
 
-        await self.update()
+        await self.update(value_dt)
 
         self.last_kwh = value
 
     async def __on_power_changed(self, value: float):
+        current_timezone = datetime.datetime.now().astimezone().tzinfo
+        value_dt = datetime.datetime.now(tz=current_timezone)
+
         await self.write(
-            Metric(MetricType.POWER, MetricPeriod.TOTAL, False, False), value
+            Metric(MetricType.POWER, MetricPeriod.TOTAL, False, False), value, value_dt
         )

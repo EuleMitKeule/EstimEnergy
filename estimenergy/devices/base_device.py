@@ -50,7 +50,7 @@ class BaseDevice(ABC):
         self,
         metric: Metric,
         value: float,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         """Increment a metric in the database."""
 
@@ -64,7 +64,7 @@ class BaseDevice(ABC):
         self,
         metric: Metric,
         value: float,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         """Decrement a metric in the database."""
 
@@ -78,7 +78,7 @@ class BaseDevice(ABC):
         self,
         metric: Metric,
         value: float,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         """Write a metric to the database."""
 
@@ -90,7 +90,7 @@ class BaseDevice(ABC):
 
     async def update(
         self,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         """Calculate metrics based on other metrics."""
 
