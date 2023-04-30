@@ -3,6 +3,6 @@ from pydantic import BaseModel, SecretStr
 
 class InfluxConfig(BaseModel):
     url: str
-    token: SecretStr
+    token: str
     org: str
     bucket: str

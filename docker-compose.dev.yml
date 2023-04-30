@@ -11,6 +11,7 @@ services:
       - 12321:12321
     volumes:
       - ./appdata/config:/config
+      - /etc/localtime:/etc/localtime:ro
 
   estimenergy-postgresql:
     image: postgres:15.2-alpine
@@ -28,6 +29,7 @@ services:
       - POSTGRES_INITDB_ARGS=--encoding=UTF8
     volumes:
       - ./appdata/postgresql:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
 
   estimenergy-influxdb:
     image: influxdb:2.7.0-alpine
@@ -48,6 +50,7 @@ services:
       - DOCKER_INFLUXDB_HTTP_AUTH_ENABLED=true
     volumes:
       - ./appdata/influxdb:/var/lib/influxdb2
+      - /etc/localtime:/etc/localtime:ro
 
   estimenergy-prometheus:
     image: prom/prometheus:v2.43.0
@@ -61,6 +64,7 @@ services:
       - --storage.tsdb.retention.size=1TB
     volumes:
       - ./appdata/prometheus:/prometheus
+      - /etc/localtime:/etc/localtime:ro
 
 networks:
   estimenergy:
