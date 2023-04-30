@@ -20,7 +20,7 @@ class DataService(ABC):
     async def last(
         self,
         metric: Metric,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ) -> float:
         """Return the last value for a metric."""
 
@@ -33,7 +33,7 @@ class DataService(ABC):
         self,
         metric: Metric,
         value: float,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         """Write a metric to the database."""
 
@@ -46,7 +46,7 @@ class DataService(ABC):
         self,
         metric: Metric,
         value: float,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         """Increment a metric in the database."""
 
@@ -61,7 +61,7 @@ class DataService(ABC):
         self,
         metric: Metric,
         value: float,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         """Decrement a metric in the database."""
 
@@ -81,7 +81,7 @@ class DataService(ABC):
     async def _last(
         self,
         metric: Metric,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ) -> float:
         """Get the last value for a metric."""
 
@@ -90,13 +90,13 @@ class DataService(ABC):
         self,
         metric: Metric,
         value: float,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         """Write a metric to the database."""
 
     @abstractmethod
     async def update(
         self,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         """Update metrics."""

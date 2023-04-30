@@ -1,0 +1,68 @@
+services:
+  estimenergy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: estimenergy
+    restart: unless-stopped
+    networks:
+      - estimenergy
+    ports:
+      - 12321:12321
+    volumes:
+      - ./appdata/config:/config
+
+  estimenergy-postgresql:
+    image: postgres:15.2-alpine
+    container_name: estimenergy-postgresql
+    restart: unless-stopped
+    networks:
+      - estimenergy
+    ports:
+      - 5432:5432
+    user: 0:0
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF8
+    volumes:
+      - ./appdata/postgresql:/var/lib/postgresql/data
+
+  estimenergy-influxdb:
+    image: influxdb:2.7.0-alpine
+    container_name: estimenergy-influxdb
+    restart: unless-stopped
+    networks:
+      - estimenergy
+    ports:
+      - 8086:8086
+    environment:
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_ADMIN_TOKEN}
+      - DOCKER_INFLUXDB_REPORTING_DISABLED=true
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_HTTP_AUTH_ENABLED=true
+    volumes:
+      - ./appdata/influxdb:/var/lib/influxdb2
+
+  estimenergy-prometheus:
+    image: prom/prometheus:v2.43.0
+    container_name: estimenergy-prometheus
+    restart: unless-stopped
+    user: 0:0
+    networks:
+      - estimenergy
+    command:
+      - --storage.tsdb.retention.time=5y
+      - --storage.tsdb.retention.size=1TB
+    volumes:
+      - ./appdata/prometheus:/prometheus
+
+networks:
+  estimenergy:
+    driver: bridge
+    name: estimenergy

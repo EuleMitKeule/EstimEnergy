@@ -39,7 +39,7 @@ class InfluxService(DataService):
     async def _last(
         self,
         metric: Metric,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ) -> float:
         """Get the last value for a metric type."""
 
@@ -74,7 +74,7 @@ class InfluxService(DataService):
         self,
         metric: Metric,
         value: float,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         """Write a metric to the database."""
 
@@ -100,7 +100,7 @@ class InfluxService(DataService):
 
     async def update(
         self,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         """Update the database with the latest values."""
         _ = value_dt

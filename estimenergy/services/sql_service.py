@@ -39,7 +39,7 @@ class SqlService(DataService):
     async def _last(
         self,
         metric: Metric,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ) -> float:
         """Get a metric value."""
 
@@ -53,7 +53,7 @@ class SqlService(DataService):
         self,
         metric: Metric,
         value: float,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         """Write a metric value."""
 
@@ -67,7 +67,7 @@ class SqlService(DataService):
 
     async def update(
         self,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         """Update all metrics."""
 
@@ -75,11 +75,11 @@ class SqlService(DataService):
         await self.update_day(date)
         await self.update_month(date)
         await self.update_year(date)
-        await self.update_total()
+        await self.update_total(date)
 
     async def update_day(
         self,
-        date: datetime.date = datetime.date.today(),
+        date: datetime.date,
     ):
         """Update the day metrics."""
 
@@ -109,7 +109,7 @@ class SqlService(DataService):
 
     async def update_month(
         self,
-        date: datetime.date = datetime.date.today(),
+        date: datetime.date,
     ):
         """Update the month metrics."""
 
@@ -117,7 +117,7 @@ class SqlService(DataService):
 
     async def update_year(
         self,
-        date: datetime.date = datetime.date.today(),
+        date: datetime.date,
     ):
         """Update the year metrics."""
 
@@ -126,7 +126,7 @@ class SqlService(DataService):
     async def update_accumulative(
         self,
         metric_period: MetricPeriod,
-        date: datetime.date = datetime.date.today(),
+        date: datetime.date,
     ):
         """Update accumulative metrics."""
 
@@ -239,19 +239,20 @@ class SqlService(DataService):
             session.add(row)
             session.commit()
 
-    async def update_total(self):
+    async def update_total(self, date: datetime.date):
         """Update the total metrics."""
 
         metric_period = MetricPeriod.TOTAL
 
         with Session(db_engine) as session:
-            total = self.get_or_create_row(metric_period)
+            total = self.get_or_create_row(metric_period, date)
             days = session.exec(select(Day)).all()
             energy = sum(day.energy for day in days)
 
             cost = await self.prediction_service.calculate_cost(
                 metric_period,
                 energy,
+                date,
             )
 
             total.energy = energy
@@ -263,7 +264,7 @@ class SqlService(DataService):
     def get_or_create_row(
         self,
         metric_period: MetricPeriod,
-        date: datetime.date = datetime.date.today(),
+        date: datetime.date,
     ) -> Day | Month | Year | Total:
         """Get or create a row in the database."""
 
@@ -277,7 +278,7 @@ class SqlService(DataService):
     def create_row(
         self,
         metric_period: MetricPeriod,
-        date: datetime.date = datetime.date.today(),
+        date: datetime.date,
     ) -> Day | Month | Year | Total:
         """Create a row in the database."""
 
@@ -298,7 +299,7 @@ class SqlService(DataService):
 
     def create_day(
         self,
-        date: datetime.date = datetime.date.today(),
+        date: datetime.date,
     ) -> Day:
         """Create a day in the database."""
 
@@ -323,7 +324,7 @@ class SqlService(DataService):
 
     def create_month(
         self,
-        date: datetime.date = datetime.date.today(),
+        date: datetime.date,
     ) -> Month:
         """Create a month in the database."""
 
@@ -360,7 +361,7 @@ class SqlService(DataService):
 
     def create_year(
         self,
-        date: datetime.date = datetime.date.today(),
+        date: datetime.date,
     ) -> Year:
         """Create a year in the database."""
 
@@ -418,7 +419,7 @@ class SqlService(DataService):
     def get_rows(
         self,
         metric_period: MetricPeriod,
-        date: datetime.date = datetime.date.today(),
+        date: datetime.date,
     ) -> list[Day] | list[Month] | list[Year] | list[Total]:
         """Get rows from the database."""
 
@@ -462,7 +463,7 @@ class SqlService(DataService):
     def get_row(
         self,
         metric_period: MetricPeriod,
-        date: datetime.date = datetime.date.today(),
+        date: datetime.date,
     ) -> Day | Month | Year | Total | None:
         """Get a row from the database."""
 

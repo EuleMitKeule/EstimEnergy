@@ -37,7 +37,7 @@ class PrometheusService(DataService):
     async def _last(
         self,
         metric: Metric,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ) -> float:
         _ = metric
         _ = value_dt
@@ -48,7 +48,7 @@ class PrometheusService(DataService):
         self,
         metric: Metric,
         value: float,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
         _ = metric
         _ = value
@@ -56,10 +56,8 @@ class PrometheusService(DataService):
 
     async def update(
         self,
-        value_dt: datetime.datetime = datetime.datetime.now(),
+        value_dt: datetime.datetime,
     ):
-        _ = value_dt
-
         for metric in METRICS:
             last_value = await self.sql_service.last(metric, value_dt)
 
