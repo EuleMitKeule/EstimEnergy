@@ -8,6 +8,7 @@ from estimenergy.models.device_config import DeviceConfig
 from estimenergy.prometheus import metric_registry
 from estimenergy.services.data_service import DataService
 from estimenergy.services.sql_service import SqlService
+from estimenergy.log import logger
 
 
 class PrometheusService(DataService):
@@ -30,21 +31,7 @@ class PrometheusService(DataService):
             except ValueError:
                 pass
 
-    @property
-    def supported_metrics(self):
-        return []
-
-    async def _last(
-        self,
-        metric: Metric,
-        value_dt: datetime.datetime,
-    ) -> float:
-        _ = metric
-        _ = value_dt
-
-        return 0
-
-    async def _write(
+    async def write(
         self,
         metric: Metric,
         value: float,
@@ -61,4 +48,7 @@ class PrometheusService(DataService):
         for metric in METRICS:
             last_value = await self.sql_service.last(metric, value_dt)
 
-            self.gauges[metric].set(last_value)
+            try:
+                self.gauges[metric].set(last_value)
+            except KeyError:
+                logger.error(f"Could not find gauge for metric {metric}")

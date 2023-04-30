@@ -1,10 +1,11 @@
 """Abstract class for all devices."""
 from abc import ABC, abstractmethod
 import datetime
+from typing import Optional, Type
 
 from estimenergy.const import Metric
 from estimenergy.models.config.config import Config
-from estimenergy.models.device_config import DeviceConfig, DeviceConfigRead
+from estimenergy.models.device_config import DeviceConfig
 from estimenergy.services.data_service import DataService
 from estimenergy.services.influx_service import InfluxService
 from estimenergy.services.prometheus_service import PrometheusService
@@ -33,46 +34,13 @@ class BaseDevice(ABC):
             influx_service = InfluxService(self.device_config, config)
             self.data_services.append(influx_service)
 
-    @property
-    @abstractmethod
-    def provided_metrics(self) -> list[Metric]:
-        """Return a list of metrics provided by this device."""
-
-    @abstractmethod
-    async def stop(self):
-        """Stop the device."""
-
     @abstractmethod
     async def start(self):
         """Start the device."""
 
-    async def increment(
-        self,
-        metric: Metric,
-        value: float,
-        value_dt: datetime.datetime,
-    ):
-        """Increment a metric in the database."""
-
-        if metric not in self.provided_metrics:
-            raise ValueError(f"Metric {metric} not provided by this device.")
-
-        for data_service in self.data_services:
-            await data_service.increment(metric, value, value_dt)
-
-    async def decrement(
-        self,
-        metric: Metric,
-        value: float,
-        value_dt: datetime.datetime,
-    ):
-        """Decrement a metric in the database."""
-
-        if metric not in self.provided_metrics:
-            raise ValueError(f"Metric {metric} not provided by this device.")
-
-        for data_service in self.data_services:
-            await data_service.decrement(metric, value, value_dt)
+    @abstractmethod
+    async def stop(self):
+        """Stop the device."""
 
     async def write(
         self,
@@ -82,11 +50,10 @@ class BaseDevice(ABC):
     ):
         """Write a metric to the database."""
 
-        if metric not in self.provided_metrics:
-            raise ValueError(f"Metric {metric} not provided by this device.")
-
         for data_service in self.data_services:
             await data_service.write(metric, value, value_dt)
+
+        await self.update(value_dt)
 
     async def update(
         self,
@@ -96,3 +63,24 @@ class BaseDevice(ABC):
 
         for data_service in self.data_services:
             await data_service.update(value_dt)
+
+    async def last(
+        self,
+        metric: Metric,
+        value_dt: datetime.datetime,
+    ) -> Optional[float]:
+        """Get the last value of a metric."""
+
+        sql_service: SqlService = next(
+            (
+                data_service
+                for data_service in self.data_services
+                if isinstance(data_service, SqlService)
+            ),
+            None,
+        )
+
+        if sql_service:
+            return await sql_service.last(metric, value_dt)
+
+        return None

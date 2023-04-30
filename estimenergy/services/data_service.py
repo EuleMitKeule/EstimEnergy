@@ -17,76 +17,8 @@ class DataService(ABC):
         self.device_config = device_config
         self.config = config
 
-    async def last(
-        self,
-        metric: Metric,
-        value_dt: datetime.datetime,
-    ) -> float:
-        """Return the last value for a metric."""
-
-        if metric not in self.supported_metrics:
-            return 0
-
-        return await self._last(metric, value_dt)
-
+    @abstractmethod
     async def write(
-        self,
-        metric: Metric,
-        value: float,
-        value_dt: datetime.datetime,
-    ):
-        """Write a metric to the database."""
-
-        if metric not in self.supported_metrics:
-            return
-
-        await self._write(metric, value, value_dt)
-
-    async def increment(
-        self,
-        metric: Metric,
-        value: float,
-        value_dt: datetime.datetime,
-    ):
-        """Increment a metric in the database."""
-
-        if metric not in self.supported_metrics:
-            return
-
-        last_value = await self.last(metric, value_dt)
-
-        await self.write(metric, last_value + value, value_dt)
-
-    async def decrement(
-        self,
-        metric: Metric,
-        value: float,
-        value_dt: datetime.datetime,
-    ):
-        """Decrement a metric in the database."""
-
-        if metric not in self.supported_metrics:
-            return
-
-        last_value = await self.last(metric, value_dt)
-
-        await self.write(metric, last_value - value, value_dt)
-
-    @property
-    @abstractmethod
-    def supported_metrics(self) -> list[Metric]:
-        """Return a list of metrics supported by this service."""
-
-    @abstractmethod
-    async def _last(
-        self,
-        metric: Metric,
-        value_dt: datetime.datetime,
-    ) -> float:
-        """Get the last value for a metric."""
-
-    @abstractmethod
-    async def _write(
         self,
         metric: Metric,
         value: float,

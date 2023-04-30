@@ -11,3 +11,4 @@ class Total(SQLModel, table=True):
     device_name: str = Field(default=None, index=True)
     energy: float = Field(default=0)
     cost: float = Field(default=0)
+    power: float = Field(default=0)

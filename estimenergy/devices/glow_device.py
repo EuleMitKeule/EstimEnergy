@@ -6,7 +6,6 @@ from typing import Optional
 from aioesphomeapi import (
     APIClient,
     APIConnectionError,
-    DeviceInfo,
     InvalidEncryptionKeyAPIError,
     ReconnectLogic,
     RequiresEncryptionAPIError,
@@ -25,14 +24,31 @@ from estimenergy.models.config.config import Config
 from estimenergy.models.device_config import DeviceConfig
 
 
+class EnergySplit:
+    energy_start: float
+    energy_last: float
+    time_start: datetime.datetime
+    time_last: datetime.datetime
+
+    def __init__(self, energy_start: float, time_start: datetime.datetime):
+        self.energy_start = energy_start
+        self.energy_last = energy_start
+        self.time_start = time_start
+        self.time_last = time_start
+
+    def update(self, energy: float, time: datetime.datetime):
+        self.energy_last = energy
+        self.time_last = time
+
+
 class GlowDevice(BaseDevice):
     """Home Assistant Glow device."""
 
     zeroconf: Zeroconf
     api: APIClient
-    reconnect_logic: Optional[ReconnectLogic] = None
-    last_kwh: Optional[float] = None
-    last_time: Optional[datetime.datetime] = None
+    reconnect_logic: Optional[ReconnectLogic]
+    energy_splits: list[EnergySplit]
+    current_split: Optional[EnergySplit]
 
     def __init__(self, device_config: DeviceConfig, config: Config):
         """Initialize the Glow device."""
@@ -46,17 +62,13 @@ class GlowDevice(BaseDevice):
             self.device_config.password,
             zeroconf_instance=self.zeroconf,
         )
-
-    @property
-    def provided_metrics(self) -> list[Metric]:
-        return [
-            Metric(MetricType.ENERGY, MetricPeriod.DAY, False, False),
-            Metric(MetricType.ACCURACY, MetricPeriod.DAY, False, False),
-            Metric(MetricType.POWER, MetricPeriod.TOTAL, False, False),
-        ]
+        self.reconnect_logic = None
+        self.energy_splits = []
+        self.current_split = None
 
     async def start(self):
         """Start the device."""
+
         with Session(db_engine) as session:
             self.device_config.is_active = True
             session.add(self.device_config)
@@ -78,6 +90,8 @@ class GlowDevice(BaseDevice):
                 session.add(self.device_config)
                 session.commit()
                 session.refresh(self.device_config)
+
+            await self.__initialize_data_splits()
 
             await self.api.subscribe_states(self.__state_changed)
 
@@ -142,6 +156,29 @@ class GlowDevice(BaseDevice):
         finally:
             await self.api.disconnect(force=True)
 
+    async def __initialize_data_splits(self):
+        current_timezone = datetime.datetime.now().astimezone().tzinfo
+        current_dt = datetime.datetime.now(tz=current_timezone)
+
+        time_start: datetime.datetime = datetime.datetime.now().replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        energy_start: float = 0
+        energy_split: EnergySplit = EnergySplit(energy_start, time_start)
+
+        last_energy: float = await self.last(
+            Metric(MetricType.ENERGY, MetricPeriod.DAY, False, False), current_dt
+        )
+        last_accuracy: float = await self.last(
+            Metric(MetricType.ACCURACY, MetricPeriod.DAY, False, False), current_dt
+        )
+        last_time = time_start + datetime.timedelta(
+            seconds=last_accuracy * 60 * 60 * 24
+        )
+        energy_split.update(last_energy, last_time)
+
+        self.energy_splits.append(energy_split)
+
     def __state_changed(self, state: SensorState):
         loop = asyncio.get_event_loop()
 
@@ -150,46 +187,62 @@ class GlowDevice(BaseDevice):
             return
 
         if state.key == 2690257735:
-            loop.create_task(self.__on_total_kwh_changed(state.state))
+            loop.create_task(self.__on_total_energy_changed(state.state))
 
-    async def __on_total_kwh_changed(self, value: float):
+    async def __on_total_energy_changed(self, value: float):
         current_timezone = datetime.datetime.now().astimezone().tzinfo
+        current_dt = datetime.datetime.now(tz=current_timezone)
 
-        if self.last_kwh is None or self.last_time is None:
-            self.last_kwh = value
-            self.last_time = datetime.datetime.now(tz=current_timezone)
+        if self.current_split is None:
+            self.current_split = EnergySplit(value, current_dt)
             return
 
-        if value < self.last_kwh:
-            self.last_kwh = value
-            logger.warning("Detected a reset of the total kWh counter.")
+        if value < self.current_split.energy_last:
+            self.energy_splits.append(self.current_split)
+            self.current_split = EnergySplit(value, current_dt)
             return
 
-        value_dt = datetime.datetime.now(tz=current_timezone)
+        if self.current_split.time_last.date() != current_dt.date():
+            self.energy_splits = []
+            self.current_split = EnergySplit(value, current_dt)
+            return
 
-        kwh_increase = value - self.last_kwh
-        time_increase_us = (value_dt - self.last_time).microseconds
-        us_per_day = 1000 * 1000 * 60 * 60 * 24
-        accuracy_increase = time_increase_us / us_per_day
+        self.current_split.update(value, current_dt)
 
-        logger.debug(
-            f"Detected {kwh_increase} kWh increase in {time_increase_us} us for device {self.device_config.name}."
+        energy_daily_total: float = (
+            sum(
+                [
+                    energy_data_split.energy_last - energy_data_split.energy_start
+                    for energy_data_split in self.energy_splits
+                ]
+            )
+            + self.current_split.energy_last
+            - self.current_split.energy_start
         )
+        seconds_daily_total: float = (
+            sum(
+                [
+                    (
+                        energy_data_split.time_last - energy_data_split.time_start
+                    ).total_seconds()
+                    for energy_data_split in self.energy_splits
+                ]
+            )
+        ) + (
+            self.current_split.time_last - self.current_split.time_start
+        ).total_seconds()
+        accuracy_daily_total: float = seconds_daily_total / (60 * 60 * 24)
 
-        await self.increment(
+        await self.write(
             Metric(MetricType.ENERGY, MetricPeriod.DAY, False, False),
-            kwh_increase,
-            value_dt,
+            energy_daily_total,
+            current_dt,
         )
-        await self.increment(
+        await self.write(
             Metric(MetricType.ACCURACY, MetricPeriod.DAY, False, False),
-            accuracy_increase,
-            value_dt,
+            accuracy_daily_total,
+            current_dt,
         )
-
-        await self.update(value_dt)
-
-        self.last_kwh = value
 
     async def __on_power_changed(self, value: float):
         current_timezone = datetime.datetime.now().astimezone().tzinfo
