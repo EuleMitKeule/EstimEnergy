@@ -9,17 +9,18 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  VERSION: ""
 
 jobs:
 
   version:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set_output.outputs.data }}
     steps:
       - name: Get version from release
         if: github.event_name == 'release'
         run: |
-          echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          export VERSION=${{ github.event.release.tag_name }}
 
       - name: Get version from API
         if: github.event_name == 'workflow_dispatch'
@@ -30,20 +31,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
-      - name: Set VERSION env variable
+      - name: Parse API response
+        if: github.event_name == 'workflow_dispatch'
         run: |
-          echo "VERSION=${{ fromJson(steps.release_api.outputs.data).tag_name }}" >> $GITHUB_ENV
+          export VERSION=${{ fromJson(steps.release_api.outputs.data).tag_name }}
 
       - name: Log version
         run: |
-          echo ${{ env.VERSION }}
+          echo "Version: $VERSION"
 
-      - name: Fail if version is empty
+      - name: Fail if no version
         run: |
           if [ -z "$VERSION" ]; then
-            echo "VERSION is empty"
+            echo "No version found"
             exit 1
           fi
+
+      - name: Set version output
+        id: set_output
+        run: |
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
   pypi:
     needs: version
@@ -69,7 +76,7 @@ jobs:
 
       - name: Set package version
         run: |
-          poetry version ${{ env.VERSION }}
+          poetry version ${{ needs.version.outputs.version }}
 
       - name: Build and publish PyPI package
         env:
@@ -101,7 +108,7 @@ jobs:
 
       - name: Set package version
         run: |
-          poetry version ${{ env.VERSION }}
+          poetry version ${{ needs.version.outputs.version }}
 
       - name: Login
         uses: docker/login-action@v2
@@ -116,7 +123,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            ${{ env.VERSION }}
+            ${{ needs.version.outputs.version }}
 
       - name: Build and publish docker image
         uses: docker/build-push-action@v4
