@@ -22,5 +22,3 @@ jobs:
         uses: cycjimmy/semantic-release-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
-        with:
-          tag_format: "{version}"
