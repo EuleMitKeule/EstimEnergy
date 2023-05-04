@@ -15,7 +15,7 @@ jobs:
   version:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.set_output.outputs.data }}
+      version: ${{ steps.set_output.outputs.version }}
     env:
       VERSION: ""
     steps:
