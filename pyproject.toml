@@ -1,7 +1,7 @@
 
 [build-system]
-requires = ["poetry-core", "poetry-dynamic-versioning"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "estimenergy"
@@ -17,23 +17,6 @@ version = "0.0.0"
 api = "estimenergy.main:start"
 drop = "estimenergy.db:drop_db"
 generate-openapi = "estimenergy.main:generate_openapi"
-
-[tool.poe.tasks]
-run = { "script" = "estimenergy.main:start" }
-test = "pytest --cov estimenergy --cov-report term-missing"
-black = "black estimenergy tests custom_components/estimenergy_integration"
-isort = "isort estimenergy tests custom_components/estimenergy_integration"
-mypy = "mypy estimenergy tests custom_components/estimenergy_integration"
-bandit = "bandit -r estimenergy custom_components/estimenergy_integration"
-format.sequence = ["black", "isort", "mypy"]
-format.ignore_fail = true
-security.sequence = ["bandit"]
-security.ignore_fail = true
-
-[tool.poetry-dynamic-versioning]
-enable = true
-vcs = "git"
-style = "semver"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -71,7 +54,6 @@ pydocstyle = "^6.3.0"
 pylint = "^2.17.2"
 
 [tool.poetry.group.build.dependencies]
-poetry-dynamic-versioning = "~0.21.4"
 twine = "~4.0.2"
 
 [tool.isort]
