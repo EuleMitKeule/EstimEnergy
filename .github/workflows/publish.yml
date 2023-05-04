@@ -9,9 +9,38 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  VERSION: ""
 
 jobs:
+
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get version from release
+        if: github.event_name == 'release'
+        run: |
+          echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+
+      - name: Get version from API
+        if: github.event_name == 'workflow_dispatch'
+        id: release_api
+        uses: octokit/request-action@v2
+        with:
+          route: GET /repos/${{ github.repository }}/releases/latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
+      - name: Set VERSION env variable
+        run: |
+          echo "VERSION=${{ steps.release_api.outputs.data.tag_name }}" >> $GITHUB_ENV
+
+      - name: Log version
+        run: |
+          echo ${{ env.VERSION }}
+
   pypi:
+    needs: version
+    if: env.VERSION != ""
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,6 +61,10 @@ jobs:
           poetry config virtualenvs.create false
           poetry install --with build
 
+      - name: Set package version
+        run: |
+          poetry version ${{ env.VERSION }}
+
       - name: Build and publish PyPI package
         env:
           TWINE_USERNAME: __token__
@@ -41,10 +74,29 @@ jobs:
           poetry run twine upload dist/*
 
   docker:
+    needs: version
+    if: env.VERSION != ""
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2
+
+      - name: Install dependencies
+        run: |
+          poetry config virtualenvs.create false
+          poetry install --with build
+
+      - name: Set package version
+        run: |
+          poetry version ${{ env.VERSION }}
 
       - name: Login
         uses: docker/login-action@v2
@@ -58,6 +110,8 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            ${{ env.VERSION }}
 
       - name: Build and publish docker image
         uses: docker/build-push-action@v4
