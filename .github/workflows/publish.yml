@@ -36,7 +36,7 @@ jobs:
 
       - name: Log version
         run: |
-          echo $VERSION
+          echo ${{ env.VERSION }}
 
       - name: Fail if version is empty
         run: |
@@ -69,7 +69,7 @@ jobs:
 
       - name: Set package version
         run: |
-          poetry version $VERSION
+          poetry version ${{ env.VERSION }}
 
       - name: Build and publish PyPI package
         env:
@@ -101,7 +101,7 @@ jobs:
 
       - name: Set package version
         run: |
-          poetry version $VERSION
+          poetry version ${{ env.VERSION }}
 
       - name: Login
         uses: docker/login-action@v2
@@ -116,7 +116,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            $VERSION
+          ${{ env.VERSION }}
 
       - name: Build and publish docker image
         uses: docker/build-push-action@v4
