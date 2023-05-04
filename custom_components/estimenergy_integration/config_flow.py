@@ -2,9 +2,7 @@ from homeassistant import config_entries
 from homeassistant.data_entry_flow import FlowResult
 import voluptuous as vol
 
-from estimenergy.const import DEFAULT_HOST, DEFAULT_PORT
-
-from .const import CONF_HOST, CONF_PORT, DOMAIN
+from .const import CONF_HOST, CONF_PORT, DOMAIN, DEFAULT_HOST, DEFAULT_PORT
 
 
 class EstimEnergyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
