@@ -36,7 +36,7 @@ jobs:
       - name: Parse API response
         if: github.event_name == 'workflow_dispatch'
         run: |
-          echo "VERSION=$(echo ${{ steps.release_api.outputs.data }} | jq -r '.tag_name')" >> $GITHUB_ENV
+          echo "VERSION=${{ fromJson(steps.release_api.outputs.data).tag_name }}" >> $GITHUB_ENV
 
       - name: Log version
         run: |
