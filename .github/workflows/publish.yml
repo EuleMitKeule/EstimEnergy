@@ -24,7 +24,7 @@ jobs:
       - name: Get version from API
         if: github.event_name == 'workflow_dispatch'
         id: release_api
-        uses: octokit/request-action@v2
+        uses: octokit/request-action@v2.x
         with:
           route: GET /repos/${{ github.repository }}/releases/latest
         env:
