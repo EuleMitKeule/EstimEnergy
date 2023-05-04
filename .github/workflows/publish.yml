@@ -32,7 +32,7 @@ jobs:
 
       - name: Set VERSION env variable
         run: |
-          echo "VERSION=${{ steps.release_api.outputs.data.tag_name }}" >> $GITHUB_ENV
+          echo "VERSION=${{ fromJson(steps.release_api.outputs.data).tag_name }}" >> $GITHUB_ENV
 
       - name: Log version
         run: |
