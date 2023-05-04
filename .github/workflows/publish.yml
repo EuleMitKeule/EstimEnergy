@@ -16,11 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.set_output.outputs.data }}
+    env:
+      VERSION: ""
     steps:
       - name: Get version from release
         if: github.event_name == 'release'
         run: |
-          export VERSION=$(echo ${{ github.event.release.tag_name }})
+          echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
       - name: Get version from API
         if: github.event_name == 'workflow_dispatch'
@@ -34,7 +36,7 @@ jobs:
       - name: Parse API response
         if: github.event_name == 'workflow_dispatch'
         run: |
-          export VERSION=$(echo ${{ steps.release_api.outputs.data }} | jq -r '.tag_name')
+          echo "VERSION=$(echo ${{ steps.release_api.outputs.data }} | jq -r '.tag_name')" >> $GITHUB_ENV
 
       - name: Log version
         run: |
