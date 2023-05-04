@@ -20,7 +20,7 @@ jobs:
       - name: Get version from release
         if: github.event_name == 'release'
         run: |
-          export VERSION=${{ github.event.release.tag_name }}
+          export VERSION=$(echo ${{ github.event.release.tag_name }})
 
       - name: Get version from API
         if: github.event_name == 'workflow_dispatch'
@@ -34,7 +34,7 @@ jobs:
       - name: Parse API response
         if: github.event_name == 'workflow_dispatch'
         run: |
-          export VERSION=${{ fromJson(steps.release_api.outputs.data).tag_name }}
+          export VERSION=$(echo ${{ steps.release_api.outputs.data }} | jq -r '.tag_name')
 
       - name: Log version
         run: |
