@@ -38,9 +38,15 @@ jobs:
         run: |
           echo $VERSION
 
+      - name: Fail if version is empty
+        run: |
+          if [ -z "$VERSION" ]; then
+            echo "VERSION is empty"
+            exit 1
+          fi
+
   pypi:
     needs: version
-    if: ${{ env.VERSION != "" }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -75,7 +81,6 @@ jobs:
 
   docker:
     needs: version
-    if: ${{ env.VERSION != "" }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
