@@ -1,7 +1,7 @@
 """Constants for EstimEnergy"""
 from enum import Enum
-from homeassistant.const import Platform
 
+from homeassistant.const import Platform
 
 PLATFORM = Platform.SENSOR
 DOMAIN = "estimenergy_integration"
