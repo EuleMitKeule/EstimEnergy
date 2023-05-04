@@ -17,7 +17,6 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      # i don't want a 'v' prefix
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v3
         env:
