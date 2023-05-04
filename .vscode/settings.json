@@ -10,7 +10,6 @@
     "python.linting.pylintArgs": [
         "--extension-pkg-whitelist=pydantic",
     ],
-    "python.formatting.provider": "black",
     "editor.formatOnPaste": false,
     "editor.formatOnSave": true,
     "editor.formatOnType": true,
@@ -31,4 +30,7 @@
     "terminal.integrated.defaultProfile.linux": "zsh",
     "terminal.integrated.defaultProfile.osx": "zsh",
     "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
 }

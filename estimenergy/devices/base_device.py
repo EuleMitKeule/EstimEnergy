@@ -77,7 +77,6 @@ class BaseDevice(ABC):
                 for data_service in self.data_services
                 if isinstance(data_service, SqlService)
             ),
-            None,
         )
 
         if sql_service:
