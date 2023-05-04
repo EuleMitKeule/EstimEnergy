@@ -40,7 +40,7 @@ jobs:
 
   pypi:
     needs: version
-    if: env.VERSION != ""
+    if: ${{ env.VERSION != "" }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -75,7 +75,7 @@ jobs:
 
   docker:
     needs: version
-    if: env.VERSION != ""
+    if: ${{ env.VERSION != "" }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
