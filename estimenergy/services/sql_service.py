@@ -1,12 +1,11 @@
 """Service for writing and reading data from the SQL database."""
 import datetime
-import traceback
 
 from sqlalchemy import extract
 from sqlmodel import Session, select
 from sqlmodel.sql.expression import SelectOfScalar
 
-from estimenergy.const import METRICS, Metric, MetricPeriod, MetricType
+from estimenergy.const import Metric, MetricPeriod
 from estimenergy.db import db_engine
 from estimenergy.models.config.config import Config
 from estimenergy.models.day import Day
@@ -28,28 +27,7 @@ class SqlService(DataService):
 
         self.prediction_service = PredictionService(device_config, config)
 
-    @property
-    def supported_metrics(self) -> list[Metric]:
-        return [
-            metric
-            for metric in METRICS
-            if not metric.is_raw and metric.metric_type != MetricType.POWER
-        ]
-
-    async def _last(
-        self,
-        metric: Metric,
-        value_dt: datetime.datetime,
-    ) -> float:
-        """Get a metric value."""
-
-        date = value_dt.date()
-        row = self.get_or_create_row(metric.metric_period, date)
-        value = getattr(row, metric.key, 0)
-
-        return value
-
-    async def _write(
+    async def write(
         self,
         metric: Metric,
         value: float,
@@ -77,6 +55,19 @@ class SqlService(DataService):
         await self.update_year(date)
         await self.update_total(date)
 
+    async def last(
+        self,
+        metric: Metric,
+        value_dt: datetime.datetime,
+    ) -> float:
+        """Get a metric value."""
+
+        date = value_dt.date()
+        row = self.get_or_create_row(metric.metric_period, date)
+        value = getattr(row, metric.key, 0)
+
+        return value
+
     async def update_day(
         self,
         date: datetime.date,
@@ -96,6 +87,7 @@ class SqlService(DataService):
                 day.energy,
                 day.date,
             )
+
             day.cost_difference = (
                 await self.prediction_service.calculate_cost_difference(
                     metric_period,

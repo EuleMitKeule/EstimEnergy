@@ -100,6 +100,7 @@ class PredictionService:
 
         if accurate_day_count == 0:
             return 0
+
         mean_energy_per_day = energy / accurate_day_count
         predicted_energy = mean_energy_per_day * day_count
 

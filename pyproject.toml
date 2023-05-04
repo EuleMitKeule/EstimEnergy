@@ -40,7 +40,7 @@ python = "^3.9"
 uvicorn = {extras = ["standard"], version = "~0.20.0"}
 fastapi = "~0.92.0"
 fastapi-crudrouter = "~0.8.6"
-aioesphomeapi = "~13.4.0"
+aioesphomeapi = "13.7.2"
 tortoise_orm = "~0.19.3"
 requests = "~2.28.2"
 prometheus_client = "~0.16.0"
