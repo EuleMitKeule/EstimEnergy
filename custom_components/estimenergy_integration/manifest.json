@@ -7,6 +7,6 @@
   "documentation": "https://github.com/EuleMitKeule/EstimEnergy",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/EuleMitKeule/EstimEnergy/issues",
-  "requirements": ["estimenergy>=2.0"],
+  "requirements": ["requests", "prometheus_client"],
   "version": "0.0.1"
 }

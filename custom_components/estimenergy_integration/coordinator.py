@@ -9,8 +9,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from prometheus_client.parser import text_string_to_metric_families
 
-from estimenergy.client import EstimEnergyClient
-from estimenergy.const import METRICS, Metric
+from .client import EstimEnergyClient
+from .const import METRICS, Metric
 
 _LOGGER = logging.getLogger(__name__)
 
