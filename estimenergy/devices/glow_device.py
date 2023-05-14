@@ -156,7 +156,7 @@ class GlowDevice(BaseDevice):
         finally:
             await self.api.disconnect(force=True)
 
-    async def __initialize_data_splits(self):
+    async def __initialize_data_splits(self) -> None:
         current_timezone = datetime.datetime.now().astimezone().tzinfo
         current_dt = datetime.datetime.now(tz=current_timezone)
 
@@ -166,11 +166,17 @@ class GlowDevice(BaseDevice):
         energy_start: float = 0
         energy_split: EnergySplit = EnergySplit(energy_start, time_start)
 
-        last_energy: float = await self.last(
-            Metric(MetricType.ENERGY, MetricPeriod.DAY, False, False), current_dt
+        last_energy: float = (
+            await self.last(
+                Metric(MetricType.ENERGY, MetricPeriod.DAY, False, False), current_dt
+            )
+            or 0
         )
-        last_accuracy: float = await self.last(
-            Metric(MetricType.ACCURACY, MetricPeriod.DAY, False, False), current_dt
+        last_accuracy: float = (
+            await self.last(
+                Metric(MetricType.ACCURACY, MetricPeriod.DAY, False, False), current_dt
+            )
+            or 0
         )
         last_time = time_start + datetime.timedelta(
             seconds=last_accuracy * 60 * 60 * 24

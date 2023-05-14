@@ -5,7 +5,7 @@ import voluptuous as vol
 from .const import CONF_HOST, CONF_PORT, DEFAULT_HOST, DEFAULT_PORT, DOMAIN
 
 
-class EstimEnergyConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class EstimEnergyConfigFlow(config_entries.ConfigFlow):
     """EstimEnergy config flow."""
 
     VERSION = 1

@@ -15,11 +15,13 @@ from estimenergy.models.device_config import DeviceConfig
 class Config(BaseModel):
     """The main config class."""
 
-    dev_config: DevConfig = Field(DevConfig(), alias="dev")
-    networking_config: NetworkingConfig = Field(NetworkingConfig(), alias="networking")
-    logging_config: LoggingConfig = Field(LoggingConfig(), alias="logging")
-    sql_config: SqlConfig = Field(SqlConfig(), alias="db")
-    influx_config: Optional[InfluxConfig] = Field(alias="influxdb")
+    dev_config: DevConfig = Field(default=DevConfig(), alias="dev")
+    networking_config: NetworkingConfig = Field(
+        default=NetworkingConfig(), alias="networking"
+    )
+    logging_config: LoggingConfig = Field(default=LoggingConfig(), alias="logging")
+    sql_config: SqlConfig = Field(default=SqlConfig(), alias="db")
+    influx_config: Optional[InfluxConfig] = Field(default=None, alias="influxdb")
 
     @classmethod
     def from_file(cls, config_path: str):
