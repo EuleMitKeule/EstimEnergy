@@ -1,16 +1,26 @@
-from fastapi import APIRouter, HTTPException
+from typing import List, Union
+
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
-from sqlmodel import Session
+from sqlalchemy.exc import NoResultFound
+from sqlmodel import Session, select
 
 from estimenergy.const import (
     RESPONSE_DEVICE_DELETED,
+    RESPONSE_DEVICE_EXISTS,
     RESPONSE_DEVICE_FAILED_TO_START,
     RESPONSE_DEVICE_NOT_FOUND,
+    RESPONSE_DEVICE_STARTED,
+    RESPONSE_DEVICE_STOPPED,
 )
-from estimenergy.db import db_engine
-from estimenergy.devices import device_registry
+from estimenergy.db import get_session
 from estimenergy.devices.device_error import DeviceError
-from estimenergy.models.device_config import DeviceConfig, DeviceConfigRead
+from estimenergy.devices.device_registry import device_registry
+from estimenergy.models.device_config import (
+    DeviceConfig,
+    DeviceConfigIn,
+    DeviceConfigOut,
+)
 from estimenergy.models.message import Message
 
 device_router = APIRouter(prefix="/device", tags=["device"])
@@ -18,19 +28,26 @@ device_router = APIRouter(prefix="/device", tags=["device"])
 
 @device_router.post(
     "",
-    response_model=DeviceConfigRead,
+    response_model=DeviceConfigOut,
     operation_id="create_device",
     responses={
+        409: {"model": Message},
         500: {"model": Message},
     },
 )
-async def create_device(device_config: DeviceConfig):
+async def create_device(
+    device_config_in: DeviceConfigIn, session: Session = Depends(get_session)
+):
     """Create a new device."""
 
-    device = await device_registry.create_device(device_config)
+    if await device_registry.device_exists(device_config_in.name, session):
+        return JSONResponse(
+            status_code=409,
+            content={"message": RESPONSE_DEVICE_EXISTS},
+        )
 
     try:
-        await device.start()
+        device = await device_registry.create_device(device_config_in, session)
     except DeviceError:
         return JSONResponse(
             status_code=500,
@@ -42,58 +59,70 @@ async def create_device(device_config: DeviceConfig):
 
 @device_router.get(
     "/{device_name}",
-    response_model=DeviceConfigRead,
+    response_model=DeviceConfigOut,
     operation_id="get_device",
     responses={
         404: {"model": Message},
     },
 )
-async def get_device(device_name: str):
+async def get_device(device_name: str, session: Session = Depends(get_session)):
     """Get a device."""
 
-    device = await device_registry.get_device(device_name)
-
-    if device is None:
+    try:
+        device_config = await device_registry.get_device_config(device_name, session)
+    except NoResultFound:
         return JSONResponse(
             status_code=404,
             content={"message": RESPONSE_DEVICE_NOT_FOUND},
         )
 
-    return device.device_config
+    return device_config
 
 
 @device_router.get(
-    "", response_model=list[DeviceConfigRead], operation_id="get_devices"
+    "",
+    response_model=list[DeviceConfigOut],
+    operation_id="get_devices",
 )
-async def get_devices():
+async def get_devices(session: Session = Depends(get_session)):
     """Get all devices."""
 
-    device_configs = [device.device_config for device in device_registry.devices]
+    device_configs = session.exec(select(DeviceConfig)).all()
+
     return device_configs
 
 
 @device_router.put(
     "/{device_name}",
-    response_model=DeviceConfigRead,
+    response_model=DeviceConfigOut,
     operation_id="update_device",
     responses={
         404: {"model": Message},
     },
 )
-async def update_device(device_name: str, device_config: DeviceConfig):
+async def update_device(
+    device_name: str,
+    device_config_in: DeviceConfigIn,
+    session: Session = Depends(get_session),
+):
     """Update a device."""
 
-    device = await device_registry.get_device(device_name)
-
-    if device is None:
+    try:
+        device_config = await device_registry.update_device(
+            device_name, device_config_in, session
+        )
+    except DeviceError:
+        return JSONResponse(
+            status_code=500,
+            content={"message": RESPONSE_DEVICE_FAILED_TO_START},
+        )
+    except NoResultFound:
         return JSONResponse(
             status_code=404,
             content={"message": RESPONSE_DEVICE_NOT_FOUND},
         )
 
-    device = await device_registry.update_device(device, device_config)
-
-    return device.device_config
+    return device_config
 
 
 @device_router.delete(
@@ -101,78 +130,77 @@ async def update_device(device_name: str, device_config: DeviceConfig):
     operation_id="delete_device",
     responses={
         404: {"model": Message},
-        201: {"model": Message},
+        200: {"model": Message},
     },
 )
-async def delete_device(device_name: str):
+async def delete_device(device_name: str, session: Session = Depends(get_session)):
     """Delete a device."""
 
-    device = await device_registry.get_device(device_name)
-
-    if device is None:
+    try:
+        await device_registry.delete_device(device_name, session)
+    except NoResultFound:
         return JSONResponse(
             status_code=404,
             content={"message": RESPONSE_DEVICE_NOT_FOUND},
         )
 
-    await device_registry.delete_device(device)
-
     return JSONResponse(
-        status_code=201,
+        status_code=200,
         content={"message": RESPONSE_DEVICE_DELETED},
     )
 
 
 @device_router.post(
     "/{device_name}/start",
-    response_model=DeviceConfigRead,
     operation_id="start_device",
     responses={
+        200: {"model": Message},
         404: {"model": Message},
         500: {"model": Message},
     },
 )
-async def start_device(device_name: str):
+async def start_device(device_name: str, session: Session = Depends(get_session)):
     """Start a device."""
 
-    device = await device_registry.get_device(device_name)
-
-    if device is None:
-        return JSONResponse(
-            status_code=404,
-            content={"message": RESPONSE_DEVICE_NOT_FOUND},
-        )
-
     try:
-        await device.start()
+        await device_registry.start_device(device_name, session)
     except DeviceError:
         return JSONResponse(
             status_code=500,
             content={"message": RESPONSE_DEVICE_FAILED_TO_START},
         )
-
-    return device.device_config
-
-
-@device_router.post(
-    "/{device_name}/stop",
-    response_model=DeviceConfigRead,
-    operation_id="stop_device",
-    responses={
-        404: {"model": Message},
-    },
-)
-async def stop_device(device_name: str):
-    """Stop a device."""
-
-    device = await device_registry.get_device(device_name)
-
-    if device is None:
+    except NoResultFound:
         return JSONResponse(
             status_code=404,
             content={"message": RESPONSE_DEVICE_NOT_FOUND},
         )
 
-    await device.stop()
+    return JSONResponse(
+        status_code=200,
+        content={"message": RESPONSE_DEVICE_STARTED},
+    )
 
-    return device.device_config
+
+@device_router.post(
+    "/{device_name}/stop",
+    operation_id="stop_device",
+    responses={
+        200: {"model": Message},
+        404: {"model": Message},
+    },
+)
+async def stop_device(device_name: str, session: Session = Depends(get_session)):
+    """Stop a device."""
+
+    try:
+        await device_registry.stop_device(device_name, session)
+    except NoResultFound:
+        return JSONResponse(
+            status_code=404,
+            content={"message": RESPONSE_DEVICE_NOT_FOUND},
+        )
+
+    return JSONResponse(
+        status_code=200,
+        content={"message": RESPONSE_DEVICE_STOPPED},
+    )

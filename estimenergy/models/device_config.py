@@ -1,30 +1,59 @@
 """Device config models."""
-from sqlmodel import Field, SQLModel
+
+from sqlmodel import Field, Relationship, SQLModel
 
 from estimenergy.const import DeviceType
+from estimenergy.models.glow_config import GlowConfig, GlowConfigIn, GlowConfigOut
+from estimenergy.models.shelly_config import (
+    ShellyConfig,
+    ShellyConfigIn,
+    ShellyConfigOut,
+)
 
 
-class BaseDeviceConfig(SQLModel):
+class DeviceConfigBase(SQLModel):
     """Base device config."""
 
-    name: str = Field(default=None, primary_key=True)
-    type: DeviceType = Field(default=DeviceType.GLOW)
-    host: str = Field(default=None)
-    port: int = Field(default=None)
+    name: str = Field(unique=True)
+    device_type: DeviceType
+    is_active: bool = Field(default=True)
+
     cost_per_kwh: float = Field(default=0)
     base_cost_per_month: float = Field(default=0)
     payment_per_month: float = Field(default=0)
     billing_month: int = Field(default=1)
     min_accuracy: float = Field(default=0)
-    is_active: bool = Field(default=True)
-    is_connected: bool = Field(default=False)
+
+    glow_config_id: int | None = Field(
+        default=None, foreign_key="glowconfig.id", nullable=True
+    )
+    shelly_config_id: int | None = Field(
+        default=None, foreign_key="shellyconfig.id", nullable=True
+    )
 
 
-class DeviceConfig(BaseDeviceConfig, table=True):
-    """Device config with secrets."""
+class DeviceConfig(DeviceConfigBase, table=True):
+    """Device config model."""
 
-    password: str = Field(default="")
+    id: int | None = Field(default=None, primary_key=True)
+    glow_config: GlowConfig | None = Relationship(
+        sa_relationship_kwargs={"cascade": "delete"},
+    )
+    shelly_config: ShellyConfig | None = Relationship(
+        sa_relationship_kwargs={"cascade": "delete"},
+    )
 
 
-class DeviceConfigRead(BaseDeviceConfig):
-    """Device config without secrets."""
+class DeviceConfigIn(DeviceConfigBase):
+    """Device config in model."""
+
+    glow_config: GlowConfigIn | None
+    shelly_config: ShellyConfigIn | None
+
+
+class DeviceConfigOut(DeviceConfigBase):
+    """Device config out model."""
+
+    id: int
+    glow_config: GlowConfigOut | None
+    shelly_config: ShellyConfigOut | None

@@ -8,7 +8,7 @@ import uvicorn
 from estimenergy.config import config
 from estimenergy.const import API_PREFIX
 from estimenergy.db import create_db
-from estimenergy.devices import device_registry
+from estimenergy.devices.device_registry import device_registry
 from estimenergy.log import logger
 from estimenergy.prometheus import instrumentator
 from estimenergy.routers.day_router import day_router

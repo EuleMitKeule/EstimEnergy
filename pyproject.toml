@@ -14,6 +14,7 @@ license = "MIT"
 version = "0.0.0"
 
 [tool.poetry.scripts]
+shelly = "estimenergy.shelly_test:main"
 api = "estimenergy.main:start"
 drop = "estimenergy.db:drop_db"
 generate-openapi = "estimenergy.main:generate_openapi"
@@ -34,6 +35,7 @@ types-pyyaml = "^6.0.12.9"
 influxdb-client = {extras = ["async"], version = "^1.36.1"}
 sqlmodel = "^0.0.8"
 psycopg2-binary = "^2.9.6"
+aioshelly = "^5.3.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "~7.2.1"

@@ -12,16 +12,17 @@ from aioesphomeapi import (
     ResolveAPIError,
     SensorState,
 )
-from sqlmodel import Session
+from sqlmodel import Session, select
 from zeroconf import Zeroconf
 
 from estimenergy.const import Metric, MetricPeriod, MetricType
 from estimenergy.db import db_engine
-from estimenergy.devices import BaseDevice
+from estimenergy.devices.base_device import BaseDevice
 from estimenergy.devices.device_error import DeviceError
 from estimenergy.log import logger
 from estimenergy.models.config.config import Config
 from estimenergy.models.device_config import DeviceConfig
+from estimenergy.models.glow_config import GlowConfig
 
 
 class EnergySplit:
@@ -49,17 +50,24 @@ class GlowDevice(BaseDevice):
     reconnect_logic: Optional[ReconnectLogic]
     energy_splits: list[EnergySplit]
     current_split: Optional[EnergySplit]
+    device_config: DeviceConfig
+    glow_config: GlowConfig
 
     def __init__(self, device_config: DeviceConfig, config: Config):
         """Initialize the Glow device."""
 
         super().__init__(device_config, config)
 
+        with Session(db_engine) as session:
+            self.glow_config = session.exec(
+                select(GlowConfig).where(GlowConfig.id == device_config.id)
+            ).one()
+
         self.zeroconf = Zeroconf()
         self.api = APIClient(
-            self.device_config.host,
-            self.device_config.port,
-            self.device_config.password,
+            self.glow_config.host,
+            self.glow_config.port,
+            self.glow_config.password,
             zeroconf_instance=self.zeroconf,
         )
         self.reconnect_logic = None
@@ -69,13 +77,8 @@ class GlowDevice(BaseDevice):
     async def start(self):
         """Start the device."""
 
-        with Session(db_engine) as session:
-            self.device_config.is_active = True
-            session.add(self.device_config)
-            session.commit()
-            session.refresh(self.device_config)
-
         if not await self.can_connect():
+            self.is_running = False
             logger.error(f"Unable to login to {self.device_config.name}")
             raise DeviceError(f"Unable to login to {self.device_config.name}")
 
@@ -85,32 +88,16 @@ class GlowDevice(BaseDevice):
             logger.info(f"Connected to ESPHome Device {self.device_config.name}")
             event.set()
 
-            with Session(db_engine) as session:
-                self.device_config.is_connected = True
-                session.add(self.device_config)
-                session.commit()
-                session.refresh(self.device_config)
-
             await self.__initialize_data_splits()
 
             await self.api.subscribe_states(self.__state_changed)
 
         async def on_connect_error(error: Exception):
             _ = error
-            with Session(db_engine) as session:
-                self.device_config.is_connected = False
-                session.add(self.device_config)
-                session.commit()
-                session.refresh(self.device_config)
-
             raise DeviceError(f"Unable to connect to {self.device_config.name}")
 
         async def on_disconnect():
-            with Session(db_engine) as session:
-                self.device_config.is_connected = False
-                session.add(self.device_config)
-                session.commit()
-                session.refresh(self.device_config)
+            pass
 
         self.reconnect_logic = ReconnectLogic(
             client=self.api,
@@ -123,6 +110,8 @@ class GlowDevice(BaseDevice):
 
         await self.reconnect_logic.start()
 
+        self.is_running = True
+
         await event.wait()
 
     async def stop(self):
@@ -130,16 +119,12 @@ class GlowDevice(BaseDevice):
 
         logger.info(f"Stopping ESPHome Device {self.device_config.name}")
 
-        with Session(db_engine) as session:
-            self.device_config.is_active = False
-            session.add(self.device_config)
-            session.commit()
-            session.refresh(self.device_config)
-
         await self.api.disconnect(force=True)
         if self.reconnect_logic is not None:
             await self.reconnect_logic.stop()
         self.zeroconf.close()
+
+        self.is_running = False
 
     async def can_connect(self) -> bool:
         """Check if we can connect to the device."""
@@ -196,6 +181,9 @@ class GlowDevice(BaseDevice):
             loop.create_task(self.__on_total_energy_changed(state.state))
 
     async def __on_total_energy_changed(self, value: float):
+        if self.device_config.name == "glow2":
+            pass
+
         current_timezone = datetime.datetime.now().astimezone().tzinfo
         current_dt = datetime.datetime.now(tz=current_timezone)
 

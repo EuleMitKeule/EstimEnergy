@@ -25,3 +25,9 @@ def drop_db():
     with Session(db_engine) as session:
         SQLModel.metadata.drop_all(db_engine)
         session.commit()
+
+
+def get_session():
+    """Get a database session."""
+
+    return Session(db_engine)

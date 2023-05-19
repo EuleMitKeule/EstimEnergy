@@ -23,10 +23,14 @@ RESPONSE_DEVICE_NOT_FOUND = "Device not found"
 RESPONSE_DEVICE_FAILED_TO_START = "Device failed to start"
 RESPONSE_DEVICE_DELETED = "Device deleted"
 RESPONSE_DAY_NOT_FOUND = "Day not found"
+RESPONSE_DEVICE_STARTED = "Device started"
+RESPONSE_DEVICE_STOPPED = "Device stopped"
+RESPONSE_DEVICE_EXISTS = "Device already exists"
 
 
 class DeviceType(Enum):
     GLOW = "glow"
+    SHELLY = "shelly"
 
 
 class MetricPeriod(Enum):
@@ -91,6 +95,9 @@ class Metric:
         return hash(
             (self.metric_type, self.metric_period, self.is_predicted, self.is_raw)
         )
+
+    def __repr__(self) -> str:
+        return f"{self.metric_key}"
 
 
 METRICS = [

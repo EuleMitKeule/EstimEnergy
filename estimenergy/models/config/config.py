@@ -9,7 +9,6 @@ from estimenergy.models.config.influx_config import InfluxConfig
 from estimenergy.models.config.logging_config import LoggingConfig
 from estimenergy.models.config.networking_config import NetworkingConfig
 from estimenergy.models.config.sql_config import SqlConfig
-from estimenergy.models.device_config import DeviceConfig
 
 
 class Config(BaseModel):

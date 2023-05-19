@@ -10,6 +10,8 @@ from estimenergy.prometheus import metric_registry
 from estimenergy.services.data_service import DataService
 from estimenergy.services.sql_service import SqlService
 
+METRIC_TO_GAUGE = {metric: metric.create_gauge(metric_registry) for metric in METRICS}
+
 
 class PrometheusService(DataService):
     sql_service: SqlService
@@ -24,12 +26,9 @@ class PrometheusService(DataService):
         self.gauges = {}
 
         for metric in METRICS:
-            try:
-                self.gauges[metric] = metric.create_gauge(metric_registry).labels(
-                    name=device_config.name
-                )
-            except ValueError:
-                pass
+            self.gauges[metric] = METRIC_TO_GAUGE[metric].labels(
+                name=device_config.name
+            )
 
     async def write(
         self,

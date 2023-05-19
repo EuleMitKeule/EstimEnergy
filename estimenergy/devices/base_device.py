@@ -1,7 +1,9 @@
 """Abstract class for all devices."""
 from abc import ABC, abstractmethod
 import datetime
-from typing import Optional, Type
+from typing import Optional
+
+from sqlmodel import Session
 
 from estimenergy.const import Metric
 from estimenergy.models.config.config import Config
@@ -18,11 +20,13 @@ class BaseDevice(ABC):
     config: Config
     device_config: DeviceConfig
     data_services: list[DataService]
+    is_running: bool
 
     def __init__(self, device_config: DeviceConfig, config: Config):
         self.data_services = []
         self.config = config
         self.device_config = device_config
+        self.is_running = False
 
         sql_service = SqlService(self.device_config, config)
         self.data_services.append(sql_service)
